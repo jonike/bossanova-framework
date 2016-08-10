@@ -94,8 +94,6 @@ $route = array(
 $restriction = array(
     'admin' => array(
         'title' => '^^[Admin Portal]^^'
-    ),
-    'countries/delete' => array(
     )
 );
 
