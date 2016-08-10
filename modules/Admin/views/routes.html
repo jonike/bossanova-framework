@@ -1,0 +1,225 @@
+<form id='route_form'>
+<input type="hidden" name="route_id" id="routes_route_id" value="">
+
+<h1 class='title'>^^[URL route configuration]^^</h1>
+<span class='subtitle'>^^[Define the configuration for a URL and the correlate behavior when the user access it]^^</span>
+
+<table cellspacing='10'>
+<tr>
+<td class='rotateText'><div><p>^^[Config]^^</p></div></td>
+<td>
+
+	<div style='padding:6px;'><label>^^[Main URL]^^</label><br><div style="position:absolute;"><div style="position:relative;padding:7px;color:#555" id="routes_domain"></div></div><input type="text" name="route" id="routes_route" style="width:492px;"></div>
+
+	<div style='padding:6px;'><label>^^[The layout should be rendered]^^?</label><br><select name="template_render" style="width:492px;"><option value="1">^^[Yes]^^</option><option value="1">^^[No]^^</option></select></div>
+
+	<div style='padding:6px;'><label>^^[Which template should be rendered]^^?</label><br><select name="template_path" id="template_path" style="width:492px;" onchange="$('#template_area').html(''); $('#template_area').combo( {url:'/admin/routes/id?template='+$(this).val() }, routes_update_areas)"></select> <a onclick="if ($('#template_path').val()) window.open('../'+$('#template_path').val(), '_new')" style='cursor:pointer;'>^^[Preview]^^</a></div>
+
+	<div style='padding:6px;'><label>^^[The configuration of this URL must be recursive]^^?</label><br><select name="template_recursive" style="width:492px;"><option value="1">^^[Yes]^^</option><option value="0">^^[No]^^</option></select></div>
+
+	<div style='padding:6px;display:none;'><label>^^[Which HTML tag is going to be the default container]^^?</label><br><select name="template_area" id="template_area" style="width:492px;"></select></div>
+
+	<div style='padding:6px;display:none;'><label>^^[Would you like to execute a module]^^?</label><br><select name="module_name" id="module_name" style="width:492px;"></select></div>
+
+	<span onclick="$(this).css('display', 'none'); $(this).prev().css('display', ''); $(this).prev().prev().css('display', '');" style='color:blue;text-decoration:underline;cursor:pointer'>^^[Show more]^^</span>
+
+</td>
+</tr>
+<tr>
+<td class='rotateText'><div><p>^^[Render]^^</p></div></td>
+<td>
+
+	<div id='route_nodes' class='drop' style='min-height:100px;'>
+		<table cellpadding="6" cellspacing="0" id="route_content_table"></table>
+		<i style='padding:10px' id='routes_help'>(^^[drag a node from the tree and drop in this area]^^)</i>
+	</div>
+
+</td>
+</tr>
+<tr>
+<td></td>
+<td>
+	<input type="button" name="save" value="^^[Save]^^" style="width:90px;"> <input type="reset" value="^^[New]^^" style="width:90px;" onclick="routes_new();"> <span onclick="$('#route_content_table').append(route_record('','','','','','')); routes_update_areas();" style="margin-left:20px;color:blue;text-decoration:underline;cursor:pointer">^^[Add advanced content to the layout]^^</span>
+</td>
+</tr>
+</table>
+</form>
+
+<div style="padding:10px">
+
+	<div class="grid" id="div_routes_grid"></div>
+
+</div>
+
+<script>
+$(document).ready(function() {
+
+	$('#template_path').combo({url:'/admin/templates'});
+	$('#module_name').combo({url:'/admin/modules'});
+	$('#route_form').form({ url:'/admin/routes', primarykey:'route_id' });
+
+	$('#div_routes_grid').grid({
+		url:'/admin/routes/grid',
+		columns:[
+			{title:'ID',width:'40', search:'1'},
+			{title:'^^[URL Route]^^',width:'120', search:'1'},
+			{title:'^^[Template]^^',width:'180', search:'1'},
+			{title:'^^[HTML Container Id]^^',width:'100', search:'0'},
+			{title:'',width:'60'}
+			],
+		actions:[
+			{title:'Open',icon:'img/open.png',click:'routes_open'},
+			{title:'Delete',icon:'img/delete.png',click:'routes_delete'}
+			]
+	});
+
+	$('#routes_domain').html($('#domain').html());
+	$('#routes_route').css('padding-left', $('#domain').width()+6);
+});
+
+$(document).on('dnd_move.vakata', function (e, data) {
+	var t = $(data.event.target);
+	if(!t.closest('.jstree').length) {
+		if(t.closest('.drop').length) {
+			data.helper.find('.jstree-icon').removeClass('jstree-er').addClass('jstree-ok');
+		} else {
+			data.helper.find('.jstree-icon').removeClass('jstree-ok').addClass('jstree-er');
+		}
+	}
+}).on('dnd_stop.vakata', function (e, data) {
+	var t = $(data.event.target);
+	if(!t.closest('.jstree').length) {
+		if(t.closest('.drop').length) {
+			id = $(data.element).context.id.replace('_anchor', '');
+			if (id > 0) {
+				table = t.closest('.drop').find('#route_content_table');
+				table.append(route_record(id, $(data.element).context.innerHTML, ''));
+				routes_update_areas();
+			} else {
+				alert('^^[Invalid node]^^');
+			}
+		}
+	}
+});
+
+function routes_new ()
+{
+	$('#route_nodes').find('table').html('');
+	$('#routes_route_id').val('');
+	$('#routes_help').css('display','block');
+}
+
+function routes_save ()
+{
+	$('#route_form').form('save');
+}
+
+function routes_open (id)
+{
+	$('#route_form').form('open', id, function (data) {
+		$('#route_nodes').find('table').html('');
+		$('#template_area').html('');
+		$('#template_area').combo( { url:'/admin/routes/id?template='+data.template_path }, function () {
+			$('#template_area').val(data.template_area);
+			$('#route_content_table').html('');
+			if (data.extra_config) {
+				$('#routes_help').css('display','none');
+				html = '';
+
+				$.each(data.extra_config, function (k, v) {
+					html = route_record(v.node_id, v.title, v.template_area, v.module_name, v.controller_name, v.method_name);
+					$('#route_content_table').append(html);
+				});
+
+				routes_update_areas();
+			} else {
+				$('#routes_help').css('display','block');
+			}
+		});
+	});
+}
+
+function routes_delete (id)
+{
+	if (confirm('^^[Are you sure]^^?'))
+	{
+		$('#route_form').form('delete', id);
+	}
+}
+
+function routes_update_areas ()
+{
+	var html = $('#template_area').html();
+	var sel = $('.route_template_area');
+	for (i = 0; i < sel.length; i++) {
+		$(sel[i]).html(html);
+		$(sel[i]).val($(sel[i]).next().val());
+	}
+
+	var html = $('#module_name').html();
+	var sel = $('.route_module_name');
+	for (i = 0; i < sel.length; i++) {
+		v1 = $(sel[i]).next().val();
+		$(sel[i]).html(html);
+		$(sel[i]).val(v1);
+
+		if (v1) {
+			b = $(sel[i]).parent().parent().parent().find('.route_controller_name');
+			v2 = $(b).next().val();
+
+			$(b).html('');
+			$(b).combo({ url:'/admin/controllers/' + v1, value:v2 });
+
+			if (v2) {
+				url = '/admin/methods/' + v1 + '/' + v2;
+			} else {
+				url = '/admin/methods/' + v1
+			}
+
+			c = $(sel[i]).parent().parent().parent().find('.route_method_name');
+			v3 = $(c).next().val();
+			$(c).combo({ url:url, value:v3 });
+		}
+	}
+}
+
+function route_record (id, title, area, module, controller, method)
+{
+	var table = $('#route_content_table');
+	var record = '';
+
+	if ($(table).html() == '') {
+		record = '<tr><td width="240">^^[Content to be rendered]^^</td><td>^^[HTML Container ID]^^ <span title="^^[This is a tag container in which your node content will be placed inside your HTML template, and it is identified by the id property]^^">(?)</span></td></tr>';
+	}
+
+	if (parseInt(id) > 0) {
+		record += '<tr><td><table><td><i class="fa fa-clone" style="font-size:16px;"></i></td><td><span style="cursor:pointer;color:blue;text-decoration:underline;" onclick="nodes_open(' + id + ')">' + title + '</span></td></table></td><td><input type="hidden" name="extra_config[module_name][]"> <input type="hidden" name="extra_config[controller_name][]"> <input type="hidden" name="extra_config[method_name][]"> <select name="extra_config[template_area][]" class="route_template_area" style="width:240px;" onchange="$(this).next().val(this.value)"></select> <input type="hidden" value="' + area + '"> <input type="hidden" name="extra_config[node_id][]" value="' + id + '"></td><td><input type="button" value="x" style="border:0px;background-color:transparent;" onclick="$(this).parent().parent().remove();"></td></tr>\n'
+	} else {
+		id = new Date().getTime()
+		record += '<tr><td><table><td><i class="fa fa-cog" style="font-size:20px;"></i></td><td><span style="cursor:pointer;color:blue;text-decoration:underline;" onclick="$(\'#route_dialog_' + id + '\').modal();">^^[advanced config]^^</td></table></span><div id="route_dialog_' + id + '"><table><tr><td>Module</td><td><select name="extra_config[module_name][]" class="route_module_name" onchange="route_module_name_data(this)"><option value=""></option></select> <input type="hidden" value="' + module + '"></td></tr><tr><td>Controller</td><td><select name="extra_config[controller_name][]" class="route_controller_name" onchange="route_controller_name_data(this)"><option value=""></option></select> <input type="hidden" value="' + controller + '"></td></tr><tr><td>Method</td><td><select name="extra_config[method_name][]" class="route_method_name"></select> <input type="hidden" value="' + method + '"></td></tr></table><p><input type="button" value="^^[Close]^^" style="width:120px;" onclick="$(\'#route_dialog_' + id + '\').modal();"></p></div><script>$(\'#route_dialog_' + id + '\').modal({ title:\'^^[Advanced Content]^^\', closed:1, height:220 });</s' +'cript></td><td><select name="extra_config[template_area][]" class="route_template_area" style="width:240px;" onchange="$(this).next().val(this.value)"><option value=""></option></select> <input type="hidden" value="' + area + '"> <input type="hidden" name="extra_config[node_id][]"></td><td><input type="button" value="x" style="border:0px;background-color:transparent;" onclick="$(this).parent().parent().remove();"></td></tr>\n'
+	}
+
+	$('#routes_help').css('display','none');
+
+	return record;
+}
+
+function route_module_name_data (obj)
+{
+	var c = $(obj).parent().parent().parent().find('.route_method_name');
+	$(c).html('');
+	$(c).combo({ url:'/admin/methods/' + $(obj).val() });
+
+	var c = $(obj).parent().parent().parent().find('.route_controller_name');
+	$(c).html('');
+	$(c).combo({ url:'/admin/controllers/' + $(obj).val() });
+}
+
+function route_controller_name_data (obj)
+{
+	var b = $(obj).parent().parent().parent().find('.route_module_name');
+	var c = $(obj).parent().parent().parent().find('.route_method_name');
+	$(c).html('');
+	$(c).combo({ url:'/admin/methods/' + $(b).val() + '/' + $(obj).val() });
+}
+</script>

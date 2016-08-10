@@ -1,0 +1,98 @@
+<form id="users_form">
+<input type="hidden" name="user_id">
+
+<h1 class='title'>Users Module</h1>
+<span class='subtitle'>Users maintenance and administration</span>
+
+<table cellspacing='10'>
+<tr>
+<td class='rotateText'><div><p>^^[Users]^^</p></div></td>
+<td>
+
+	<table cellpadding="3" cellspacing="0">
+	<tr>
+		<td>^^[Name]^^<br><input type="text" name="user_name" style="width:240px"></td>
+		<td>^^[E-mail]^^<br><input type="text" name="user_email" style="width:240px"></td>
+		<td>^^[Gender]^^<br><select name="user_gender" style="width:240px"><option value="0">Male</option><option value="1">Female</option></select></td>
+	</tr>
+	<tr>
+		<td>^^[Login]^^<br><input type="text" name="user_login" style="width:240px"></td>
+		<td>^^[Password]^^<br><input type="password" name="user_password" style="width:240px"></td>
+		<td>^^[Group]^^<br><select name="permission_id" style="width:240px"></select></td>
+	</tr>
+	<tr>
+		<td>^^[Facebook]^^ ID<br><input type="text" name="user_facebook" style="width:240px"></td>
+		<td>^^[City]^^<br><input type="text" name="user_city" style="width:240px"></td>
+		<td>^^[Status]^^<br><select name="user_status" style="width:240px"><option value='1'>^^[Enabled]^^</option><option value='0'>^^[Disabled]^^</option></select></td>
+	</tr>
+	</table>
+
+	<p><input type="button" value="^^[Save]^^" onclick="users_save();" style="width:90px;"> <input type="reset" value="^^[New]^^" style="width:90px;" onclick="users_new()"></p>
+
+</td>
+</tr>
+</table>
+</form>
+
+<div style="padding:10px;"><div class="grid" id="users_form_grid"></div></div>
+
+<script>
+$(document).ready(function() {
+
+	$('#users_form').form({ url:bossanova_url + 'admin/users', primarykey:'user_id' });
+	$('#users_form').find('[name="permission_id"]').combo({ url:bossanova_url + 'admin/permissions/combo' });
+
+	$('#users_form_grid').grid({
+		url:bossanova_url + 'admin/users/grid',
+		type:0,
+		columns:[
+			{title:'^^[ID]^^',width:'40', search:'1'},
+			{title:'^^[Name]^^',width:'80%', search:'1'},
+			{title:'^^[Status]^^',width:'100', search:'2', search_combo:{'1':'^^[Active]^^', '0':'^^[Inactive]^^', '2':'^^[Not confirmed]^^'}},
+			{title:'',width:'40'}
+			],
+		actions:[
+			{title:'^^[Open]^^',icon:'img/open.png',click:'users_open'},
+			{title:'^^[Delete]^^',icon:'img/delete.png',click:'users_delete'}
+			]
+	});
+});
+
+function users_new ()
+{
+	$('#users_form').find('[name="user_id"]').val('');
+
+	var permission = $('#users_form').find('[name="permission_id"]');
+	$(permission).html('');
+	$(permission).combo({ url:bossanova_url + 'admin/permissions/combo' });
+}
+
+function users_open (id)
+{
+	$('#users_form').form('open', id, function (data) {
+		$('#users_form_devices').autocomplete('reset');
+		$.each(data.devices, function(k, v) {
+			$('#users_form_devices').autocomplete('add', { id:k, name:v });
+		});
+	});
+}
+
+function users_save ()
+{
+	if ($('#users_form').find('[name="client_id"]').val() == '') {
+		alert('^^[Please select one client]^^');
+	} else if ($('#users_form').find('[name="permission_id"]').val() == '') {
+		alert('^^[Before you proceed you need to select one group]^^');
+	} else {
+		$('#users_form').form('save');
+	}
+}
+
+function users_delete (id)
+{
+	if (confirm('^^[Are you sure]^^?'))
+	{
+		$('#users_form').form('delete', id);
+	}
+}
+</script>

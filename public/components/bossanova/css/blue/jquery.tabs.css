@@ -1,0 +1,91 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+
+* JS UI Tabs
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+.jquery_tabs {
+	width:100%;
+	height:100%;
+	background-color:#fff;
+}
+
+.jquery_tabs > thead td {
+	background-color:transparent;	
+	background-image:url('img/s_header.png');
+	background-repeat:repeat-x;
+	border-bottom:3px solid #4b4e4b;
+	padding-top:4px;
+}
+
+.jquery_tabs_head
+{
+	padding:2px;
+}
+
+.jquery_tabs_head div
+{
+	float:left;
+	margin-left:2px;
+	padding:5px;
+	padding-left:20px;
+	padding-right:20px;
+	height: 16px;
+	position:relative;
+	z-index:0;
+	background-color: #364449;
+	color:#cfcfcf;
+	border-radius: 5px 5px 0 0;
+	-webkit-border-radius: 5px 5px 0 0;
+	-moz-border-radius: 5px 5px 0 0;
+	cursor:pointer;
+}
+
+.jquery_tabs_tab_selected
+{
+	background-color: #38525b !important;
+}
+
+.jquery_tabs_body
+{
+	width:100%;
+	height:100%;
+	border:1px solid #ccc;
+	background-color:#fff;
+	position:relative;
+	z-index:1;
+	top:-1px;
+}
+
+.jquery_tabs_content
+{
+	padding:10px;
+}
+
+.jquery_tabs_tab span
+{
+	cursor:pointer;
+}
+
+.jquery_tabs_close
+{
+	cursor:pointer;
+	position:relative;
+	left:10px;
+}

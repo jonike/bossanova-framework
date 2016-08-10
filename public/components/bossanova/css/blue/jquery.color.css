@@ -1,0 +1,60 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+*
+* JS UI Calendar
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+.jquery_color
+{
+	position:absolute;
+	top:-999;
+	left:-999;
+	width:220px;
+	height:180px;
+	z-index:999;
+}
+.jquery_color table
+{
+	border:1px solid #ccc;
+	background-color:#fff;
+	width:100%;
+}
+.jquery_color td
+{
+	font:9px Verdana;
+	background-color:#fff;
+}
+.jquery_color td div
+{
+	width:10px;
+	height:10px;
+}
+.jquery_color_icon
+{
+	position:relative;
+	top:3px;
+	left:-18px;
+	background-image:url('img/color.png');
+	width:16px;
+	height:16px;
+}
+.jquery_color_input
+{
+	padding-right:18px;
+}

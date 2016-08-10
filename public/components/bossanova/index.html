@@ -1,0 +1,731 @@
+<html>
+<head>
+<title>Bossanova Jquery UI</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<link rel="stylesheet" href="style.css" type="text/css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/lang-css.js"></script>
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans|Roboto">
+
+<script src="js/jquery.accordion.js" type="text/javascript"></script>
+<script src="js/jquery.autocomplete.js" type="text/javascript"></script>
+<script src="js/jquery.calendar.js" type="text/javascript"></script>
+<script src="js/jquery.color.js" type="text/javascript"></script>
+<script src="js/jquery.grid.js" type="text/javascript"></script>
+<script src="js/jquery.tabs.js" type="text/javascript"></script>
+<script src="js/jquery.menu.js" type="text/javascript"></script>
+<script src="js/jquery.modal.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+<body>
+
+<div id='table'>
+
+<div id='menu' class='column'>
+
+<div id='menu-container'></div>
+
+</div>
+
+<div id='content' class='column'>
+
+<div id='content-container'>
+
+<div style="float:right;">
+Change Skin: 
+<select id="skin" onchange="window.open('#?'+this.value, '_top');" style="width:200px;">
+<option value="system">System Skin</option>
+<option value="red">Red Skin</option>
+<option value="blue">Blue Skin</option>
+</select>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var skin = window.location.search.substr(1);
+if (!skin) skin = 'system';
+document.write('<link rel="stylesheet" href="css/'+skin+'/jquery.accordion.css" type="text/css" />');
+document.write('<link rel="stylesheet" href="css/'+skin+'/jquery.autocomplete.css" type="text/css" />');
+document.write('<link rel="stylesheet" href="css/'+skin+'/jquery.calendar.css" type="text/css" />');
+document.write('<link rel="stylesheet" href="css/'+skin+'/jquery.grid.css" type="text/css" />');
+document.write('<link rel="stylesheet" href="css/'+skin+'/jquery.tabs.css" type="text/css" />');
+document.write('<link rel="stylesheet" href="css/'+skin+'/jquery.color.css" type="text/css" />');
+document.write('<link rel="stylesheet" href="css/'+skin+'/jquery.menu.css" type="text/css" />');
+document.write('<link rel="stylesheet" href="css/'+skin+'/jquery.modal.css" type="text/css" />');
+$('#skin').val(skin);
+//]]>
+</script>
+
+<h1>Bossanova Jquery UI</h1>
+
+<h2>Installation</h2>
+
+You can download the whole project on <a href="http://www.github.com/paulhodel/bossanova-ui">http://www.github.com/paulhodel/bossanova-ui</a>
+
+<h2>Components</h2>
+
+<!-- Components Accordion -->
+
+<h3><a name="accordion" class="accordion" onclick="getComponent('accordion');">Accordion</a></h3>
+
+<div id="accordion" class="components">
+
+<h4>Demonstration</h4>
+
+<div style='width:260px;height:160px;border:1px solid #ccc;'>
+<div id="myaccordion">
+	<div>
+		<h1><span>Inline load option</span></h1>
+		<div>Inline static HTML content</div>
+	</div>
+	<div>
+		<h1><span>Remote load option</span></h1>
+		<div url="http://www.bossanova-framework.com/tests/test"></div>
+	</div>
+</div>
+</div>
+
+<script>
+$("#myaccordion").accordion();
+$("#myaccordion").accordion('open', 0); // Open the first tab
+</script>
+
+<h4>Methods</h4>
+
+<pre class="prettyprint">
+Method: open (smallint [tabNum]);
+
+// Open the tab number. Tab index starting on 0
+Example: $('#myaccordion').accordion('open', 1);
+
+<input type="button" value="Test it" onclick="$('#myaccordion').accordion('open', 1);">
+</pre>
+
+<pre class="prettyprint">
+Method: add (string [title], string [html]);
+
+// Add a new item with static HTML inside the accordion
+$('#myaccordion').accordion('add', 'Your title', '&lt;b>new item&lt;/b>');
+
+<input type="button" value="Test it" onclick="$('#myaccordion').accordion('add', 'Your title', '&lt;b>new item&lt;/b>');">
+</pre>
+
+<pre class="prettyprint">
+Method: load (smallint [tabNum], string [html]);
+
+// Load a static HTML inside an element in the accordion
+Example: $('#myaccordion').accordion('load', 0, '&lt;b>new item content&lt;/b>');
+
+<input type="button" value="Test it" onclick="$('#myaccordion').accordion('load', 0, '&lt;b>new item content&lt;/b>');">
+</pre>
+
+<pre class="prettyprint">
+Method: remove (smallint [tabNum]);
+
+// Remove an element from the accordion
+Example: $('#myaccordion').accordion('remove', 0);
+
+<input type="button" value="Test it" onclick="Example: $('#myaccordion').accordion('remove', 0);">
+</pre>
+
+<pre class="prettyprint">
+Method: addUrl (string [title], string [url]);
+
+// Add a remote HTML content inside in a new element and append in the accordion
+Example: $('#myaccordion').accordion('addUrl', 'title remote content', 'http://www.bossanova-framework.com/tests/test');
+
+<input type="button" value="Test it" onclick="$Example: $('#myaccordion').accordion('addUrl', 'title remote content', 'http://www.bossanova-framework.com/tests/test');">
+</pre>
+
+<pre class="prettyprint">
+Method: loadUrl (string [title], string [url]);
+
+// Load a static HTML inside an element in the accordion
+Example: $('#myaccordion').accordion('loadUrl', 0, 'http://www.bossanova-framework.com/tests/test2');
+
+<input type="button" value="Test it" onclick="$('#myaccordion').accordion('loadUrl', 0, 'http://www.bossanova-framework.com/tests/test');">
+</pre>
+
+<h4>Code example</h4>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://www.bossanova-framework.com/ui/js/jquery.accordion.js"></script>
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/style.css" type="text/css" />
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/system/jquery.accordion.css" type="text/css" />
+</head>
+<body>
+
+<div id="myaccordion" style="width:220px;height:300px;">
+    <div>
+        <h1><span>Inline load option</span></h1>
+        <div>Inline static HTML content</div>
+    </div>
+    <div>
+        <h1><span>Remote load option</span></h1>
+        <div url="http://www.bossanova-framework.com/tests/test"></div>
+    </div>
+</div>
+
+</body>
+</html>
+</xmp>
+</div>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<script>
+$("#myaccordion").accordion();
+$("#myaccordion").accordion('open', 0); // Open the first tab
+</script>
+</xmp>
+</div>
+
+<h4>Send us your comments</h4>
+<div class="fb-comments" data-href="https://www.bossanova-framework.org/ui/accordion" data-numposts="10" data-colorscheme="light"></div>
+
+</div>
+
+
+
+
+
+<!-- Components Autocomplete -->
+
+<h3><a name="autocomplete" onclick="getComponent('autocomplete');">Autocomplete</a></h3>
+
+<div id="autocomplete" class="components" style="display:none;">
+
+Users<br>
+<input type="text" id="myautocomplete" name="myautocomplete">
+
+<script>
+$("#myautocomplete").autocomplete({ url:'http://www.bossanova-framework.com/tests/users' });
+</script>
+
+<h4>Methods</h4>
+
+<pre class="prettyprint">
+Method: reset ();
+
+// Reset values
+Example: $('#myautocomplete').autocomplete('reset');
+
+<input type="button" value="Test it" onclick="$('#myautocomplete').autocomplete('reset');">
+</pre>
+
+<h4>Code example</h4>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://www.bossanova-framework.com/ui/js/jquery.autocomplete.js"></script>
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/style.css" type="text/css" />
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/system/jquery.autocomplete.css" type="text/css" />
+</head>
+<body>
+
+Users<br>
+<input type="text" id="myautocomplete" name="myautocomplete" />
+
+</body>
+</html>
+</xmp>
+</div>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<script>
+$("#myautocomplete").autocomplete({ url:'http://www.bossanova-framework.com/tests/users' });
+</script>
+</xmp>
+</div>
+
+<h4>Send us your comments</h4>
+<div class="fb-comments" data-href="https://www.bossanova-framework.org/ui/autocomplete" data-numposts="10" data-colorscheme="light"></div>
+
+</div>
+
+
+
+
+
+<!-- Components Autocomplete -->
+
+<h3><a name="color" onclick="getComponent('color');">Colorpicker</a></h3>
+
+<div id="color" class="components" style="display:none;">
+
+<input type="text" id="mycolor" name="mycolor">
+
+<script>
+$("#mycolor").color();
+</script>
+
+<h4>Methods</h4>
+
+<pre class="prettyprint">
+Method: open (smallint [tabNum]);
+
+// Open the tab number. Tab index starting on 0
+Example: $('#mycolor').color('open');
+
+<input type="button" value="Test it" onclick="$('#mycolor').color('open', 1);">
+</pre>
+<h4>Code example</h4>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://www.bossanova-framework.com/ui/js/jquery.color.js"></script>
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/style.css" type="text/css" />
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/system/jquery.color.css" type="text/css"/>
+</head>
+<body>
+
+<input type="text" id="mycolor" name="mycolor"/>
+
+</body>
+</html>
+</xmp>
+</div>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<script>
+$("#mycolor").color();
+</script>
+</xmp>
+</div>
+
+<h4>Send us your comments</h4>
+<div class="fb-comments" data-href="https://www.bossanova-framework.org/ui/color" data-numposts="10" data-colorscheme="light"></div>
+
+</div>
+
+
+
+
+
+<!-- Components Modal -->
+
+<h3><a name="modal" onclick="getComponent('modal');">Modal</a></h3>
+
+<div id="modal" class="components" style="display:none;">
+
+<div id="mymodal">This is my modal</div>
+
+<script>
+$("#mymodal").modal({ title:'Title from this modal', closed:1 });
+</script>
+
+<h4>Methods</h4>
+
+<pre class="prettyprint">
+Method: init (object [options]);
+
+// Create a new modal or open a existing one
+// options.title {String} from your modal
+// options.closed {Boolean} create and keep it closed or create and open it.
+Example: $('#mymodal').modal({ title:'Title from this modal', closed:0 });
+
+<input type="button" value="Test it" onclick="$('#mymodal').modal({ title:'Title from this modal', closed:0 });">
+</pre>
+
+<h4>Code example</h4>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://www.bossanova-framework.com/ui/js/jquery.modal.js"></script>
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/style.css" type="text/css" />
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/system/jquery.modal.css" type="text/css" />
+</head>
+<body>
+
+<div id="mymodal">This is my modal</div>
+
+</body>
+</html>
+</xmp>
+</div>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<script>
+$("#mymodal").modal({ title:'Title from this modal', closed:1 });
+</script>
+</xmp>
+</div>
+
+<h4>Send us your comments</h4>
+<div class="fb-comments" data-href="https://www.bossanova-framework.org/ui/modal" data-numposts="10" data-colorscheme="light"></div>
+
+</div>
+
+
+
+
+
+<!-- Components Calendar -->
+
+<h3><a name="calendar" onclick="getComponent('calendar');">Calendar</a></h3>
+
+<div id="calendar" class="components" style="display:none;">
+
+<input type="text" id="mycalendar" name="mycalendar">
+
+<script>
+$("#mycalendar").calendar({ readonly:0 });
+</script>
+
+<h4>Methods</h4>
+
+<pre class="prettyprint">
+// Create a calendar picker element based on existing input. If calendar already exists open the calendar picker.
+// format: {String} calendar format. ex. 'dd/mm/YYYY';
+// dynamicformat: {Method} any function to return the format live
+// readonly: {Boolean} input text is a readonly [0/1]
+// clock: {Boolean} show the hour and minutes picker [0/1]
+// months: {Array} array of string so can be translated
+// weekdays: {Array} array of string so can be translated
+
+Method: init (json [options]);
+
+Example: $('#mycalendar').calendar();
+
+<input type="button" value="Test it" onclick="$('#mycalendar').calendar();">
+</pre>
+
+<pre class="prettyprint">
+// Open the calendar if the element exists
+Method: open ();
+
+Example: $('#mycalendar').calendar('open');
+
+<input type="button" value="Test it" onclick="$('#mycalendar').calendar('open');">
+</pre>
+
+<pre class="prettyprint">
+// Close calendar if it is openned
+Method: close ();
+
+Example: $('#mycalendar').calendar('close');
+
+<input type="button" value="Test it" onclick="$('#mycalendar').calendar('close');">
+</pre>
+
+<pre class="prettyprint">
+// Reset the current value of the calendaer
+Method: reset ();
+
+Example: $('#mycalendar').calendar('reset');
+
+<input type="button" value="Test it" onclick="$('#mycalendar').calendar('reset');">
+</pre>
+
+<h4>Code example</h4>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://www.bossanova-framework.com/ui/js/jquery.calendar.js"></script>
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/style.css" type="text/css" />
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/system/jquery.calendar.css" type="text/css"/>
+</head>
+<body>
+
+<input type="text" id="mycalendar" name="mycalendar"/>
+
+</body>
+</html>
+</xmp>
+</div>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<script>
+$("#mycalendar").calendar();
+</script>
+</xmp>
+</div>
+
+<h4>Send us your comments</h4>
+<div class="fb-comments" data-href="https://www.bossanova-framework.org/ui/calendar" data-numposts="10" data-colorscheme="light"></div>
+
+</div>
+
+
+
+
+
+<!-- Components Grid -->
+
+<h3><a name="grid" onclick="getComponent('grid');">Grid</a></h3>
+
+<div id="grid" class="components" style="display:none;">
+
+<div id="mygrid"></div>
+
+<script>
+$('#mygrid').grid({
+	url:'http://www.bossanova-framework.com/tests/grid',
+	columns:[
+		{ title:'UserID',width:'40', search:'1' },
+		{ title:'Name',width:'120', search:'1' },
+		{ title:'Status',width:'100', search:'2', search_combo:{'1':'Enabled','0':'Disabled'} },
+		{ title:'',width:'60'}
+		],
+	actions:[
+		{ title:'Open',icon:'http://www.bossanova-framework.com/ui/img/open.png', click:'user_open' },
+		{ title:'Delete',icon:'http://www.bossanova-framework.com/ui/img/delete.png', click:'user_delete' }
+		]
+});
+
+function user_open (id) {
+	alert('Open user_id: ' + id);
+}
+
+function user_delete (id) {
+	alert('Delete user_id: ' + id);
+}
+</script>
+
+<h4>Methods</h4>
+
+<pre class="prettyprint">
+// Create a calendar picker element based on existing input. If calendar already exists open the calendar picker.
+// format: {String} calendar format. ex. 'dd/mm/YYYY';
+// dynamicformat: {Method} any function to return the format live
+// readonly: {Boolean} input text is a readonly [0/1]
+// clock: {Boolean} show the hour and minutes picker [0/1]
+// months: {Array} array of string so can be translated
+// weekdays: {Array} array of string so can be translated
+
+Method: init (json [options]);
+
+Example: $('#mygrid').grid();
+
+<input type="button" value="Test it" onclick="$('#mygrid').grid();">
+</pre>
+
+<pre class="prettyprint">
+// Open the calendar if the element exists
+Method: open ();
+
+Example: $('#mygrid').calendar('open');
+
+<input type="button" value="Test it" onclick="$('#mygrid').calendar('open');">
+</pre>
+
+<pre class="prettyprint">
+// Close calendar if it is openned
+Method: close ();
+
+Example: $('#mygrid').calendar('close');
+
+<input type="button" value="Test it" onclick="$('#mygrid').calendar('close');">
+</pre>
+
+<pre class="prettyprint">
+// Reset the current value of the calendaer
+Method: reset ();
+
+Example: $('#mygrid').calendar('reset');
+
+<input type="button" value="Test it" onclick="$('#mygrid').calendar('reset');">
+</pre>
+
+<h4>Code example</h4>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://www.bossanova-framework.com/ui/js/jquery.grid.js"></script>
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/style.css" type="text/css" />
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/system/jquery.grid.css" type="text/css"/>
+</head>
+<body>
+
+<div id="mygrid"></div>
+
+</body>
+</html>
+</xmp>
+</div>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<script>
+$('#mygrid').grid({
+	url:'http://www.bossanova-framework.com/tests/grid',
+	columns:[
+		{ title:'UserID',width:'40', search:'1' },
+		{ title:'Name',width:'120', search:'1' },
+		{ title:'Status',width:'100', search:'2', search_combo:{'1':'Enabled','0':'Disabled'} },
+		{ title:'',width:'60'}
+		],
+	actions:[
+		{ title:'Open',icon:'http://www.bossanova-framework.com/ui/img/open.png', click:'user_open' },
+		{ title:'Delete',icon:'http://www.bossanova-framework.com/ui/img/delete.png', click:'user_delete' }
+		]
+});
+
+function user_open (id) {
+	alert('Open user_id: ' + id);
+}
+
+function user_delete (id) {
+	alert('Delete user_id: ' + id);
+}
+</script>
+</xmp>
+</div>
+
+<h4>Send us your comments</h4>
+<div class="fb-comments" data-href="https://www.bossanova-framework.org/ui/grid" data-numposts="10" data-colorscheme="light"></div>
+
+</div>
+
+
+
+
+
+<!-- Components Tabs -->
+
+<h3><a name="tabs" onclick="getComponent('tabs');">Tabs</a></h3>
+
+<div id="tabs" class="components" style="display:none;">
+
+<div style="width:600px;height:160px;">
+<div id="mytabs"></div>
+</div>
+
+<script>
+$("#mytabs").tabs();
+$('#mytabs').tabs('add', {title:'Introdution', index:'tab_number_1', url:'http://www.bossanova-framework.com/tests/test', closable:'0'});
+$('#mytabs').tabs('add', {title:'Other tab', index:'second_tab', html:'teste2', closable:'1'});
+</script>
+
+<h4>Methods</h4>
+
+<pre class="prettyprint">
+Method: add (json [options]);
+
+// Add a new tab (if the index provied already exists display and focus the tab)
+Example: $('#mytabs').tabs('add', {title:'New tab', index:'unique_name', html:'this is a new tab and content', closable:'1'});
+
+<input type="button" value="Test it" onclick="$('#mytabs').tabs('add', {title:'New tab', index:'unique_name', html:'this is a new tab and content', closable:'1'});">
+</pre>
+
+<pre class="prettyprint">
+Method: open (string [tabIndex]);
+
+// Close an existing tab by index name
+Example: $('#mytabs').tabs('open', 'second_tab');
+
+<input type="button" value="Test it" onclick="$('#mytabs').tabs('open', 'second_tab');">
+</pre>
+
+<pre class="prettyprint">
+Method: close (string [tabIndex]);
+
+// Close an existing tab by index name
+Example: $('#mytabs').tabs('close', 'second_tab');
+
+<input type="button" value="Test it" onclick="$('#mytabs').tabs('close', 'second_tab');">
+</pre>
+
+<h4>Code example</h4>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://www.bossanova-framework.com/ui/js/jquery.tabs.js"></script>
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/style.css" type="text/css" />
+<link rel="stylesheet" href="http://www.bossanova-framework.com/ui/css/system/jquery.tabs.css" type="text/css"/>
+</head>
+<body>
+
+<div style="width:600px;height:380px;">
+	<div id="mytabs"></div>
+</div>
+
+</body>
+</html>
+</xmp>
+</div>
+
+<div class="code">
+<xmp class="prettyprint lang-html">
+<script>
+$("#mytabs").tabs();
+$('#mytabs').tabs('add', {title:'Introdution', index:'tab_number_1', url:'http://www.bossanova-framework.com/tests/test', closable:'0'});
+$('#mytabs').tabs('add', {title:'Other tab', index:'second_tab', html:'teste2', closable:'1'});
+</script>
+</xmp>
+</div>
+
+<h4>Send us your comments</h4>
+<div class="fb-comments" data-href="https://www.bossanova-framework.org/ui/tabs" data-numposts="10" data-colorscheme="light"></div>
+</div>
+
+
+
+
+
+<h4>Get in touch for free support by email</h4>
+<xmp class="prettyprint lang-html">paul.hodel@gmail.com</xmp>
+<div class="fb-like" data-href="https://www.bossanova-framework.org/ui" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+function getComponent (id) {
+	$('.components').css('display', 'none');
+	$('#'+id).css('display', '');
+}
+
+$(document).ready(function () {
+	var menu = '';
+	var menu_sub = '';
+	var h1 = $('#content-container > h1, #content-container > h2, #content-container > h3');
+
+	$(h1).each(function (k, v) {
+		if ($(v).prop('tagName') == 'H1') {
+			menu += '<p>' + $(v).html() + '</p>';
+		} else if ($(v).prop('tagName') == 'H2') {
+			menu += '<li><a href="">' + $(v).html() + '</a></li>';
+		} else if ($(v).prop('tagName') == 'H3') {
+			menu += '<li class="menusub"><a href="">' + $(v).html() + '</a></li>';
+		}
+	});
+	
+	$('#menu-container').append(menu);
+});
+</script>
+
+</body>
+</html>

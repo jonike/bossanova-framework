@@ -1,0 +1,26 @@
+.fieldset_title
+{
+	padding:2px;
+	padding-right:8px;
+	position:relative;
+	top:8px;
+	left:10px;
+	background-color:#EEEDE9;
+	font-weight:bold;
+}
+.fieldset_title input
+{
+	position:relative;
+	top:2px;
+}
+.fieldset_content
+{
+	padding:15px;
+}
+.fieldset
+{
+	border:1px solid #aaa;
+	border-radius:  5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius:  5px;
+}

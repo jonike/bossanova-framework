@@ -1,0 +1,64 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+*
+* JS UI Autocomplete
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+.jquery_autocomplete_results
+{
+	padding:1px;
+	position:absolute;
+	background-color:#fff;
+	border:1px solid #ccc;
+	max-height:200px;
+	overflow-y:auto;
+	overflow-x:hidden;
+	z-index:30;
+	font-size:10px;
+}
+.jquery_autocomplete_results li
+{
+	padding:6px;
+	list-style-type:none;
+	z-index:30;
+	font-size:10px;
+}
+.jquery_autocomplete_results li:hover, .autocomplete_content_record_selected
+{
+	background-color:#3399ff;
+	color:#fff;
+	padding:6px;
+	list-style-type:none;
+}
+.jquery_autocomplete_options div
+{
+	padding:2px;
+	background-color:#bbb;
+	color:#fff;
+	margin:2px;
+	max-width:200px;
+	border-radius:  5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius:  5px;
+}
+.jquery_autocomplete_options span
+{
+	position:relative;
+	top:-3px;
+}

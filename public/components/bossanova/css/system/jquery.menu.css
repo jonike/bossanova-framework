@@ -1,0 +1,127 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+
+* JS UI Menu
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+.jquery_menu
+{
+	margin: 0;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-box-shadow: 0 1px 3px #CCC;
+	-moz-box-shadow: 0 1px 3px #CCC;
+	background: #e3e3e3;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#e3e3e3');
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#e3e3e3));
+	background: -moz-linear-gradient(top,  #ededed,  #e3e3e3);
+	border: solid 1px #F2F2F2;
+	width:100%;
+}
+
+.jquery_menu_item
+{
+	margin: 0;
+	border-radius: 3px;
+	background: #e5e5e5 
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5e5', endColorstr='#dedede');
+	background: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#dedede)) !important;
+	background: -moz-linear-gradient(top,  #e5e5e5,  #dedede) !important;
+	color: #444;
+	border: solid 1px #ececec !important;
+	-webkit-box-shadow: 0 0 1px #999 !important;
+	-moz-box-shadow: 0 0 1px #999 !important;
+	box-shadow: 0 0 1px #999 !important;
+	text-align:center;
+	padding:6px;
+	width:120px;
+}
+
+.jquery_menu_img
+{
+	margin: 0;
+	border-radius: 3px;
+	background: #e5e5e5; 
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5e5', endColorstr='#dedede');
+	background: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#dedede)) !important;
+	background: -moz-linear-gradient(top,  #e5e5e5,  #dedede) !important;
+	color: #444;
+	border: solid 1px #ececec !important;
+	-webkit-box-shadow: 0 0 1px #999 !important;
+	-moz-box-shadow: 0 0 1px #999 !important;
+	box-shadow: 0 0 1px #999 !important;
+	text-align:center;
+	padding:4px;
+}
+
+.jquery_menu_img div
+{
+}
+.jquery_menu td
+{
+	padding:3px;
+	cursor:pointer;
+}
+
+.jquery_menu li, .jquery_menu_mouseout
+{
+	list-style:none;
+	padding:12px;
+	position:relative;
+	border:1px solid transparent;
+	background: #dedede;
+	color: #444;
+}
+
+.jquery_menu_mouseover
+{
+	background-color: #e5e5e5;
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5e5', endColorstr='#dedede');
+	background: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#dedede)) !important;
+	background: -moz-linear-gradient(top,  #e5e5e5,  #dedede) !important;
+	border: solid 1px #ececec !important;
+	-webkit-box-shadow: 0 0 1px #999 !important;
+	-moz-box-shadow: 0 0 1px #999 !important;
+	box-shadow: 0 0 1px #999 !important;
+}
+
+.jquery_menu ul
+{
+	position:absolute;
+	display:none;
+	z-index:500;
+	margin:0;
+	margin-top:3px;
+	padding:0px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-box-shadow: 0 1px 3px #CCC;
+	-moz-box-shadow: 0 1px 3px #CCC;
+	background: #dedede;
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5e5', endColorstr='#dedede');
+	background: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#dedede)) !important;
+	background: -moz-linear-gradient(top,  #e5e5e5,  #dedede) !important;
+	color: #444;
+	border: solid 1px #ececec !important;
+	-webkit-box-shadow: 0 0 1px #999 !important;
+	-moz-box-shadow: 0 0 1px #999 !important;
+	box-shadow: 0 0 1px #999 !important;
+}

@@ -1,0 +1,14 @@
+body {
+	background-color: #ec2626;
+	margin:0px;
+	height:100%;
+}
+
+body,td,div,select,input,textarea,h1
+{
+	font:10px Arial;
+}
+input, select
+{
+	padding:2px;
+}

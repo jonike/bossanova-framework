@@ -1,0 +1,50 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+*
+* JS UI Accordion
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+.jquery_accordion
+{
+	background-color:#d4d4d4;
+	height:100%;
+}
+.jquery_accordion > div
+{
+	background-color:#d4d4d4;
+}
+.jquery_accordion h1
+{
+	margin:0px;
+	margin-bottom: 1;
+	padding: 6px;
+	text-align:center;
+	-webkit-box-shadow: 0 3px 3px #CCC;
+	-moz-box-shadow: 0 3px 3px #CCC;
+	background: #e3e3e3;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#e3e3e3');
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#e3e3e3));
+	background: -moz-linear-gradient(top,  #ededed,  #e3e3e3);
+	border: solid 1px #F2F2F2;
+	background-color: #e3e3e3;
+	font-size:1em;
+	font-weight:normal;
+	cursor:pointer;
+}
+

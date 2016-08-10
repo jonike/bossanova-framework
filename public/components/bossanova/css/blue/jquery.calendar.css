@@ -1,0 +1,190 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+*
+* JS UI Calendar
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+.jquery_calendar td
+{
+	font-size:12px;
+}
+.jquery_calendar thead td
+{
+	background-color:#4dbbe7;
+	padding:12px;
+	background: #4dbbe7;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4dbbe7', endColorstr='#4dbbe7');
+	background: -webkit-gradient(linear, left top, left bottom, from(#4dbbe7), to(#4dbbe7));
+	background: -moz-linear-gradient(top,  #4dbbe7,  #4dbbe7);
+	background-color: #4dbbe7;
+	color:#fff;
+}
+
+.jquery_calendar thead span
+{
+	font-size:12px;
+	cursor:pointer;
+}
+
+.jquery_calendar tbody td
+{
+	cursor:pointer;
+	padding:10px;
+	background-color:#fff;
+	font-size:9px !important;
+	color:#000;
+}
+
+#jquery_calendar_weekdays td
+{
+	font-weight:550;
+	background-color:#f8f8f8;
+	padding:14px;
+}
+
+.jquery_calendar tbody u
+{
+	cursor:pointer;
+	margin-left:20px;
+}
+
+.jquery_calendar_header_close
+{
+	position:relative;
+	cursor:pointer;
+}
+
+.jquery_calendar_months td, .jquery_calendar_years td
+{
+	height:30px;
+} 
+
+.jquery_calendar table
+{
+	width:100%;
+	background-color:#fff;
+}
+
+.jquery_calendar_icon
+{
+	border:0px;
+	padding:0px;
+	margin:0px;
+	background-image:url('img/calendar.png');
+	width:15px;
+	height:15px;
+	position:relative;
+	top:2px;
+	left:-17px;
+}
+.jquery_calendar_input
+{
+	padding-right:18px;
+}
+
+.jquery_calendar_icon_up
+{
+	width: 0;
+	height: 0;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-bottom: 10px solid #fff;
+	cursor:pointer;
+}
+
+.jquery_calendar_icon_down
+{
+	width: 0;
+	height: 0;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-top: 10px solid #fff;
+	cursor:pointer;
+}
+
+.jquery_calendar_icon_left
+{
+	width: 0;
+	height: 0;
+	border-top: 4px solid transparent;
+	border-bottom: 4px solid transparent;
+	border-right: 4px solid #fff;
+	cursor:pointer;
+}
+
+.jquery_calendar_icon_right
+{
+	width: 0;
+	height: 0;
+	border-top: 4px solid transparent;
+	border-bottom: 4px solid transparent;
+	border-left: 4px solid #fff;
+	cursor:pointer;
+}
+
+.jquery_calendar
+{
+	position:absolute;
+	z-index:999;
+}
+
+
+.jquery_calendar_container
+{
+	width:220px;
+}
+
+.jquery_calendar_hour, .jquery_calendar_min, .jquery_calendar_ok
+{
+	width:50px;
+	display:inline-block;
+	font-size:1.4em;
+	border:1px solid #ddd;
+	padding:4px;
+	border-radius:4px;
+}
+
+.jquery_calendar_ok
+{
+	width:70px !important;
+	text-align:center;
+	background-color:#eee;
+	text-transform:uppercase;
+}
+
+.jquery_calendar_centralized
+{
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	margin:auto;
+}
+
+.jquery_calendar_centralized .jquery_calendar_container
+{
+	width:300px;
+	position:absolute;
+	z-index:999;
+	left:50%;
+	top:50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	border:1px solid #ccc;
+}

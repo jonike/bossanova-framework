@@ -1,0 +1,40 @@
+.jquery_autocomplete_results
+{
+	padding:2px;
+	position:absolute;
+	background-color:#fff;
+	border:1px solid #ccc;
+	max-height:200px;
+	overflow-y:auto;
+	overflow-x:hidden;
+	z-index:30;
+}
+.jquery_autocomplete_results li
+{
+	padding:6px;
+	list-style-type:none;
+	z-index:30;
+}
+.jquery_autocomplete_results li:hover
+{
+	background-color:#3399ff;
+	color:#fff;
+	padding:6px;
+	list-style-type:none;
+}
+.jquery_autocomplete_options div
+{
+	padding:2px;
+	background-color:#bbb;
+	color:#fff;
+	margin:2px;
+	max-width:200px;
+	border-radius:  5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius:  5px;
+}
+.jquery_autocomplete_options span
+{
+	position:relative;
+	top:-3px;
+}

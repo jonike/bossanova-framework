@@ -1,0 +1,13 @@
+<div id="div_images" class="dropzone"></div>
+
+<script>
+var myDropzone = new Dropzone("div#div_images", { url: '/admin/upload/' + node_id });
+
+myDropzone.on("complete", function (file) { 
+	myDropzone.removeFile(file);
+});
+
+myDropzone.on("queuecomplete", function (file) {
+	$('#admin_nodes_tree').jstree(true).refresh();
+});
+</script>

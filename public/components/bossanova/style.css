@@ -1,0 +1,88 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+*
+* Documentation CSS Style
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+body
+{
+	font: 11px Verdana;
+	padding:0px;
+	margin:0px;
+}
+a
+{
+	cursor:pointer;
+}
+div, span, input, text, select, textarea, label td
+{
+	font:11px Verdana;;
+}
+pre
+{
+	padding:10px !important;
+	background-color:#f9f9f9 !important;
+	border:0px !important;
+}
+#table
+{
+	display:table;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	margin: 0;
+	padding: 0;
+}
+#menu
+{
+	background-color:#647687;
+}
+#menu-container
+{
+	width:220px;
+	color:#fff;
+	padding:30px;
+}
+#menu-container ul
+{
+	padding:0px;
+	margin:0px;
+	list-style:none;
+}
+#menu-container p
+{
+	font-weight:bold;
+	font-size:1.2em;
+}
+#menu-container a
+{
+	color:#fff;
+}
+.menusub
+{
+	margin-left:20px;
+}
+#content-container
+{
+	padding:20px;
+}
+div.column
+{
+	display:table-cell;
+}

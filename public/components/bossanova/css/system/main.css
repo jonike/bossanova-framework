@@ -1,0 +1,10 @@
+body {
+	background-color: #b1d7e4;
+	margin:0px;
+	height:100%;
+}
+
+body,td,div,select,input,textarea,h1
+{
+	font:10px Arial;
+}

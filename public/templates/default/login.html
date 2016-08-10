@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>Bossanova PHP Framework</title>
+<meta id="viewport" name='viewport' content='width=device-width, initial-scale=1, user-scalable=no' />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<script src="../../components/jquery/jquery.min.js"></script>
+<link rel="stylesheet" href="css/admin.css" type="text/css" />
+<body style='background-color:#333333;color:#fff'>
+</head>
+
+<form id="login">
+<table height="90%" align="center">
+<td>
+
+	<div class="login">
+	<table cellpadding='4'>
+	<tr><td colspan='2'><img src='img/logo.png'></td></tr>
+	<tr id='username'><td><b>^^[E-mail]^^</b><br><input name='username' id='username' style='width:200px;'></td></tr>
+	<tr id='password'><td><b>^^[Password]^^</b><br><input type='hidden' name='password'><input type='password' style='width:200px;' onkeyup='if (event.keyCode == 13) doAction();'></td></tr>
+	<tr><td><input type='button' id='login_buttom' value='^^[Login]^^' style='width:200px;' class='circ1' onclick='doAction()'></td></tr>
+	<tr><td><input type="checkbox" name="remember" id="remember" value="1" checked="checked"><span>^^[Remember me on this computer]^^</span></td></tr>
+	<tr><td><input type='hidden' name='recovery' id='recovery'><a onclick="loginRecovery();" style='color:#fff;cursor:pointer;text-decoration:underline'>^^[Remember my password]^^</a></td></tr>
+	</table>
+	</div>
+
+</td>
+</table>
+</form>
+
+<script>
+function loginRecovery ()
+{
+	if ($('#password').css('display') == 'none') {
+		$('#login_buttom').val('^^[Login]^^');
+		$('#password').css('display', '');
+		$('#remember').parent().parent().css('display','');
+		$('#recovery').val(0);
+		$('#recovery').next().html('^^[Remember my password]^^');
+	} else {
+		$('#login_buttom').val('^^[Login recovery]^^');
+		$('#password').css('display', 'none');
+		$('#remember').parent().parent().css('display','none');
+		$('#recovery').val(1);
+		$('#recovery').next().html('^^[Back]^^');
+	}
+
+	return false;
+}
+
+function doAction ()
+{
+	var string = '#login input, #login select';
+
+	string = $(string);
+
+	$(string[1]).val(SHA512($(string[2]).val()));
+
+	$.ajax({
+		url:bossanova_url + bossanova_base,
+		type: 'POST',
+		dataType:'json',
+		data: $(string).serializeArray(),
+		success: function(result) {
+			if ($('#recovery').val() == 1) {
+				loginRecovery();
+				alert(result.message);
+			} else {
+				if (result && result.message) {
+					if (!result.success) {
+						alert(result.message);
+					} else {
+						if (bossanova_referer) {
+							window.open('/'+bossanova_referer,'_top');
+						} else {
+							window.open('/admin','_top');
+						}
+					}
+				} else {
+					if (bossanova_referer) {
+						window.open('/'+bossanova_referer,'_top');
+					} else {
+						window.open('/admin','_top');
+					}
+				}
+			}
+		}
+	});
+}
+</script>
+</body>
+</html>

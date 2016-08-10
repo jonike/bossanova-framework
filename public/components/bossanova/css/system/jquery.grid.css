@@ -1,0 +1,76 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+*
+* JS UI Grid
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+.jquery_grid
+{
+	border:1px solid #ccc;
+}
+.jquery_grid_table
+{
+	width:100%;
+}
+
+.jquery_grid_header_title
+{
+	background-color:#d4d4d4;
+	background-color: #e3e3e3;
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#e3e3e3');
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#e3e3e3));
+	background: -moz-linear-gradient(top,  #ededed,  #e3e3e3);
+	background-image:url('img/s_header.png') !important;
+	background-repeat:repeat-x;
+	border-bottom:3px solid #4b4e4b;
+	font-weight:bold;
+	padding:8px;
+}
+
+.jquery_grid_content_search
+{
+	background-color:#d4d4d4;
+	background-color: #e3e3e3;
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#e3e3e3');
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#e3e3e3));
+	background: -moz-linear-gradient(top,  #ededed,  #e3e3e3);
+}
+
+.jquery_grid_content_search input, .jquery_grid_content_search select
+{
+	font-size:1em !important;
+}
+
+.jquery_grid_content td
+{
+	padding:4px;
+}
+
+.jquery_grid_content tbody td
+{
+	background-color:#fff;
+	padding:0px;
+}
+.jquery_grid_column 
+{
+	background-color:transparent;
+	border:0px;
+	padding:4px;
+	font-size:0.9em !important;
+}

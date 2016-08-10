@@ -1,0 +1,10 @@
+<div itemscope itemtype="http://schema.org/WebSite" id='search-container'>
+	<meta itemprop="url" content="<?php echo $this->getDomain(); ?>" />
+	<form action='/nodes' itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
+		<meta itemprop="target" content="/nodes?q={search_term_string}"/>
+		<input itemprop="query-input" type="text" name="q" class="search-input" required />
+		<button class="search-button" />
+		<span>Search</span>
+		</button>
+	</form>
+</div>

@@ -1,0 +1,110 @@
+<h1 class='title'>^^[My profile]^^</h1>
+
+<div id='message_box'></div>
+
+<form id="profile">
+
+<div style="border-bottom:1px solid #ccc;text-transform:uppercase;"><div style='padding:6px;width:40px;height:40px;text-align:center;font-weight:bold;font-size:23px;display:inline;'>1</div> ^^[Personal info]^^</div>
+
+<div style='padding:4px;'>
+
+	<table cellpadding='6' cellspacing='0' width='600'>
+	<tr>
+	<td>
+		<b>^^[Gender]^^</b><br>
+		<select name='user_gender' style='width:220px'><option value="1">^^[Male]^^</option><option value="2">^^[Female]^^</option></select>
+	</td>
+	<td>
+		<b>^^[Name]^^</b><br>
+		<input type='text' name='user_name' id='user_name' value='<?=$this->view['user_name']?>' style='width:400px'>
+	</td>
+	</tr>
+	<tr>
+	<td>
+		<b>^^[E-mail]^^</b><br>
+		<input type='text' name='user_email' id='user_email' value='<?=$this->view['user_email']?>' style='width:220px'>
+	</td>
+	<td>
+		<b>^^[City]^^</b><br>
+		<input type='text' name='user_city' id='user_city' value='<?=$this->view['user_city']?>' style='width:400px'>
+	</td>
+	</tr>
+	<tr>
+	<td colspan='2'>
+		<b>^^[About you]^^</b><br>
+		<textarea name='user_description' style='width:100%'><?=$this->view['user_description']?></textarea>
+	</td>
+	</tr>
+	</table>
+</div>
+
+<br>
+
+<div style="border-bottom:1px solid #ccc;text-transform:uppercase;"><div style='padding:6px;width:40px;height:40px;text-align:center;font-weight:bold;font-size:23px;display:inline;'>2</div> ^^[Configuration]^^</div>
+
+<div style='padding:4px;'>
+
+	<table cellpadding='6' cellspacing='0' width='600'>
+	<tr>
+	<td>
+		<b>^^[Password]^^</b><br>
+		<input type='text' name='user_password' id='user_password' style='width:220px'>
+	</td>
+	</tr>
+	<tr>
+	<td>
+		<b>^^[Confirm password]^^</b><br>
+		<input type='text' id='user_password1' style='width:220px'>
+	</td>
+	</tr>
+	</table>
+	
+</div>
+</form>
+
+<p><button onclick='users_save()' style='width:140px'>Salvar</button></p>
+
+<script>
+function users_save ()
+{
+	var error = '';
+
+	// Name is required
+	if ($('#user_name').val() == '') {
+		error += "^^[Name cannot be left blank]^^\n<br>";
+	}
+
+	// Email validations
+	var pattern = new RegExp(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/);
+	var email = $('#user_email').val();
+	if (!email || !pattern.test(email)) error += "^^[Invalid Email Address]^^\n<br>"; 
+
+	// Password validations
+	var password = $('#user_password').val();
+	if (password != '') {
+		if (password.length < 6) {
+			error += "^^[The Password is too short]^^\n<br>";
+		}
+		if (password != $('#user_password1').val()) {
+			error += "^^[The Passwords do not match]^^\n<br>";
+		}
+	}
+
+	if (error) {
+		$('#message_box').html(error);
+		$('#message_box').css('color', 'red');
+		$('html, body').animate({ scrollTop: $('#message_box').offset().top }, 'slow');
+	} else {
+		$.ajax({
+				type: "POST",
+				url: '/me/profile',
+				data: $('#profile input, #profile select, #profile textarea').serializeArray(),
+				dataType:'json',
+				success: function(data) {
+					$('#message_box').html(data.message);
+					$('#message_box').focus();
+				}
+			});
+	}
+}
+</script>

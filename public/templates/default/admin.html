@@ -1,0 +1,255 @@
+<html>
+<head>
+<title>Bossanova PHP Framework</title>
+<meta charset="utf-8">
+<meta name = "format-detection" content = "telephone=no" />
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+<script src="../../components/jquery/jquery.min.js"></script>
+<script src="../../components/bossanova/js/jquery.grid.js"></script>
+<script src="../../components/bossanova/js/jquery.tabs.js"></script>
+<script src="../../components/bossanova/js/jquery.calendar.js"></script>
+<script src="../../components/bossanova/js/jquery.accordion.js"></script>
+<script src="../../components/bossanova/js/jquery.autocomplete.js"></script>
+<script src="../../components/bossanova/js/jquery.menu.js"></script>
+<script src="../../components/bossanova/js/jquery.combo.js"></script>
+<script src="../../components/bossanova/js/jquery.form.js"></script>
+<script src="../../components/bossanova/js/jquery.modal.js"></script>
+<script src="../../components/dropzone/dropzone.js"></script>
+<script src="../../components/jstree/dist/jstree.min.js"></script>
+<script src="../../components/tageditor/jquery.tag-editor.min.js"></script>
+<script src="../../components/tageditor/jquery.caret.min.js"></script>
+<script src="//cdn.ckeditor.com/4.5.1/standard-all/ckeditor.js"></script>
+<script src="../../components/ckeditor/pastebase64.js"></script>
+
+<link rel="stylesheet" href="css/admin.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.grid.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.modal.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.calendar.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.autocomplete.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.accordion.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.menu.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.tabs.css" type="text/css" />
+<link rel="stylesheet" href="../../components/jstree/dist/themes/default/style.min.css" />
+<link rel="stylesheet" href="../../components/tageditor/jquery.tag-editor.css" />
+<link rel="stylesheet" href="../../components/dropzone/dropzone.css" type="text/css" />
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans|Roboto">
+<link rel="stylesheet" href="../../components/fontawsome/css/font-awesome.min.css" type="text/css" />
+
+</head>
+<body>
+
+<body style="width:100%;height:100%;margin:0px;">
+
+<table cellpadding="0" cellspacing="0" style="width:100%;height:100%">
+<thead>
+<tr><td colspan='2' style='background-color:#4b4e4b;height:2px;'></td></tr>
+<tr>
+<td colspan='2' style='height:40px;padding:10px;'>
+
+	<table width="100%">
+	<tr>
+	<td style="width:260px;"><img src="img/logo.png" style="margin-bottom:4px;"><br><script>document.write('<span id="domain">http://'+document.domain+'/</span>');</script></td>
+	<td style="width:450px;"><div id='menu'></div></td>
+	<td></td>
+	<td style="width:200px;" align="right">
+
+		<table><tr><td><div style='color:#fff;' id="user_email"></div></td><td><img src="img/nophoto.jpg" id="main_photo" align="right" class="circ2" style="width:40px;height:40px;" onclick="topmenu();"></td></tr></table>
+
+		<div style="position:absolute;z-index:3;display:none;" id="topballoon">
+		<div class="ballon" style="left:-15px;width:220px;">
+		<div class="ballow_arrow_container"><div class="balloon_arrow"></div></div>
+		<div class="balloon_content">
+
+			<table>
+			<tr>
+			<td style='height:110px;' valign='top'>
+
+				<div style='padding-bottom:3px;'>LANGUAGE</div>
+					<div style='padding:2px;'>
+					<span class='jquery_bossanova_radio' id='en_GB' onclick="window.open(bossanova_url + 'admin/locale/en_GB', '_top');"><img src="img/flags/uk.png"></span>
+					<span class='jquery_bossanova_radio' id='pt_BR' onclick="window.open(bossanova_url + 'admin/locale/pt_BR', '_top');"><img src="img/flags/br.png"></span>
+					<span class='jquery_bossanova_radio' id='fr_FR' onclick="window.open(bossanova_url + 'admin/locale/fr_FR', '_top');" style="display:none;"><img src="img/flags/fr.png"></span>
+					<span class='jquery_bossanova_radio' id='es_ES' onclick="window.open(bossanova_url + 'admin/locale/es_ES', '_top');" style="display:none;"><img src="img/flags/es.png"></span>
+					</div>
+					<br>
+
+					<div style='padding-bottom:3px;'>SEARCH</div>
+					<div style='padding:2px;'>
+						<input type="text" id="search_value" style="width:170px;border-radius:3px;border:1px solid #ccc;padding:5px;padding-right:25px;"><img src="img/search.png" onclick="$('#tabs').tabs('add', {title:'^^[Search Results]^^', id:'search', closable:'1', url:'/admin/search', reload:1, data: { q:$('#search_value').val() } });" style="position:relative;left:-23px;top:4px;">
+					</div>
+
+			</td>
+			</tr>
+			<tr>
+				<td align='right'><a href="/admin/logout">^^[Logout]^^</a></td>
+			</tr>
+			</table>
+
+		</div>
+		</div>
+		</div>
+
+	</td>
+	</tr>
+	</table>
+
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td width="320" style="vertical-align:top;width:320px;">
+	<div id="accordion">
+		<div><h1><span>^^[Content Explorer]^^</span></h1>
+			<div id="admin_nodes_tree"></div>
+		</div>
+	</div>
+</td>
+<td>
+	<div id="tabs"></div>
+</td>
+</tr>
+</tbody>
+</table>
+
+<script type="text/javascript">
+var permission = '';
+var node_id = 0;
+$(document).ready(function () {
+	$("#tabs").tabs();
+	$("#tabs").tabs("add", {title:'^^[Routes]^^', id:'routes', closable:'0', url:'/admin/routes' });
+	$("#tabs").tabs("add", {title:'^^[Nodes]^^', id:'nodes', closable:'0', url:'/admin/nodes' });
+	$("#menu").menu({ url:bossanova_url + 'admin/menu' });
+
+	// Loading personal information
+	$.getJSON(bossanova_url + 'admin/info', function(data) {
+
+		if (data.user_email) {
+			$('#user_email').html(data.user_email);
+		}
+
+		if (data.user_facebook) {
+			$('#main_photo').attr('src', 'http://graph.facebook.com/' + data.user_facebook_id + '/picture?width=40&height=40');
+		}
+
+		if (data.user_locale) {
+			$('#'+data.user_locale).attr('class','jquery_bossanova_radio_select');
+		}
+
+		permission = data.permission;
+
+		$("#accordion").accordion();
+		$("#accordion").accordion('open', 0);
+
+		$('#admin_nodes_tree').jstree({
+			'core' : { 'data' : { 'url' : '/admin/tree', 'dataType' : 'json' }, 'check_callback': dnd },
+			'plugins' : [ 'dnd', 'contextmenu' ],
+			'type' : { 'default' : { 'valid_children' : [ 'default' ] } },
+			'contextmenu': {
+				'items': function ($node) {
+					if ($node.id == 'upload') {
+						return false;
+					} else {
+						return {
+							'Folder': {
+								'label': '^^[New folder]^^',
+								'action': function (obj) {
+									var folder = prompt('^^[Folder name]^^:', '');
+									if (folder) {
+										$.ajax({
+											url: '/admin/nodes/insert',
+											dataType:'json',
+											type: 'POST',
+											data: { title:folder, parent_id:node_id, module_name:'nodes', option_name:'folder', status:1 },
+											success: function(result) {
+												$("#admin_nodes_tree").jstree('create_node', node_id, { id:result.id, text:folder }, 'last');
+												$('#admin_nodes_tree').jstree('open_node', $('#'+node_id));
+												$('#admin_nodes_tree').jstree("deselect_node", "#" + node_id);
+												$('#admin_nodes_tree').jstree("select_node", "#" + result.id); 
+											}
+										});
+									}
+								}
+							},
+							'Content': {
+								'label': '^^[Create content]^^',
+								'action': function (obj) {
+									$("#tabs").tabs("add", {title:'^^[Content]^^', id:'nodes', closable:'1', url:'/admin/nodes', reload:1 });
+								}
+							},
+							'Upload Images/Files': {
+								'label': '^^[Upload images/files]^^',
+								'action': function (obj) {
+									$("#tabs").tabs("add", {title:'^^[Upload]^^', id:'upload', closable:'1', url:'/admin/upload', reload:1 });
+								}
+							},
+							'Expand': {
+								'label': '^^[Expand all tree]^^',
+								'action': function (obj) {
+									$("#admin_nodes_tree").jstree('open_all');
+								}
+							}
+						};
+					}
+				}
+			}
+		});
+
+		$('#admin_nodes_tree').on("changed.jstree", function (e, data) {
+			if(data.selected.length) {
+				node_id = data.instance.get_node(data.selected[0]).id;
+				nodes_open(node_id);
+			}
+		});
+
+		$('#admin_nodes_tree').bind("move_node.jstree", function (e, data) {
+			if (data.node.parent == 'trash') {
+				$.ajax({
+					url: '/admin/nodes/delete/' + data.node.id,
+					dataType:'json',
+					type: 'DELETE',
+					success: function(result) {
+					}
+				});
+			} else {
+				// Nodes in order
+				var obj = '';
+				$('#'+data.node.parent).find('li').each( function( k, v ) {
+					if (obj) obj += ',';
+					obj += v.id;
+				});
+				// Update server order
+				$.ajax({
+					url: '/admin/nodes/update/' + data.node.id,
+					dataType:'json',
+					data: { parent_id:data.node.parent, ordered:obj },
+					type: 'POST',
+					success: function(result) {
+					}
+				});
+			}
+		});
+	});
+});
+
+function dnd (a, b, c)
+{
+	if ((b.id == 'trash') || c.id == '#') {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function topmenu ()
+{
+	if ($('#topballoon').css('display') == 'none') {
+		$('#topballoon').css('display', '');
+	} else {
+		$('#topballoon').css('display', 'none');
+	}
+}
+</script>
+</body>
+</html>
