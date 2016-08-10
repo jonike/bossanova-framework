@@ -1,4 +1,4 @@
-# bossanova-framework
+# Bossanova Framework
 
 Bossanova is a PHP Framework very fast and easy to use.
 
