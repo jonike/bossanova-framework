@@ -1,11 +1,17 @@
 <?php
-
 /**
  * (c) 2013 Bossanova PHP Framework
  * http://www.bossanova-framework.com
  *
- * @author: Paul Hodel <paul.hodel@gmail.com>
- * @description: BF Auth Library
+ * PHP version 5
+ *
+ * @category PHP
+ * @package  BossanovaFramework
+ * @author   Paul Hodel <paul.hodel@gmail.com>
+ * @license  The MIT License (MIT)
+ * @link     http://www.bossanova-framework.com
+ *
+ * Authentication Library
  */
 namespace Bossanova\Auth;
 
@@ -641,8 +647,8 @@ class Auth
 
     /**
      * Return the full link of the page
-     *
-     * @return string $link;
+     * @param  string $page
+     * @return string $link
      */
     public function getLink($page = null)
     {
@@ -664,6 +670,7 @@ class Auth
     /**
      * Set the user initial locale
      *
+     * @param  string $locale Locale file, must be available at resources/locale/[string].csv
      * @return void
      */
     public function setLocale($locale)

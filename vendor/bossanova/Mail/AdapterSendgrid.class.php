@@ -1,11 +1,17 @@
 <?php
-
 /**
  * (c) 2013 Bossanova PHP Framework
  * http://www.bossanova-framework.com
  *
- * @author: Paul Hodel <paul.hodel@gmail.com>
- * @description: Sendgrid
+ * PHP version 5
+ *
+ * @category PHP
+ * @package  BossanovaFramework
+ * @author   Paul Hodel <paul.hodel@gmail.com>
+ * @license  The MIT License (MIT)
+ * @link     http://www.bossanova-framework.com
+ *
+ * Sendgrid abstraction
  */
 namespace Bossanova\Mail;
 
@@ -40,13 +46,13 @@ class AdapterSendgrid implements MailService
 
     public function addTo($email, $name = null)
     {
-    	$email = new \Sendgrid\Email($name, $email);
+        $email = new \Sendgrid\Email($name, $email);
         $this->personalization->addTo($email);
     }
 
     public function addAddress($email, $name = null)
     {
-    	$email = new \Sendgrid\Email($name, $email);
+        $email = new \Sendgrid\Email($name, $email);
         $this->personalization->addTo($email);
     }
 

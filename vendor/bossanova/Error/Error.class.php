@@ -1,11 +1,17 @@
 <?php
-
 /**
  * (c) 2013 Bossanova PHP Framework
  * http://www.bossanova-framework.com
  *
- * @author: Paul Hodel <paul.hodel@gmail.com>
- * @description: Error Handler
+ * PHP version 5
+ *
+ * @category PHP
+ * @package  BossanovaFramework
+ * @author   Paul Hodel <paul.hodel@gmail.com>
+ * @license  The MIT License (MIT)
+ * @link     http://www.bossanova-framework.com
+ *
+ * Error Handler
  */
 namespace Bossanova\Error;
 
