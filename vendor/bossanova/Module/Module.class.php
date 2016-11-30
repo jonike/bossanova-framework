@@ -19,9 +19,12 @@ use Bossanova\Auth\Auth;
 use Bossanova\Render\Render;
 use Bossanova\Database\Database;
 use Bossanova\Mail\Mail;
+use Bossanova\Common\Post;
 
 class Module
 {
+    use Post;
+
     /**
      * Global authentication instance
      *
@@ -58,6 +61,13 @@ class Module
     public $view = array();
 
     /**
+     * Allow native methods
+     *
+     * @var $view
+     */
+    protected $nativeMethods = true;
+
+    /**
      * Connect to the database
      */
     public function __construct()
@@ -69,6 +79,10 @@ class Module
             DB_CONFIG_PASS,
             DB_CONFIG_NAME
         ));
+
+        if (defined('NATIVE_METHODS')) {
+            $nativeMethods = NATIVE_METHODS ? true : false;
+        }
     }
 
     /**
@@ -80,6 +94,11 @@ class Module
     public function __default()
     {
         global $restriction;
+
+        // If native methods is disabled
+        if ($this->nativeMethods == false) {
+            return false;
+        }
 
         // Id
         $id = 0;
@@ -128,7 +147,9 @@ class Module
                         // No restriction defined or restriction defined but permission defined as well
                         if ($this->getPermission($action)) {
                             // Saving data
-                            if ($model = $this->query->model($table)) {
+                            $model = $this->query->model($table);
+
+                            if ($model) {
                                 $model->column($column)->update($id);
 
                                 if ($this->query->error) {
@@ -151,7 +172,9 @@ class Module
                         // No restriction defined or restriction defined but permission defined as well
                         if ($this->getPermission($action)) {
                             // Saving data
-                            if ($model = $this->query->model($table)) {
+                            $model = $this->query->model($table);
+
+                            if ($model) {
                                 $id = $model->column($column)->insert();
 
                                 if ($this->query->error) {
@@ -186,15 +209,19 @@ class Module
                         $table = $this->escape($table);
 
                         // Runtime model
-                        $this->query->model($table)->delete($id);
+                        $model = $this->query->model($table);
 
-                        if ($this->query->error) {
-                            throw new \Exception('^^[It was not possible delete this record]^^');
-                        } else {
-                            $data['message'] = "^^[Successfully deleted]^^";
+                        if ($model) {
+                            $model->delete($id);
 
-                            if (method_exists($this, "delete_callback")) {
-                                $this->delete_callback($id);
+                            if ($this->query->error) {
+                                throw new \Exception('^^[It was not possible delete this record]^^');
+                            } else {
+                                $data['message'] = "^^[Successfully deleted]^^";
+
+                                if (method_exists($this, "delete_callback")) {
+                                    $this->delete_callback($id);
+                                }
                             }
                         }
                     }
@@ -217,10 +244,13 @@ class Module
                         $table = $this->escape($table);
 
                         // Runtime model
-                        $data = $this->query->model($table)->select($id);
+                        $model = $this->query->model($table);
+                        if ($model) {
+                            $data = $model->select($id);
 
-                        if ($this->query->error) {
-                            throw new \Exception('^^[It was not possible to load this record]^^');
+                            if ($this->query->error) {
+                                throw new \Exception('^^[It was not possible to load this record]^^');
+                            }
                         }
                     }
                 } else {
@@ -241,6 +271,11 @@ class Module
      */
     public function select()
     {
+        // If native methods is disabled
+        if ($this->nativeMethods == false) {
+            return false;
+        }
+
         // Table name based on the module and controllers
         if ((int) $this->getParam(2) > 0) {
             $table = $this->escape($this->getParam(0));
@@ -271,6 +306,11 @@ class Module
      */
     public function insert($row = null)
     {
+        // If native methods is disabled
+        if ($this->nativeMethods == false) {
+            return false;
+        }
+
         // Data to be saved
         if (! isset($row)) {
             $row = $_POST;
@@ -286,20 +326,23 @@ class Module
             }
 
             // Saving data
-            $id = $this->query->model($table)->column($row)->insert();
+            $model = $this->query->model($table);
 
-            // Check if there is any error from the database class
-            if (! $this->query->error) {
-                $data['id'] = $id;
-                $data['message'] = "^^[Successfully saved]^^";
+            if ($model) {
+                $id = $model->column($row)->insert();
+                // Check if there is any error from the database class
+                if (! $this->query->error) {
+                    $data['id'] = $id;
+                    $data['message'] = "^^[Successfully saved]^^";
 
-                // If the method insert_callback in the module exists called it
-                if (method_exists($this, "insert_callback")) {
-                    $this->insert_callback($id);
+                    // If the method insert_callback in the module exists called it
+                    if (method_exists($this, "insert_callback")) {
+                        $this->insert_callback($id);
+                    }
+                } else {
+                    $data['error'] = 1;
+                    $data['message'] = "^^[It was not possible save this record]^^\n";
                 }
-            } else {
-                $data['error'] = 1;
-                $data['message'] = "^^[It was not possible save this record]^^\n";
             }
         }
 
@@ -313,6 +356,11 @@ class Module
      */
     public function update($row = null)
     {
+        // If native methods is disabled
+        if ($this->nativeMethods == false) {
+            return false;
+        }
+
         // Table name based on the module and controllers
         if ((int) $this->getParam(2) > 0) {
             $table = $this->escape($this->getParam(0));
@@ -336,19 +384,23 @@ class Module
                 // Find by id
                 if ($tabid > 0) {
                     // Saving data
-                    $data = $this->query->model($table)->column($row)->update($tabid);
+                    $model = $this->query->model($table);
 
-                    // Check if there is any error from the database class
-                    if (! $this->query->error) {
-                        $data['message'] = "^^[Successfully saved]^^";
+                    if ($model) {
+                        $model->column($row)->update($tabid);
 
-                        // If the method update_callback in the module exists called it
-                        if (method_exists($this, "update_callback")) {
-                            $this->update_callback($tabid);
+                        // Check if there is any error from the database class
+                        if (! $this->query->error) {
+                            $data['message'] = "^^[Successfully saved]^^";
+
+                            // If the method update_callback in the module exists called it
+                            if (method_exists($this, "update_callback")) {
+                                $this->update_callback($tabid);
+                            }
+                        } else {
+                            $data['error'] = 1;
+                            $data['message'] = "^^[It was not possible save this record]^^\n";
                         }
-                    } else {
-                        $data['error'] = 1;
-                        $data['message'] = "^^[It was not possible save this record]^^\n";
                     }
                 }
             }
@@ -364,6 +416,11 @@ class Module
      */
     public function delete()
     {
+        // If native methods is disabled
+        if ($this->nativeMethods == false) {
+            return false;
+        }
+
         // Table name based on the module and controllers
         if ((int) $this->getParam(2) > 0) {
             $table = $this->escape($this->getParam(0));
@@ -377,19 +434,23 @@ class Module
 
         // Record to be deleted
         if (isset($tabid) && $tabid > 0) {
-            //$data = $this->query->model($table)->delete($tabid);
+            $model = $this->query->model($table);
 
-            // Check if there is any error from the database class
-            if (! $this->query->error) {
-                $data['message'] = "^^[Successfully deleted]^^";
+            if ($model) {
+                $model->delete($tabid);
 
-                // If the method update_callback in the module exists called it
-                if (method_exists($this, "delete_callback")) {
-                    $this->delete_callback($tabid);
+                // Check if there is any error from the database class
+                if (! $this->query->error) {
+                    $data['message'] = "^^[Successfully deleted]^^";
+
+                    // If the method update_callback in the module exists called it
+                    if (method_exists($this, "delete_callback")) {
+                        $this->delete_callback($tabid);
+                    }
+                } else {
+                    $data['error'] = 1;
+                    $data['message'] = "^^[It was not possible delete this record]^^\n";
                 }
-            } else {
-                $data['error'] = 1;
-                $data['message'] = "^^[It was not possible delete this record]^^\n";
             }
         }
 
@@ -550,33 +611,6 @@ class Module
     public function setKeywords($data)
     {
         Render::$configuration['template_meta']['keywords'] = $data;
-    }
-
-    /**
-     * This function is to return $_POST values
-     *
-     * @param  array $filter Array with the values you want to get from the $_POST, if is NULL return the whole $_POST.
-     * @return array $row    Array with values from $_POST
-     */
-    public function getPost($filter = null)
-    {
-        $row = array();
-
-        // Return all variables in the post
-        if (! isset($filter)) {
-            if (isset($_POST)) {
-                $row = $_POST;
-            }
-        } else {
-            // Return only what you have defined as important
-            foreach ($filter as $k => $v) {
-                if (isset($_POST[$v])) {
-                    $row[$v] = $_POST[$v];
-                }
-            }
-        }
-
-        return $row;
     }
 
     /**

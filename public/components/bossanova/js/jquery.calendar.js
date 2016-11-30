@@ -77,7 +77,7 @@
 		var id = $(obj).attr('id');
 
 		// Keep non id elements to be instantiate without any problems
-		if (!id) {
+		if (! id) {
 			id = 'calendar_' + Math.floor(Math.random() * 1000) + 9999;
 			$(this).attr('id', id);
 		}
@@ -108,7 +108,9 @@
 		// Check for read only or create a mask to the visual input
 		if (options.readonly == 1) {
 			$(input).attr('readonly', 'readonly');
-			$(input).attr('onclick', "$('#"+id+"').calendar('open')");
+			$(input).click(function () {
+				$(obj).calendar('open');
+			});
 		} else {
 			// The Masking will work only with NUMBERS
 			$(input).keydown(function (e) {
@@ -220,8 +222,13 @@
 					var data = y + '-' + m + '-' + d + ' ' + h + ':' +  i + ':' + s;
 					$(this).prev().val(data);
 				} else {
+					var data = '';
 					$(this).val('');
 					$(this).prev().val('');
+				}
+
+				if (typeof(options.onchange) == 'function') {
+					options.onchange($(this), data);
 				}
 			});
 		}
@@ -246,10 +253,12 @@
 		$(div).attr('class', 'jquery_calendar bossanova-ui');
 
 		// Structure of objects
-		$(obj).after('<div style="position:absolute;display:inline;"><div class="jquery_calendar_icon" onclick="$(\'#'+id+'\').calendar(\'open\');"></div></div>');
+		$(obj).after('<div style="position:absolute;display:inline;"><div class="jquery_calendar_icon"></div></div>');
 		$(obj).after($(div));
 		$(obj).after($(input));
-
+		$(obj).next().next().next().click(function () {
+			$(obj).calendar('open');
+		})
 		// Hide calendar controllers
 		$(obj).css('display','none');
 		$(div).css('display','none');
@@ -275,8 +284,17 @@
 
 		// Month and year html
 		var html = '';
-		html += '<tr align="center"><td></td><td align="right" onclick="$(\'#'+id+'\').calendar(\'prev\')" class="jquery_calendar_command"><div class="jquery_calendar_icon_left"></div></td><td colspan="3"><input type="hidden" class="jquery_calendar_day" value="'+data.getDate()+'"> <span class="jquery_calendar_month_label" onclick="$(this).parents(\'.jquery_calendar\').calendar(\'months\')">' + months[ data.getMonth() ] +'</span><input type="hidden" class="jquery_calendar_month" value="' + month +'"> <span class="jquery_calendar_year_label" onclick="$(this).parents(\'.jquery_calendar\').calendar(\'years\')">'+data.getFullYear()+'</span> <input type="hidden" class="jquery_calendar_year" value="'+data.getFullYear()+'"></td><td align="left" onclick="$(\'#'+id+'\').calendar(\'next\')" class="jquery_calendar_command"><div class="jquery_calendar_icon_right"></div></td><td><span class="jquery_calendar_header_close" onclick="$(\'#'+id+'\').calendar(\'close\', 0);">x</span></td></tr>';
+		html += '<tr align="center"><td></td><td align="right" class="jquery_calendar_command prev"><div class="jquery_calendar_icon_left"></div></td><td colspan="3"><input type="hidden" class="jquery_calendar_day" value="'+data.getDate()+'"> <span class="jquery_calendar_month_label" onclick="$(this).parents(\'.jquery_calendar\').calendar(\'months\')">' + months[ data.getMonth() ] +'</span><input type="hidden" class="jquery_calendar_month" value="' + month +'"> <span class="jquery_calendar_year_label" onclick="$(this).parents(\'.jquery_calendar\').calendar(\'years\')">'+data.getFullYear()+'</span> <input type="hidden" class="jquery_calendar_year" value="'+data.getFullYear()+'"></td><td align="left" class="jquery_calendar_command next"><div class="jquery_calendar_icon_right"></div></td><td><span class="jquery_calendar_header_close close">x</span></td></tr>';
 		$(calendar_header).html(html);
+		$(calendar_header).find('.prev').click(function () {
+			$(obj).calendar('prev');
+		});
+		$(calendar_header).find('.next').click(function () {
+			$(obj).calendar('next');
+		});
+		$(calendar_header).find('.close').click(function () {
+			$(obj).calendar('close', 0);
+		});
 
 		// Create calendar table picker
 		$(div).calendar('days');
@@ -284,7 +302,12 @@
 		$(div).append($(modal));
 
 		// Update labels
-		if ($(obj).val()) $(obj).calendar('label');
+		if ($(obj).val().replace(/\D/g,'').length > 7) {
+			var val = $(obj).calendar('label', options.format);
+			$(obj).next().val(val);
+		} else {
+			$(obj).val('');
+		}
 	},
 
 	/**
@@ -387,8 +410,18 @@
 	 */
 
 	set : function( val ) {
+		// Object id
+		var id = $(this).attr('id');
+
+		// Loading options
+		var format = $.fn.calendar.options[id].format;
+
+		// Set value
 		$(this).val(val);
-		$(this).calendar('label');
+
+		// Set label
+		val = $(this).calendar('label', format);
+		$(this).next().val(val);
 	},
 
 	/**
@@ -396,12 +429,14 @@
 	 * @return void
 	 */
 
-	label : function( ) {
+	label : function( format ) {
 		// Object id
 		var id = $(this).attr('id');
 
-		// Loading options
-		var format = $.fn.calendar.options[id].format;
+		// Default calendar
+		if (! format) {
+			format = 'DD/MM/YYYY';
+		}
 
 		value = '';
 		if ($(this).val()) {
@@ -443,8 +478,7 @@
 			value = value.replace('SS', 0);
 		}
 
-		$(this).next().val(value);
-		//$(this).next().focus();
+		return value;
 	},
 
 	/**
@@ -535,15 +569,26 @@
 			$(this).val(y + '-' + m + '-' + d + ' ' + h + ':' + i + ':00');
 
 			// Update the label to the user
-			$(this).calendar('label');
+			val = $(this).calendar('label', format);
+			$(this).next().val(val);
 
 			// Hid calendar
 			$(calendar).css('display','none');
+
+			// On change
+			if (typeof($.fn.calendar.options[id].onchange) ==  'function') {
+				$.fn.calendar.options[id].onchange($(this), y + '-' + m + '-' + d + ' ' + h + ':' + i + ':00');
+			}
 		}
 
 		// Hide the calendar table
 		var div = $(this).next().next();
 		$(div).css('display', 'none');
+
+		// On close
+		if ($.fn.calendar.options[id].onclose) {
+			$.fn.calendar.options[id].onclose(($this));
+		}
 	},
 
 	/**

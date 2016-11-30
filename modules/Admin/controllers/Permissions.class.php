@@ -47,10 +47,10 @@ class Permissions extends Admin
     public function insert($row = NULL)
     {
         $row = $this->getPost(array(
-            'permission_description',
+            'permission_name',
             'permission_status',
-            'global_user',
-            'permission_order'
+            'permission_order',
+            'global_user'
         ));
 
         return parent::insert($row);
@@ -74,10 +74,10 @@ class Permissions extends Admin
     public function update($row = NULL)
     {
         $row = $this->getPost(array(
-            'permission_description',
+            'permission_name',
             'permission_status',
-            'global_user',
-            'permission_order'
+            'permission_order',
+            'global_user'
         ));
 
         return parent::update($row);
@@ -102,7 +102,7 @@ class Permissions extends Admin
     public function delete()
     {
         // Get ID
-        $id = $this->getParam(3);
+        $id = (int)$this->getParam(3);
 
         // Logical delete
         $permissions = new \models\Permissions();

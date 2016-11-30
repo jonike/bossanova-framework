@@ -85,16 +85,18 @@ class Routes extends Admin
         $data = array();
 
         $template = $_GET['template'];
-        $template = file_get_contents("public/templates/" . $template);
-        preg_match_all("/<(.*)id=[\"'](.*?)[\"'](.*)>/", $template, $test);
+        if (file_exists("public/templates/" . $template)) {
+            $template = file_get_contents("public/templates/" . $template);
+            preg_match_all("/<(.*)id=[\"'](.*?)[\"'](.*)>/", $template, $test);
 
-        // Format grid json data
-        $i = 0;
-        foreach ($test[2] as $k => $v) {
-            $data[$i]['id'] = $v;
-            $data[$i]['name'] = $v;
+            // Format grid json data
+            $i = 0;
+            foreach ($test[2] as $k => $v) {
+                $data[$i]['id'] = $v;
+                $data[$i]['name'] = $v;
 
-            $i ++;
+                $i ++;
+            }
         }
 
         return $this->jsonEncode($data);
@@ -112,7 +114,11 @@ class Routes extends Admin
         $nodes = new \models\Nodes();
         $routes = new \models\Routes();
 
-        $row = $routes->getById($route_id);
+        if (isset($_GET['route']) && $_GET['route']) {
+            $row = $routes->getByRoute($_GET['route']);
+        } else {
+            $row = $routes->getById($route_id);
+        }
 
         if ($row['extra_config']) {
             $extra_config = json_decode($row['extra_config']);

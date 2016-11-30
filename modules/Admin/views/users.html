@@ -27,8 +27,13 @@
 	</tr>
 	</table>
 
-	<p><input type="button" value="^^[Save]^^" onclick="users_save();" style="width:90px;"> <input type="reset" value="^^[New]^^" style="width:90px;" onclick="users_new()"></p>
+</td>
+</tr>
+<tr><td></td>
+<td>
 
+        <input type="button" value="^^[Save]^^" onclick="users_save();" style="width:90px;"> <input type="reset" value="^^[New]^^" style="width:90px;" onclick="users_new()">
+    
 </td>
 </tr>
 </table>
@@ -90,8 +95,7 @@ function users_save ()
 
 function users_delete (id)
 {
-	if (confirm('^^[Are you sure]^^?'))
-	{
+	if (confirm('^^[Are you sure]^^?')) {
 		$('#users_form').form('delete', id);
 	}
 }

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 <script src="../../components/jquery/jquery.min.js"></script>
 <link rel="stylesheet" href="css/admin.css" type="text/css" />
-<body style='background-color:#333333;color:#fff'>
+<body>
 </head>
 
 <form id="login">
@@ -13,13 +13,13 @@
 <td>
 
 	<div class="login">
-	<table cellpadding='4'>
+	<table cellpadding='6'>
 	<tr><td colspan='2'><img src='img/logo.png'></td></tr>
 	<tr id='username'><td><b>^^[E-mail]^^</b><br><input name='username' id='username' style='width:200px;'></td></tr>
 	<tr id='password'><td><b>^^[Password]^^</b><br><input type='hidden' name='password'><input type='password' style='width:200px;' onkeyup='if (event.keyCode == 13) doAction();'></td></tr>
-	<tr><td><input type='button' id='login_buttom' value='^^[Login]^^' style='width:200px;' class='circ1' onclick='doAction()'></td></tr>
+    <tr><td><input type='hidden' name='recovery' id='recovery'><a onclick="loginRecovery();" style='cursor:pointer;text-decoration:underline'>^^[Forget your password]^^?</a></td></tr>
 	<tr><td><input type="checkbox" name="remember" id="remember" value="1" checked="checked"><span>^^[Remember me on this computer]^^</span></td></tr>
-	<tr><td><input type='hidden' name='recovery' id='recovery'><a onclick="loginRecovery();" style='color:#fff;cursor:pointer;text-decoration:underline'>^^[Remember my password]^^</a></td></tr>
+    <tr><td><input type='button' id='login_buttom' value='^^[Login]^^' style='width:200px;' class='circ1' onclick='doAction()'></td></tr>
 	</table>
 	</div>
 

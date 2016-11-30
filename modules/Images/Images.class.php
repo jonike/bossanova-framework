@@ -19,14 +19,14 @@ class Images extends Module
             $this->setLayout(0);
 
             $this->query->Table("nodes");
-            $this->query->Column("complement, info");
-            $this->query->Argument(1, "node_id", $id);
-            $this->query->Select();
-            $result = $this->query->Execute();
+            $this->query->column("content, format");
+            $this->query->argument(1, "node_id", $id);
+            $this->query->select();
+            $result = $this->query->execute();
             $row = $this->query->fetch_assoc($result);
 
-            header("Content-type:" . $row['complement']);
-            echo base64_decode($row['info']);
+            header("Content-type:" . $row['format']);
+            echo base64_decode($row['content']);
             exit();
         }
     }

@@ -67,12 +67,12 @@ class Auth
                     // Check for recovery information
                     $username = $this->database->bind($_POST['username']);
 
-                    $this->database->Table("users");
-                    $this->database->Column("user_id, user_email, user_name, user_login");
-                    $this->database->Argument(1, "lower(user_email)", "lower($username)");
-                    $this->database->Argument(2, "user_status", "0", ">");
-                    $this->database->Select();
-                    $result = $this->database->Execute();
+                    $this->database->table("users");
+                    $this->database->column("user_id, user_email, user_name, user_login");
+                    $this->database->argument(1, "lower(user_email)", "lower($username)");
+                    $this->database->argument(2, "user_status", "0", ">");
+                    $this->database->select();
+                    $result = $this->database->execute();
 
                     if (! $row = $this->database->fetch_assoc($result)) {
                         $data['message'] = "^^[User not found]^^";
@@ -80,15 +80,15 @@ class Auth
                         $row['user_hash'] = md5(uniqid(mt_rand(), true));
 
                         // Save hash in the user table, is is a one time code to access the system
-                        $this->database->Table("users");
-                        $this->database->Column(array(
+                        $this->database->table("users");
+                        $this->database->column(array(
                             'user_hash' => "'{$row['user_hash']}'",
                             'user_recovery' => 1,
                             'user_recovery_date' => "NOW()"
                         ));
-                        $this->database->Argument(1, "user_id", $row['user_id']);
-                        $this->database->Update();
-                        $this->database->Execute();
+                        $this->database->argument(1, "user_id", $row['user_id']);
+                        $this->database->update();
+                        $this->database->execute();
 
                         $data['message'] = "^^[The instructions to recovery your password was sent to your email]^^";
                         $data['success'] = 1;
@@ -107,14 +107,14 @@ class Auth
                     $password = $this->database->bind($_POST['password']);
 
                     // Check for username and password
-                    $this->database->Table("users");
-                    $this->database->Column("user_id, permission_id, user_password, user_salt, user_locale");
-                    $this->database->Argument(1, "lower(user_login)", "lower($username)");
-                    $this->database->Argument(2, "lower(user_email)", "lower($username)");
-                    $this->database->Argument(3, "user_status", 1);
-                    $this->database->Where("((1) OR (2)) AND (3)");
-                    $this->database->Select();
-                    $result = $this->database->Execute();
+                    $this->database->table("users");
+                    $this->database->column("user_id, permission_id, user_password, user_salt, user_locale");
+                    $this->database->argument(1, "lower(user_login)", "lower($username)");
+                    $this->database->argument(2, "lower(user_email)", "lower($username)");
+                    $this->database->argument(3, "user_status", 1);
+                    $this->database->where("((1) OR (2)) AND (3)");
+                    $this->database->select();
+                    $result = $this->database->execute();
                     $row = $this->database->fetch_assoc($result);
 
                     if (! isset($row['user_id']) || ! $row['user_id']) {
@@ -136,11 +136,11 @@ class Auth
                             $access_token = $this->setSession($row['user_id'], $keepAlive);
 
                             // Update hash
-                            $this->database->Table("users");
-                            $this->database->Column(array('user_hash' => "'$access_token'"));
-                            $this->database->Argument(1, "user_id", "{$row['user_id']}");
-                            $this->database->Update();
-                            $this->database->Execute();
+                            $this->database->table("users");
+                            $this->database->column(array('user_hash' => "'$access_token'"));
+                            $this->database->argument(1, "user_id", "{$row['user_id']}");
+                            $this->database->update();
+                            $this->database->execute();
 
                             // Registering permissions
                             $_SESSION['permission'] = $this->loadPermissions($row['user_id']);
@@ -175,25 +175,25 @@ class Auth
                 if (isset($_GET['h']) && $_GET['h']) {
                     $hash = $this->database->bind($_GET['h']);
 
-                    $this->database->Table("users");
-                    $this->database->Column("user_id, permission_id, user_locale");
-                    $this->database->Argument(1, "user_recovery", 1);
-                    $this->database->Argument(2, "user_status", 1);
-                    $this->database->Argument(3, "user_hash", $hash);
-                    $this->database->Select();
-                    $result = $this->database->Execute();
+                    $this->database->table("users");
+                    $this->database->column("user_id, permission_id, user_locale");
+                    $this->database->argument(1, "user_recovery", 1);
+                    $this->database->argument(2, "user_status", 1);
+                    $this->database->argument(3, "user_hash", $hash);
+                    $this->database->select();
+                    $result = $this->database->execute();
 
                     if ($row = $this->database->fetch_assoc($result)) {
                         // Update hash
-                        $this->database->Table("users");
-                        $this->database->Column(array(
+                        $this->database->table("users");
+                        $this->database->column(array(
                             'user_hash' => "NULL",
                             "user_recovery" => "NULL",
                             "user_recovery_date" => "NULL"
                         ));
-                        $this->database->Argument(1, "user_id", "{$row['user_id']}");
-                        $this->database->Update();
-                        $this->database->Execute();
+                        $this->database->argument(1, "user_id", "{$row['user_id']}");
+                        $this->database->update();
+                        $this->database->execute();
 
                         // Registering permissions
                         $_SESSION['permission'] = $this->loadPermissions($row['user_id']);
@@ -223,19 +223,19 @@ class Auth
                         exit();
                     } else {
                         // User activation
-                        $this->database->Table("users");
-                        $this->database->Column("user_id");
-                        $this->database->Argument(1, "user_hash", $hash);
-                        $this->database->Argument(2, "user_status", 2);
-                        $this->database->Select();
-                        $result = $this->database->Execute();
+                        $this->database->table("users");
+                        $this->database->column("user_id");
+                        $this->database->argument(1, "user_hash", $hash);
+                        $this->database->argument(2, "user_status", 2);
+                        $this->database->select();
+                        $result = $this->database->execute();
 
                         if ($row = $this->database->fetch_assoc($result)) {
-                            $this->database->Table("users");
-                            $this->database->Column(array("user_status" => 1, 'user_hash' => "NULL"));
-                            $this->database->Argument(1, "user_id", $row['user_id']);
-                            $this->database->Update();
-                            $result = $this->database->Execute();
+                            $this->database->table("users");
+                            $this->database->column(array("user_status" => 1, 'user_hash' => "NULL"));
+                            $this->database->argument(1, "user_id", $row['user_id']);
+                            $this->database->update();
+                            $result = $this->database->execute();
 
                             // Registering permissions
                             $_SESSION['permission'] = $this->loadPermissions($row['user_id']);
@@ -337,12 +337,12 @@ class Auth
                 // User Identification
                 if ($user_id) {
                     // Check the cookie against the tables
-                    $this->database->Table("users");
-                    $this->database->Column("user_id, permission_id, user_locale, user_hash");
-                    $this->database->Argument(1, "user_id", "$user_id");
-                    $this->database->Argument(2, "user_hash", "'$access_token'");
-                    $this->database->Select();
-                    $result = $this->database->Execute();
+                    $this->database->table("users");
+                    $this->database->column("user_id, permission_id, user_locale, user_hash");
+                    $this->database->argument(1, "user_id", "$user_id");
+                    $this->database->argument(2, "user_hash", "'$access_token'");
+                    $this->database->select();
+                    $result = $this->database->execute();
 
                     if ($row = $this->database->fetch_assoc($result)) {
                         // Token matches so register the user again
@@ -432,12 +432,12 @@ class Auth
         $isSuperuser = 0;
 
         // Check if the user is a superuser
-        $this->database->Table("users u");
-        $this->database->Innerjoin("permissions p", "u.permission_id = p.permission_id");
-        $this->database->Column("global_user");
-        $this->database->Argument(1, "u.user_id", (int) $user_id);
-        $this->database->Select();
-        $result = $this->database->Execute();
+        $this->database->table("users u");
+        $this->database->innerjoin("permissions p", "u.permission_id = p.permission_id");
+        $this->database->column("global_user");
+        $this->database->argument(1, "u.user_id", (int) $user_id);
+        $this->database->select();
+        $result = $this->database->execute();
 
         if ($row = $this->database->fetch_assoc($result)) {
             $isSuperuser = $row['global_user'];
@@ -459,20 +459,20 @@ class Auth
         $permission = array();
 
         // Get the user permission_id
-        $this->database->Table("users");
-        $this->database->Column("permission_id");
-        $this->database->Argument(1, "user_id", "$id");
-        $this->database->Select();
-        $result = $this->database->Execute();
+        $this->database->table("users");
+        $this->database->column("permission_id");
+        $this->database->argument(1, "user_id", "$id");
+        $this->database->select();
+        $result = $this->database->execute();
         $row = $this->database->fetch_assoc($result);
 
         if (isset($row['permission_id'])) {
             // Load permission information for this permission_id
-            $this->database->Table("permissions");
-            $this->database->Column("permission_id, global_user");
-            $this->database->Argument(1, "permission_id", $row['permission_id']);
-            $this->database->Select();
-            $result = $this->database->Execute();
+            $this->database->table("permissions");
+            $this->database->column("permission_id, global_user");
+            $this->database->argument(1, "permission_id", $row['permission_id']);
+            $this->database->select();
+            $result = $this->database->execute();
             $row1 = $this->database->fetch_assoc($result);
 
             // If the user_id is a superuser register all restrited routes as permited
@@ -483,11 +483,11 @@ class Auth
             } else {
                 if ($row['permission_id']) {
                     // All route permited for his permission_id
-                    $this->database->Table("permissions_route");
-                    $this->database->Column("route");
-                    $this->database->Argument(1, "permission_id", $row['permission_id']);
-                    $this->database->Select();
-                    $result = $this->database->Execute();
+                    $this->database->table("permissions_route");
+                    $this->database->column("route");
+                    $this->database->argument(1, "permission_id", $row['permission_id']);
+                    $this->database->select();
+                    $result = $this->database->execute();
                     while ($row = $this->database->fetch_assoc($result)) {
                         $permission[$row['route']] = 1;
                     }
@@ -637,10 +637,10 @@ class Auth
         $column = $this->database->bind($column);
         $column['access_date'] = "NOW()";
 
-        $this->database->Table("users_access");
-        $this->database->Column($column);
-        $this->database->Insert();
-        $this->database->Execute();
+        $this->database->table("users_access");
+        $this->database->column($column);
+        $this->database->insert();
+        $this->database->execute();
 
         return $this->database->insert_id('users_access_user_access_id_seq');
     }

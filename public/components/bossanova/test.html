@@ -1,0 +1,195 @@
+<script src="../../components/jquery/jquery.min.js"></script>
+
+<style>
+.bossanova_table
+{
+    border-collapse:collapse;
+    table-layout:fixed;
+    white-space: nowrap;
+    width:0px;
+}
+.bossanova_table thead
+{
+    background-color:#f3f3f3;
+}
+.bossanova_table thead td
+{
+    padding:4px;
+}
+.bossanova_table tbody td
+{
+    padding:2px;
+}
+.bossanova_table tbody tr td:first-child
+{
+    background-color:#f3f3f3;
+    width:30px;
+    text-align:center;
+}
+.bossanova_table td
+{
+    border:1px solid #cccccc;
+    overflow:hidden;
+    white-space: nowrap;
+}
+.bossanova_table .selected
+{
+    border:2px solid #5292f7;
+}
+.bossanova_table .editor
+{
+    outline:0px solid transparent;
+    overflow:hidden;
+    white-space: nowrap;
+}
+.bossanova_table select
+{
+    outline:0px solid transparent;
+}
+.corner
+{
+    background-color: rgb(82, 146, 247);
+    height: 5px;
+    width: 5px;
+    border: 2px solid rgb(255, 255, 255);
+}
+</style>
+
+<table id="my" cellpadding="0" cellspacing="0" class="bossanova_table">
+<thead>
+<tr>
+    <td width='30'></td>
+    <td width='500'>Linha</td>
+    <td width='200'>Horário</td>
+    <td width='100'>Motorista</td>
+    <td width='100'>Cobrador</td>
+</tr>
+</thead>
+<tbody>
+<tr id='r1'>
+    <td>1</td>
+    <td id='1-1'><input type='checkbox'></td>
+    <td id='2-1'><select style='width:100%;border:0px;'><option>asdf</option></select></td>
+    <td id='3-1'></td>
+    <td id='4-1'></td>
+</tr>
+<tr id='r2'>
+    <td>2</td>
+    <td id='1-2'></td>
+    <td id='2-2'></td>
+    <td id='3-2'></td>
+    <td id='4-2'></td>
+</tr>
+<tr id='r3'>
+    <td>3</td>
+    <td id='1-3'></td>
+    <td id='2-3'>asfsadfsdf</td>
+    <td id='3-3'></td>
+    <td id='4-3'></td>
+</tr>
+</tbody>
+</table>
+
+<div class="corner"></div>
+
+<script>
+var selectedCell = null;
+var bx = 0;
+var by = 0
+var tx = 0;
+var ty = 0;
+
+$("#my").bind('copy', function() {
+	var str = '';
+	var row = '';
+	var x = $('#my thead tr td').length;
+	var y = $('#my tbody tr').length;
+	for (j = 1; j <= y; j++) {
+		row = '';
+		for (i = 1; i < x; i++) {
+			if (i > 1) {
+				row += ',';
+			}
+			row += $('#' + i +'-' + j).html();
+		}
+		
+        if (str) {
+            str += "\r\n";
+        }
+        str += row;
+	}
+
+    // Create a "hidden" input
+    var aux = document.createElement("textarea");
+    aux.value = str;
+    document.body.appendChild(aux);
+    aux.select();
+    document.execCommand("copy");
+    document.body.removeChild(aux);
+}); 
+$("#my").bind('paste', function() {
+	alert(2);
+}); 
+$("#my").bind('cut', function() {
+	alert(3);
+});
+
+$('#my tbody td').mousedown(function () {
+	if (selectedCell) {
+		$('#my td').prop('class', '');
+	}
+	selectedCell = $(this);
+	$(this).prop('class', 'selected');
+});
+
+$('#my tbody td').dblclick(function () {
+	var html = $(this).html();
+	$(this).html('<div class="editor" contenteditable="true" onblur="updateCell(this)">' + html + '</div>');
+
+	var editor = $(this).find('.editor');
+	$(editor).focus();
+	$(editor).css('width', $(this).width());
+});
+
+$('#my tbody td').mouseover(function () {
+	if (selectedCell) {
+		var o = $(selectedCell).prop('id').split('-');
+		var d = $(this).prop('id').split('-');
+
+		$('#my td').prop('class', '');
+
+		if (o[0] < d[0]) {
+			px = o[0];
+			ux = d[0];
+		} else {
+            px = d[0];
+            ux = o[0];
+		}
+
+        if (o[1] < d[1]) {
+            py = o[1];
+            uy = d[1];
+        } else {
+            py = d[1];
+            uy = o[1];
+        }
+
+		for (i = px; i <= ux; i++) {
+			for (j = py; j <= uy; j++) {
+			    $('#' + i + '-' + j).prop('class', 'selected');
+			}
+		}
+	}
+})
+
+function tableCopy()
+{
+	
+}
+function updateCell(obj)
+{
+	var html = $(obj).html();
+	$(obj).parent().html(html);
+}
+
+</script>

@@ -27,7 +27,7 @@ class Me extends Module
             $user = new \models\Users();
 
             // Return the profile information
-            $row = $users->getProfile($_SESSION['user_id']);
+            $row = $user->getProfile($_SESSION['user_id']);
         }
 
         return $this->json_encode($row);

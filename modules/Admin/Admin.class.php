@@ -20,7 +20,7 @@ class Admin extends Module
     // Connect to the database and keep the resource available for all controllers
     public function __construct()
     {
-        $this->query = Database::getInstance(NULL, array(
+        $this->query = Database::getInstance(null, array(
             DB_CONFIG_TYPE,
             DB_CONFIG_HOST,
             DB_CONFIG_USER,
@@ -254,14 +254,14 @@ class Admin extends Module
         $locale = DEFAULT_LOCALE;
 
         // Search for nodes
-        $this->query->Table("nodes n");
-        $this->query->Leftjoin("nodes_content c", "n.node_id = c.node_id AND c.locale = '{$locale}'");
-        $this->query->Column("n.node_id, COALESCE(n.parent_id, 0) AS parent_id, n.module_name, n.option_name, n.ordered, COALESCE(c.title, n.title) AS title");
-        $this->query->Argument(1, "COALESCE(n.parent_id, 0)", $parent_id);
-        $this->query->Argument(2, "n.status", 0, ">");
-        $this->query->Order("COALESCE(n.ordered,0), n.node_id");
-        $this->query->Select();
-        $result = $this->query->Execute();
+        $this->query->table("nodes n");
+        $this->query->leftjoin("nodes_content c", "n.node_id = c.node_id AND c.locale = '{$locale}'");
+        $this->query->column("n.node_id, COALESCE(n.parent_id, 0) AS parent_id, n.module_name, n.option_name, n.ordered, COALESCE(c.title, n.title) AS title");
+        $this->query->argument(1, "COALESCE(n.parent_id, 0)", $parent_id);
+        $this->query->argument(2, "n.status", 0, ">");
+        $this->query->order("COALESCE(n.ordered,0), n.node_id");
+        $this->query->select();
+        $result = $this->query->execute();
 
         while ($row = $this->query->fetch_assoc($result)) {
             // Avoid overflow in the interface

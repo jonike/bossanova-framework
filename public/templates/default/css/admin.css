@@ -1,7 +1,6 @@
 body
 {
 	overflow-x:hidden;
-	background-color: #ec2626;
 	margin:0px;
 	height:100%;
 }
@@ -23,7 +22,7 @@ input,select,textarea
 {
 	position:relative;
 	top:-10px;
-	left:20px;
+	left:10px;
 }
 #domain
 {
@@ -101,13 +100,17 @@ input,select,textarea
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	background: #e3e3e3;
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ec2626', endColorstr='#e3ec01f1f3e3');
-	background: -webkit-gradient(linear, left top, left bottom, from(#ec2626), to(#c01f1f));
-	background: -moz-linear-gradient(top,  #ec2626,  #c01f1f);
-	border: solid 1px #c01f1f;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eee', endColorstr='#fff');
+	background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#fff));
+	background: -moz-linear-gradient(top,  #eee,  #fff);
+	border: solid 1px #bbb;
 	padding:20px;
 }
-
+.login img
+{
+	width:200px;
+	height:60px;
+}
 .ballon
 {
 	position:relative;
@@ -224,4 +227,12 @@ input,select,textarea
 {
 	top:5px !important;
 	left:-20px !important;
+}
+.icon
+{
+	cursor:pointer;
+}
+#domain
+{
+	position:absolute;
 }

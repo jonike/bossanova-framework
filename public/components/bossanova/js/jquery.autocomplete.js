@@ -38,7 +38,16 @@
 
 		// Keep the options
 		var options =  $.extend(defaults, options);
-		var main = '#' + $(this).attr("id");
+		var id = $(this).attr("id");
+
+		// Keep non id elements to be instantiate without any problems
+		if (!id) {
+			id = 'autocomplete_' + Math.floor(Math.random() * 1000) + 9999;
+			$(this).attr('id', id);
+		}
+		
+		var main = '#' + id;
+
 		$.fn.autocomplete.options[main] = options;
 
 		// Create autocomplete results box

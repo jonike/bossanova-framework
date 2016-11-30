@@ -150,9 +150,10 @@ class Render
 
         // Check for restriction
         if ($restricted = self::isRestricted()) {
+
             if (! isset($_SESSION['user_id'])) {
                 $module_name = (isset(self::$urlParam[0])) ? ucfirst(strtolower(self::$urlParam[0])) : '';
-                if (file_exists("modules/$module_name/$module_name.class.php")) {
+                if ($module_name && file_exists("modules/$module_name/$module_name.class.php")) {
                     // Just to check if is possible to recover the login from a cookie
                     // Module must have call getIdent in the __construct
                     $name = "\\modules\\$module_name\\$module_name";
@@ -181,7 +182,11 @@ class Render
                 }
             } else {
                 // Redirect the user to the login page
-                $base = strtolower(self::$configuration['module_name']) . '/login';
+                $base = strtolower(self::$configuration['module_name']);
+                if ($base) {
+                    $base .= '/';
+                }
+                $base .= 'login';
                 $url = self::getLink($base);
                 header("Location: $url");
             }
@@ -284,6 +289,9 @@ class Render
                     // Loadind methods content including translation
                     ob_start();
                     $content = $instance->$method_name();
+                    if (is_array($content)) {
+                        $content = print_r($content, true);
+                    }
                     $content .= ob_get_clean();
                 } else {
                     // Loading methods content
@@ -293,10 +301,24 @@ class Render
 
             // Automatic load view
             if (self::$configuration['module_view'] == 1) {
-                if (isset(self::$urlParam[0]) && ! isset(self::$urlParam[1])) {
-                    $view = $instance->loadView(self::$urlParam[0], $module_name);
-                } elseif (isset(self::$urlParam[1]) && ! isset(self::$urlParam[2])) {
-                    $view = $instance->loadView(self::$urlParam[1], $module_name);
+                if (count(self::$urlParam) <= 3) {
+                    if (isset(self::$urlParam[2])) {
+                        if (is_numeric(self::$urlParam[2])) {
+                            $view = $instance->loadView(self::$urlParam[1], $module_name);
+                        } else {
+                            if (is_numeric(self::$urlParam[1])) {
+                                $view = $instance->loadView(self::$urlParam[2], $module_name);
+                            }
+                        }
+                    } else if (isset(self::$urlParam[1])) {
+                        if (is_numeric(self::$urlParam[1])) {
+                            $view = $instance->loadView(self::$urlParam[0], $module_name);
+                        } else {
+                            $view = $instance->loadView(self::$urlParam[1], $module_name);
+                        }
+                    } else if (isset(self::$urlParam[0])) {
+                        $view = $instance->loadView(self::$urlParam[0], $module_name);
+                    }
                 }
 
                 if (isset($view)) {
@@ -431,9 +453,9 @@ class Render
 
             if (is_object($this->database)) {
                 // Search for the URL configuration
-                $this->database->Table("routes");
-                $this->database->Select();
-                $result = $this->database->Execute();
+                $this->database->table("routes");
+                $this->database->select();
+                $result = $this->database->execute();
 
                 while ($row = $this->database->fetch_assoc($result)) {
                     $routes[$row['route']] = $row;
@@ -566,13 +588,13 @@ class Render
                     $locale = isset($_SESSION['locale']) && $_SESSION['locale'] ? $_SESSION['locale'] : DEFAULT_LOCALE;
 
                     // Is there any nodes for this URL
-                    $this->database->Table("nodes n");
-                    $this->database->Leftjoin("nodes_content c", "n.node_id = c.node_id");
-                    $this->database->Column("n.node_id, n.module_name");
-                    $this->database->Argument(1, "c.link", "'{$route}'");
-                    $this->database->Argument(2, "n.status", 1);
-                    $this->database->Select();
-                    $result = $this->database->Execute();
+                    $this->database->table("nodes n");
+                    $this->database->leftjoin("nodes_content c", "n.node_id = c.node_id");
+                    $this->database->column("n.node_id, n.module_name");
+                    $this->database->argument(1, "c.link", "'{$route}'");
+                    $this->database->argument(2, "n.status", 1);
+                    $this->database->select();
+                    $result = $this->database->execute();
 
                     if ($row = $this->database->fetch_assoc($result)) {
                         self::$configuration['node_id'] = $row['node_id'];
@@ -807,8 +829,6 @@ class Render
     {
         global $restriction;
 
-        $restricted = '';
-
         // Route he trying to access
         $access_route = (isset($urlRoute)) ? $urlRoute : self::$urlParam;
 
@@ -830,38 +850,42 @@ class Render
 
                 // Allowed by main configuration
                 if (isset($restriction[$route]['permission']) && $restriction[$route]['permission'] == 1) {
-                    $restricted = '';
+                    unset($restricted);
                 }
             }
 
             // Always allow login/logout method
             $param = $access_route[count($access_route) - 1];
             if ($param == 'login' || $param == 'logout') {
+                unset($restricted);
+            }
+        } else {
+            if (isset($restriction[''])) {
                 $restricted = '';
             }
         }
 
         // If there is a restriction check the permission, this should be implemented by the login function
 
-        if ($restricted) {
+        if (isset($restricted)) {
             if (isset($_SESSION['permission'])) {
                 // Check if the user has access to the module
                 $key = $restricted;
                 if (isset($_SESSION['permission'][$key])) {
-                    $restricted = '';
+                    unset($restricted);
                 }
 
                 // Check if the user has access to a parent function, if defined
-                if (isset($restriction[$restricted]['parent'])) {
+                else if (isset($restriction[$restricted]['parent'])) {
                     $key = $restriction[$restricted]['parent'];
                     if (isset($_SESSION['permission'][$key])) {
-                        $restricted = '';
+                        unset($restricted);
                     }
                 }
             }
         }
 
-        return $restricted;
+        return isset($restricted) ? true : false;
     }
 
     /**
@@ -897,6 +921,10 @@ class Render
 
         if (isset($_SERVER['REQUEST_SCHEME'])) {
             $scheme = $_SERVER['REQUEST_SCHEME'];
+        }
+
+        if (!isset($_SERVER["HTTP_HOST"])) {
+            $_SERVER["HTTP_HOST"] = '';
         }
 
         $script = $_SERVER["HTTP_HOST"] . $_SERVER["SCRIPT_NAME"];
@@ -944,16 +972,16 @@ class Render
             $realpath = self::$urlParam[0];
 
             // Check if the user exists
-            $this->database->Table("users");
+            $this->database->table("users");
             if ($realpath > 0) {
-                $this->database->Argument(1, "user_id", "$realpath");
+                $this->database->argument(1, "user_id", "$realpath");
             } else {
                 $realpath = $this->database->Bind(strtolower($realpath));
-                $this->database->Argument(1, "user_login", "$realpath");
+                $this->database->argument(1, "user_login", "$realpath");
             }
 
-            $this->database->Select();
-            $result = $this->database->Execute();
+            $this->database->select();
+            $result = $this->database->execute();
 
             if ($row = $this->database->fetch_assoc($result)) {
                 self::$configuration['module_name'] = "Me";

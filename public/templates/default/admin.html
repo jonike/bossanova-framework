@@ -23,13 +23,13 @@
 <script src="../../components/ckeditor/pastebase64.js"></script>
 
 <link rel="stylesheet" href="css/admin.css" type="text/css" />
-<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.grid.css" type="text/css" />
-<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.modal.css" type="text/css" />
-<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.calendar.css" type="text/css" />
-<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.autocomplete.css" type="text/css" />
-<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.accordion.css" type="text/css" />
-<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.menu.css" type="text/css" />
-<link rel="stylesheet" href="../../components/bossanova/css/red/jquery.tabs.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.grid.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.modal.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.calendar.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.autocomplete.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.accordion.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.menu.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.tabs.css" type="text/css" />
 <link rel="stylesheet" href="../../components/jstree/dist/themes/default/style.min.css" />
 <link rel="stylesheet" href="../../components/tageditor/jquery.tag-editor.css" />
 <link rel="stylesheet" href="../../components/dropzone/dropzone.css" type="text/css" />
@@ -49,12 +49,12 @@
 
 	<table width="100%">
 	<tr>
-	<td style="width:260px;"><img src="img/logo.png" style="margin-bottom:4px;"><br><script>document.write('<span id="domain">http://'+document.domain+'/</span>');</script></td>
-	<td style="width:450px;"><div id='menu'></div></td>
+	<td style="width:320px;"><img src="img/logo.png" style="margin-bottom:4px;width:264px;height:80px;"><br><script>document.write('<span id="domain">http://'+document.domain+'/</span>');</script></td>
+	<td style="width:450px;"><img src='img/icon1.png' id='icon1' class="icon"> <img src='img/icon2.png' id='icon2' class="icon"> <img src='img/icon3.png' id='icon3' class="icon"></td>
 	<td></td>
 	<td style="width:200px;" align="right">
 
-		<table><tr><td><div style='color:#fff;' id="user_email"></div></td><td><img src="img/nophoto.jpg" id="main_photo" align="right" class="circ2" style="width:40px;height:40px;" onclick="topmenu();"></td></tr></table>
+		<table><tr><td><div id="user_email"></div></td><td><img src="img/nophoto.jpg" id="main_photo" align="right" class="circ2" style="width:40px;height:40px;" onclick="topmenu();"></td></tr></table>
 
 		<div style="position:absolute;z-index:3;display:none;" id="topballoon">
 		<div class="ballon" style="left:-15px;width:220px;">
@@ -122,6 +122,14 @@ $(document).ready(function () {
 	$("#tabs").tabs("add", {title:'^^[Nodes]^^', id:'nodes', closable:'0', url:'/admin/nodes' });
 	$("#menu").menu({ url:bossanova_url + 'admin/menu' });
 
+	// Menu
+	$("#icon1").click(function () {
+		$("#tabs").tabs("add", {title:'^^[Users]^^', id:'users', closable:'0', url:'/admin/users', closable:true });
+	});
+    $("#icon2").click(function () {
+        $("#tabs").tabs("add", {title:'^^[Permissions]^^', id:'permissions', closable:'0', url:'/admin/permissions', closable:true });
+    });
+    $("#icon3").css('display','none');
 	// Loading personal information
 	$.getJSON(bossanova_url + 'admin/info', function(data) {
 

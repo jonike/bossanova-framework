@@ -126,15 +126,22 @@ class Nodes extends Module
             $content .= "<div class='date' itemprop='datePublished' content='{$this->node['published_from']}'>{$this->node['published_from']}</div>";
             $content .= "<div class='date' itemprop='dateCreated' style='display:none;'>{$this->node['posted']}</div>";
             $content .= "<div class='date' itemprop='dateModified' style='display:none;'>{$this->node['updated']}</div>";
-            $content .= "<div class='description' itemprop='description'>{$this->node['info']}</div>";
+            $content .= "<div class='description' itemprop='description'>{$this->node['content']}</div>";
             $content .= "<div class='keywords' itemprop='keywords'><i>{$this->node['keywords']}</i></div>\n";
 
             $content .= "</div>";
+        } else if ($this->node['complement'] == 99) {
+            // Custom
+            $content = $this->node['format'];
+
+            foreach ($this->node as $k => $v) {
+                $content = str_replace("[$k]", $v, $content);
+            }
         } else {
             // If the text has automatic indexes
             if ($this->node['complement'] == 2) {
                 // Create index options base on H1, H2, H3
-                preg_match_all("/<h[1-9]>(.*?)<\/h[1-9]>/i", $this->node['info'], $h1);
+                preg_match_all("/<h[1-9]>(.*?)<\/h[1-9]>/i", $this->node['content'], $h1);
 
                 // Create tabulation
                 foreach ($h1[1] as $k => $v) {
@@ -151,7 +158,7 @@ class Nodes extends Module
             }
 
             // Default
-            $content .= "<h1 class='title'>{$this->node['title']}</h1>$index<p>{$this->node['info']}</p>";
+            $content .= "<h1 class='title'>{$this->node['title']}</h1>$index<p>{$this->node['content']}</p>";
         }
 
         return $content;
@@ -186,6 +193,29 @@ class Nodes extends Module
             // List with descriptions
             $nodes = new \models\Nodes();
             $content .= $nodes->getListContent($this->node['node_id']);
+        } else if ($this->node['complement'] == 99) {
+            $nodes = new \models\Nodes();
+            $data = $nodes->getNodes($this->node['node_id']);
+
+            foreach ($data AS $k => $v) {
+                $t = $this->node['format_nodes'];
+                foreach ($v as $k1 => $v1) {
+                    $t = str_replace("[$k1]", $v1, $t);
+                }
+
+                if (! isset($this->node['nodes'])) {
+                    $this->node['nodes'] = '';
+                }
+                $this->node['nodes'] .= $t;
+            }
+
+            // Custom TODO in case nodes do not exists append automatically in the end.
+            $t = $this->node['format'];
+            foreach ($this->node as $k => $v) {
+                $t = str_replace("[$k]", $v, $t);
+            }
+
+            $content .= $t;
         } else {
             // List
             $nodes = new \models\Nodes();
@@ -193,7 +223,7 @@ class Nodes extends Module
         }
 
         // Create folder content
-        $content = "<div class='description' itemprop='description'>{$this->node['info']}</div><ul class='folder'>$content</ul>";
+        $content = "<div class='description' itemprop='description'>{$this->node['content']}</div><ul class='folder'>$content</ul>";
 
         return $content;
     }
@@ -242,7 +272,7 @@ class Nodes extends Module
 
             $content .= "<input type='hidden' name='node_id' value='{$this->node['node_id']}'>";
             $content .= "<div class='title' itemprop='name'>{$this->node['title']}</div>";
-            $content .= "<div class='description' itemprop='description'>{$this->node['info']}</div>";
+            $content .= "<div class='description' itemprop='description'>{$this->node['content']}</div>";
 
             $content .= "<div><label>^^[Name]^^</label></div><div><input name='name' class='contact-field' style='width:400px'></div>\n";
             $content .= "<div><label>^^[Email]^^</label></div><div><input name='email' class='contact-field' style='width:400px'></div>\n";
@@ -264,8 +294,8 @@ class Nodes extends Module
     public function images()
     {
         $this->setLayout(0);
-        header("Content-type:" . $this->node['complement']);
-        return base64_decode($this->node['info']);
+        header("Content-type:" . $this->node['attach_mime']);
+        return base64_decode($this->node['attach']);
     }
 
     /**
@@ -277,7 +307,7 @@ class Nodes extends Module
     {
         $this->setLayout(0);
         header("Content-type:" . $this->node['complement']);
-        return base64_decode($this->node['info']);
+        return base64_decode($this->node['content']);
     }
 
     /**

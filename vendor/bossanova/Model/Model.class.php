@@ -16,9 +16,12 @@
 namespace Bossanova\Model;
 
 use Bossanova\Database\Database;
+use Bossanova\Common\Post;
 
 class Model extends \stdClass
 {
+    use Post;
+
     // Database instance
     public $database = null;
 
@@ -84,11 +87,40 @@ class Model extends \stdClass
      */
     public function getById($id)
     {
-        $this->database->table($this->config->tableName);
-        $this->database->argument(1, $this->config->primaryKey, $id);
-        $this->database->select();
-        $result = $this->database->execute();
+        $result = $this->database->table($this->config->tableName)
+            ->argument(1, $this->config->primaryKey, $id)
+            ->select()
+            ->execute();
+
         return $this->database->fetch_assoc($result);
+    }
+
+    /**
+     * Return a empty record
+     *
+     * @param  integer $id
+     * @return object
+     */
+    public function getMeta()
+    {
+        $data = array();
+
+        $result = $this->database->table($this->config->tableName)
+            ->limit(0)
+            ->select()
+            ->execute();
+
+        for ($i = 0; $i < $result->columnCount(); $i++) {
+            $col = $result->getColumnMeta($i);
+            $data[$col['name']] = '';
+        }
+
+        return $data;
+    }
+
+    public function getEmpty()
+    {
+        return $this->getMeta();
     }
 
     /**
@@ -100,10 +132,11 @@ class Model extends \stdClass
     public function get($id)
     {
         // Get data from the table
-        $this->database->table($this->config->tableName);
-        $this->database->argument(1, $this->config->primaryKey, $id);
-        $this->database->select();
-        $result = $this->database->execute();
+        $result = $this->database->table($this->config->tableName)
+            ->argument(1, $this->config->primaryKey, $id)
+            ->select()
+            ->execute();
+
         $data = $this->database->fetch_assoc($result);
 
         // Update object
@@ -137,20 +170,20 @@ class Model extends \stdClass
         // Check the operation type, insert or update
         if (! $this->config->recordId) {
             // Insert a new record
-            $this->database->table($this->config->tableName);
-            $this->database->column($column);
-            $this->database->insert();
-            $this->database->execute();
+            $this->database->table($this->config->tableName)
+                ->column($column)
+                ->insert()
+                ->execute();
 
             // Return id
             $this->config->recordId = $this->database->insert_id($this->config->sequence);
         } else {
             // Update existing record
-            $this->database->table($this->config->tableName);
-            $this->database->column($column);
-            $this->database->argument(1, $this->config->primaryKey, $this->config->recordId);
-            $this->database->update();
-            $this->database->execute();
+            $this->database->table($this->config->tableName)
+                ->column($column)
+                ->argument(1, $this->config->primaryKey, $this->config->recordId)
+                ->update()
+                ->execute();
         }
 
         return $this->config->recordId;
@@ -180,10 +213,11 @@ class Model extends \stdClass
     public function select($id)
     {
         // Get data from the table
-        $this->database->table($this->config->tableName);
-        $this->database->argument(1, $this->config->primaryKey, $id);
-        $this->database->select();
-        $result = $this->database->execute();
+        $result = $this->database->table($this->config->tableName)
+            ->argument(1, $this->config->primaryKey, $id)
+            ->select()
+            ->execute();
+
         return $row = $this->database->fetch_assoc($result);
     }
 
@@ -196,11 +230,11 @@ class Model extends \stdClass
     public function update($id)
     {
         // Get data from the table
-        $this->database->table($this->config->tableName);
-        $this->database->column($this->config->column);
-        $this->database->argument(1, $this->config->primaryKey, $id);
-        $this->database->update();
-        $result = $this->database->execute();
+        $this->database->table($this->config->tableName)
+            ->column($this->config->column)
+            ->argument(1, $this->config->primaryKey, $id)
+            ->update()
+            ->execute();
     }
 
     /**
@@ -212,15 +246,15 @@ class Model extends \stdClass
     {
         $pk = $this->config->primaryKey;
 
-        if (isset($this->config->column[$pk]) && (! $this->config->column[$pk] || $this->config->column[$pk])) {
+        if (isset($this->config->column[$pk])) {
             unset($this->config->column[$pk]);
         }
 
         // Get data from the table
-        $this->database->table($this->config->tableName);
-        $this->database->column($this->config->column);
-        $this->database->insert();
-        $result = $this->database->execute();
+        $this->database->table($this->config->tableName)
+            ->column($this->config->column)
+            ->insert()
+            ->execute();
 
         // Return the id
         return $this->database->insert_id($this->config->sequence);
@@ -235,13 +269,10 @@ class Model extends \stdClass
     public function delete($id)
     {
         // Get data from the table
-        $this->database->table($this->config->tableName);
-        $this->database->argument(1, $this->config->primaryKey, $id);
-        $this->database->delete();
-        $result = $this->database->execute();
-
-        // Return the object
-        return $this;
+        $this->database->table($this->config->tableName)
+            ->argument(1, $this->config->primaryKey, $id)
+            ->delete()
+            ->execute();
     }
 
     /**
@@ -312,5 +343,15 @@ class Model extends \stdClass
     {
         // Create a new record
         $this->config->recordId = 0;
+    }
+
+    /**
+     * Return if the session is from a superuser
+     *
+     * @return bool superuser
+     */
+    protected function isSuperuser()
+    {
+        return isset($_SESSION['superuser']) && $_SESSION['superuser'] ? true : false;
     }
 }

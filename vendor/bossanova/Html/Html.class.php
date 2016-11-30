@@ -38,13 +38,23 @@ class Html
 
         if (is_array($options) && count($options)) {
             foreach ($options as $k => $v) {
-                $html .= "<option value='$k'";
+                if (is_array($v)) {
+                    $html .= "<option value='{$v['id']}'";
 
-                if ($k === $value) {
-                    $html .= " selected='selected'";
+                    if ($v['id'] === $value) {
+                        $html .= " selected='selected'";
+                    }
+
+                    $html .= ">{$v['label']}</option>";
+                } else {
+                    $html .= "<option value='$k'";
+
+                    if ($k === $value) {
+                        $html .= " selected='selected'";
+                    }
+
+                    $html .= ">$v</option>";
                 }
-
-                $html .= ">$v</option>";
             }
         } else {
             $html .= "<option value=''></option>";

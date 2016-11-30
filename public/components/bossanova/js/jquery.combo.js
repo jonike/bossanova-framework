@@ -27,13 +27,20 @@
 	init : function( options, callback ) { 
 
 		// Callback function
-		if (!callback) callback = function () { }
+		if (!callback) {
+			callback = function () { }
+		}
 
-		var defaults = { include_blank_option:1 };
+		var defaults = { include_blank_option:1, reset:0 };
 		var options =  $.extend(defaults, options);
 
 		// Selector to the main object
 		var select = $(this);
+
+		// Reset
+		if (options.reset == true) {
+			$(select).html('');
+		}
 
 		// Blank option?
 		if (options.include_blank_option == 1) {

@@ -1,12 +1,15 @@
 /* surrounding tag container */
 .tag-editor {
-    list-style-type: none; padding: 0 5px 0 0; margin: 0; overflow: hidden; border: 1px solid #eee; cursor: text;
-    font: normal 14px sans-serif; color: #555; background: #fff; line-height: 20px;
+    list-style-type: none; padding: 5px 5px 5px 0px; overflow: hidden; border: 1px solid #aaa;
+    border-radius: 4px; cursor: text;
+    line-height: 20px;
+    margin:0px;
+    max-width:720px;
 }
 
 /* core styles usually need no change */
 .tag-editor li { display: block; float: left; overflow: hidden; margin: 3px 0; }
-.tag-editor div { float: left; padding: 0 4px; }
+.tag-editor div { float: left; padding:4px; }
 .tag-editor .placeholder { padding: 0 8px; color: #bbb; }
 .tag-editor .tag-editor-spacer { padding: 0; width: 8px; overflow: hidden; color: transparent; background: none; }
 .tag-editor input {
@@ -21,7 +24,7 @@
 
 /* tag style */
 .tag-editor .tag-editor-tag {
-    padding-left: 5px; background: #e0eaf1; white-space: nowrap;
+    background: #e0eaf1; white-space: nowrap;
     overflow: hidden; cursor: pointer; border-radius: 2px 0 0 2px;
 }
 
@@ -45,7 +48,6 @@
 
 /* overwrite default CSS for tiny, dark tags */
 
-.tag-editor { background: #fafafa; font-size: 12px; height:100px; }
 .tag-editor .tag-editor-tag {
     padding:6px;
     background-color:#eee;

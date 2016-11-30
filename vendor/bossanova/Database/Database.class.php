@@ -142,6 +142,17 @@ class Database
     }
 
     /**
+     * Set schema
+     *
+     * @param  string $id
+     * @return void
+     */
+    public function setSchema($schema)
+    {
+        $this->connection->exec('SET search_path TO ' . $schema);
+    }
+
+    /**
      * Return database name for an instance
      *
      * @param  string $id
@@ -231,6 +242,7 @@ class Database
     {
         $this->query = array();
         $this->query['table'] = $tableName;
+
         return $this;
     }
 
@@ -243,6 +255,8 @@ class Database
     public function column($column)
     {
         $this->query['column'] = $column;
+
+        return $this;
     }
 
     /**
@@ -259,6 +273,8 @@ class Database
         }
 
         $this->query['join'] .= " LEFT JOIN $tableName ON ($arguments)";
+
+        return $this;
     }
 
     /**
@@ -275,6 +291,8 @@ class Database
         }
 
         $this->query['join'] .= " RIGHT JOIN $tableName ON ($arguments)";
+
+        return $this;
     }
 
     /**
@@ -291,6 +309,8 @@ class Database
         }
 
         $this->query['join'] .= " INNER JOIN $tableName ON ($arguments)";
+
+        return $this;
     }
 
     /**
@@ -302,6 +322,8 @@ class Database
     public function group($groupBy)
     {
         $this->query['group'] = $groupBy;
+
+        return $this;
     }
 
     /**
@@ -313,6 +335,8 @@ class Database
     public function order($orderBy)
     {
         $this->query['order'] = $orderBy;
+
+        return $this;
     }
 
     /**
@@ -323,6 +347,8 @@ class Database
     public function limit($limit)
     {
         $this->query['limit'] = $limit;
+
+        return $this;
     }
 
     /**
@@ -334,6 +360,8 @@ class Database
     public function having($having)
     {
         $this->query['having'] = $having;
+
+        return $this;
     }
 
     /**
@@ -347,6 +375,8 @@ class Database
     public function argument($i, $k, $v, $o = "=")
     {
         $this->query['argument'][$i] = "$k $o $v";
+
+        return $this;
     }
 
     /**
@@ -389,6 +419,8 @@ class Database
 
             $this->query['where'] = $where;
         }
+
+        return $this;
     }
 
     /**
@@ -399,6 +431,8 @@ class Database
     public function setQuery($query)
     {
         $this->query['query'] = $query;
+
+        return $this;
     }
 
     /**
@@ -460,7 +494,7 @@ class Database
             $this->query['query'] .= " LIMIT " . $this->query['limit'];
         }
 
-        return $this->query['query'];
+        return $this;
     }
 
     /**
@@ -470,7 +504,7 @@ class Database
      */
     public function getSelect()
     {
-        $this->Select();
+        $this->select();
 
         return $this->query['query'];
     }
@@ -507,7 +541,7 @@ class Database
         $this->query['query'] = "INSERT INTO " . $this->query['table'] . " (" . $this->query['names'] . ")
             VALUES (" . $this->query['values'] . ")";
 
-        return $this->query['query'];
+        return $this;
     }
 
     /**
@@ -517,7 +551,7 @@ class Database
      */
     public function getInsert()
     {
-        $this->Insert();
+        $this->insert();
 
         return $this->query['query'];
     }
@@ -552,7 +586,7 @@ class Database
             $this->query['query'] .= " WHERE " . $this->query['where'];
         }
 
-        return $this->query['query'];
+        return $this;
     }
 
     /**
@@ -562,7 +596,7 @@ class Database
      */
     public function getUpdate()
     {
-        $this->Update();
+        $this->update();
 
         return $this->query['query'];
     }
@@ -588,7 +622,7 @@ class Database
             $this->query['query'] .= " WHERE " . $this->query['where'];
         }
 
-        return $this->query['query'];
+        return $this;
     }
 
     /**
@@ -598,7 +632,7 @@ class Database
      */
     public function getDelete()
     {
-        $this->Delete();
+        $this->delete();
 
         return $this->query['query'];
     }
@@ -612,18 +646,18 @@ class Database
     {
         $id = 0;
 
-        $this->Select();
-        $result = $this->Execute($debug);
+        $this->select();
+        $result = $this->execute($debug);
 
         if ($row = $this->fetch_assoc($result)) {
             if (isset($row[$pk])) {
                 $id = $row[$pk];
             }
-            $this->Update();
-            $this->Execute($debug);
+            $this->update();
+            $this->execute($debug);
         } else {
-            $this->Insert();
-            $result = $this->Execute($debug);
+            $this->insert();
+            $result = $this->execute($debug);
             $id = $this->insert_id($sq);
         }
 
@@ -677,7 +711,7 @@ class Database
 
         // In case no statement was created, assume it is a select statement
         if (!isset($this->query['query']) || !$this->query['query']) {
-            $this->query['query'] = $this->Select();
+            $this->select();
         }
 
         // Prepare and execute query
@@ -860,7 +894,7 @@ class Database
         // Find primary key and keep in the session for future use
         if (DB_CONFIG_TYPE == 'mysql') {
             $this->setQuery("SHOW KEYS FROM $tableName WHERE Key_name = 'PRIMARY'");
-            $result = $this->Execute();
+            $result = $this->execute();
             $row = $this->fetch_assoc($result);
         } elseif (DB_CONFIG_TYPE == 'pgsql') {
             $query = "SELECT * FROM information_schema.table_constraints tc
@@ -869,7 +903,7 @@ class Database
                 AND tc.table_name = c.table_name AND ccu.column_name = c.column_name
                 WHERE constraint_type = 'PRIMARY KEY' and tc.table_name = '$tableName'";
             $this->setQuery($query);
-            $result = $this->Execute();
+            $result = $this->execute();
             $row = $this->fetch_assoc($result);
         }
 
