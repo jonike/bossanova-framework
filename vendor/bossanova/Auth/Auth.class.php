@@ -270,7 +270,7 @@ class Auth
             $data['success'] = 1;
 
             // Redirect to the main page
-            if (! isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            if (! $this->isAjax()) {
                  $url = $this->getLink();
                  header("Location: $url");
                  exit();
@@ -279,7 +279,7 @@ class Auth
 
         // Print any message
         if (isset($data)) {
-            if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            if ($this->isAjax()) {
                 echo json_encode($data);
             } else {
                 echo $data['message'];
@@ -381,7 +381,7 @@ class Auth
             // Redirect the user to the login page
             if ($param != 'login') {
                 // Save referer
-                if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                if ($this->isAjax()) {
                     echo json_encode(array('error' => '1', 'message' => '^^[User not authenticated]^^'));
                 } else {
                     // Keep the reference to redirect to this page after the login
@@ -682,5 +682,10 @@ class Auth
             // Exclude the current dictionary words
             unset($_SESSION['dictionary']);
         }
+    }
+
+    public function isAjax()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false;
     }
 }

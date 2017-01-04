@@ -10,6 +10,7 @@
     border-right:1px solid #cccccc;
     border-bottom:1px solid #cccccc;
     background-clip:padding-box;
+    background-color:#fff;
 }
 .jexcel > thead
 {
@@ -155,8 +156,10 @@
 .jexcel_textarea
 {
 	position:absolute;
-	top:-9999;
-	left:-9999;
+	top:-999px;
+	left:-999px;
+	width:1px;
+	height:1px;
 }
 
 .jexcel .results

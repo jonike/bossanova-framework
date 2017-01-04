@@ -48,14 +48,14 @@
 
 	<div class='row content'>
 
-		<div class='column' style='width:220px;padding:50px;padding-top:0px;' id='content_left'>
+		<div class='column' style='max-width:300px;padding:50px;padding-top:0px;' id='content_left'>
 
-			<div id='menu-left'>
+            <input id="filter" type="text" />
 
-			</div>
+			<div id='menu-left'></div>
 
 		</div>
-		<div class='column' style='margin-right:60px;min-width:280px;max-width:720px;text-align:justify;'>
+		<div class='column' style='margin-right:60px;min-width:280px;max-width:780px;text-align:justify;'>
 
 			<div id='content'></div>
 
@@ -68,6 +68,30 @@
 	</div>
 
 </div>
+<script>
+ $(document).ready(function () {
+     $("#filter").keyup(function () {
+         var filter = $(this).val(),
+             count = 0;
+         var items = [];
+         $("#menu-left li a").each(function (k, v) {
+             if (filter == "") {
+                 items.push($(v).parent());
+                 $(v).parent().css('font-weight', '');
+             } else if ($(this).text().search(new RegExp(filter, "i")) >= 0) {
+                 items.push($(v).parent());
+             } else {
+                 $(v).parent().hide();
+             }
+         });
 
+         while (items[0]) {
+             i = items.pop();
+             $(i).find('li').show();
+             $(i).parents('li').show();
+         }
+     });
+ });
+</script>
 </body>
 </html>

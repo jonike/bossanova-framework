@@ -1,5 +1,5 @@
 {
-    "name": "bossanova-framework/bossanova-framework",
+    "name": "bossanova2/php-framework",
     "description": "Bossanova PHP Framework",
     "keywords": ["framework", "php", "bossanova"],
     "license": "GNU",
@@ -9,7 +9,7 @@
             "email": "paul.hodel@gmail.com"
         }],
     "require": {
-        "phpmailer/phpmailer": "~5.2"
+        "phpmailer/phpmailer": "~5.2",
     },
    "autoload": {
         "classmap": [

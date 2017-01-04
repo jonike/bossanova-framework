@@ -22,7 +22,7 @@
 
 .jquery_modal
 {
-	position:fixed;
+	position:absolute;
 	top:0px;
 	left:0px;
 	width:100%;
@@ -37,11 +37,9 @@
 {
 	width:550px;
 	height:300px;
-	position:absolute;
-	left:50%;
-	top:40%;
-	margin-left:-275px;
-	margin-top:-140px;
+    margin:auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
 	-webkit-box-shadow: 0 2px 10px rgba(0,0,0,.2);
 	-moz-box-shadow: 0 2px 10px rgba(0,0,0,.2);
 	border:1px solid #ccc;

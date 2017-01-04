@@ -16,7 +16,7 @@ class Nodes extends Model
     // Table configuration
     public $config = array(
         'tableName' => 'nodes',
-        'primaryKey' => 'nodes_id',
+        'primaryKey' => 'node_id',
         'sequence' => 'nodes_node_id_seq',
         'recordId' => 0
     );
@@ -234,6 +234,7 @@ class Nodes extends Model
         // Loading node information
         $result = $this->database->table('nodes')
             ->argument(1, 'node_id', $node_id)
+            ->argument(2, 'status', 0, '>')
             ->select()
             ->execute();
 
@@ -304,19 +305,20 @@ class Nodes extends Model
     {
         $url = '';
 
-        $this->database->table("nodes n");
-        $this->database->column("n.node_id, n.option_name, n.complement, n.link");
-        $this->database->argument(1, "n.node_id", $node_id);
-        $this->database->select();
-        $result = $this->database->execute();
+        $result =$this->database->table("nodes n")
+            ->column("n.node_id, n.option_name, n.complement, n.link")
+            ->argument(1, "n.node_id", $node_id)
+            ->argument(2, "n.status", 1)
+            ->select()
+            ->execute();
 
         if ($data = $this->database->fetch_assoc($result)) {
             // Get locale
-            $this->database->table("nodes_content");
-            $this->database->argument(1, "node_id", $node_id);
-            $this->database->argument(2, "locale", $this->database->bind($this->config->locale));
-            $this->database->select();
-            $result1 = $this->database->execute();
+            $result1 =$this->database->table("nodes_content")
+                ->argument(1, "node_id", $node_id)
+                ->argument(2, "locale", $this->database->bind($this->config->locale))
+                ->select()
+                ->execute();
 
             // Locale information
             if ($row = $this->database->fetch_assoc($result1)) {
@@ -352,11 +354,12 @@ class Nodes extends Model
     {
         $content = '';
 
-        $this->database->table("nodes");
-        $this->database->argument(1, "parent_id", $node_id);
-        $this->database->Order("ordered, node_id");
-        $this->database->select();
-        $result = $this->database->execute();
+        $result =$this->database->table("nodes")
+            ->argument(1, "parent_id", $node_id)
+            ->argument(2, "status", 1)
+            ->order("ordered, node_id")
+            ->select()
+            ->execute();
 
         // List
         while ($data = $this->database->fetch_assoc($result)) {
@@ -400,7 +403,7 @@ class Nodes extends Model
      * @param  integer $node_id
      * @return string  $content
      */
-    public function getList($node_id)
+    public function getList($node_id, $format = null)
     {
         $content = '';
 
@@ -431,9 +434,17 @@ class Nodes extends Model
             }
 
             // Content
-            $url = $this->nodeLink($data);
+            $data['url'] = $this->nodeLink($data);
 
-            $content .= "<li><a href='$url'>{$data['title']}</a></li>";
+            if ($format) {
+                $contentNode = $format;
+                foreach ($data as $k => $v) {
+                    $contentNode = str_replace("[$k]", $v, $contentNode);
+                }
+                $content .= $contentNode;
+            } else {
+                $content .= "<li><a href='{$data['url']}'>{$data['title']}</a></li>";
+            }
         }
 
         return $content;
@@ -555,10 +566,10 @@ class Nodes extends Model
         // Very simple search @TODO: pagination, contextual/elastic search.
         $this->database->table("nodes n");
         $this->database->Innerjoin("nodes_content c", "n.node_id = c.node_id AND c.locale = '{$this->config->locale}'");
-        $this->database->column("n.node_id, n.option_name, n.complement, c.title, c.info, c.description, c.link");
+        $this->database->column("n.node_id, n.option_name, n.complement, c.title, c.content, c.description, c.link");
         $this->database->argument(1, "lower(c.title)", "lower($v)", "LIKE");
         $this->database->argument(2, "lower(c.description)", "lower($v)", "LIKE");
-        $this->database->argument(3, "lower(c.info)", "lower($v)", "LIKE");
+        $this->database->argument(3, "lower(c.content)", "lower($v)", "LIKE");
         $this->database->argument(4, "status", 1);
         $this->database->Where("((1) OR (2) OR (3)) AND (4)");
         $this->database->select();
@@ -567,7 +578,7 @@ class Nodes extends Model
         while ($row = $this->database->fetch_assoc($result)) {
             // Description
             if (! $row['description']) {
-                $info = preg_replace("/\r\n/", " ", strip_tags($row['info']));
+                $info = preg_replace("/\r\n/", " ", strip_tags($row['content']));
             } else {
                 $info = preg_replace("/\r\n/", " ", strip_tags($row['description']));
             }
@@ -669,7 +680,7 @@ class Nodes extends Model
                     // Recursive call in case there is a parent for this node
                     $node = $this->getBreadcrumb($row['parent_id']);
                     if ($node) {
-                        $node = $node . ' › ';
+                        $node = $node . ' > ';
                     }
                 }
 

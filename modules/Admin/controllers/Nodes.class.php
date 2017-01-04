@@ -41,10 +41,13 @@ class Nodes extends Admin
         $model = new \models\Nodes();
 
         if (isset($_POST['parent_id']) && isset($_POST['ordered'])) {
+            $data = $model->get($id);
+            $data->parent_id = (int)$this->getPost('parent_id');
+            $data->save();
+
             $options = new \stdClass();
             $options->parent_id = (int)$this->getPost('parent_id');
             $options->ordered   = $this->getPost('ordered');
-
             $data = $model->setOrder($id, $options);
         } else {
             $data = $model->update($id);

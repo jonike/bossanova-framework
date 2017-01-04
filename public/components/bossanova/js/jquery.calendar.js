@@ -505,6 +505,9 @@
 		if (value) {
 			value = value.split(' ');
 			v1 = value[0].split('-');
+			if (! value[1]) {
+			    value[1] = '00:00:00';
+			}
 			v2 = value[1].split(':');
 
 			v1[0] = parseInt(v1[0]);

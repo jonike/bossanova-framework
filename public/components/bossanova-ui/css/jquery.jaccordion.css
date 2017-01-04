@@ -1,0 +1,59 @@
+/*******************************************************************************
+* Bossanova PHP Framework 1.0.1
+* 2013 Paul Hodel <paul.hodel@gmail.com> 
+* http://www.bossanova-framework.com
+*
+* JS UI Accordion
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+********************************************************************************/
+
+.jaccordion
+{
+	background-color:#ffffff;
+}
+.jaccordion > div
+{
+	background-color:#ffffff;
+}
+.jaccordion h1
+{
+    margin:0px;
+    margin-bottom:1px;
+    padding: 8px;
+    text-align:center;
+    font-size:1em;
+    font-weight:normal;
+    cursor:pointer;
+    -webkit-box-shadow: 0 1px 1px #ccc;
+    -moz-box-shadow: 0 1px 1px #ccc;
+    border: solid 1px #F2F2F2;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3f3f3', endColorstr='#e3e3e3');
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#e3e3e3));
+    background: -moz-linear-gradient(top,  #f3f3f3,  #e3e3e3);
+    background-color: #f3f3f3;
+}
+
+.jaccordion div h1 span
+{
+	text-align:right;
+	background-image:url('img/arrow.png');
+	background-repeat:no-repeat;
+	background-position:right;
+	padding-right:15px;
+	padding-left:15px;
+	width:15px;
+	height:15px;
+}

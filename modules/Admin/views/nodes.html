@@ -12,11 +12,11 @@
 <td class='rotateText'><div><p>^^[Info]^^</p></div></td>
 <td>
 
-	<table cellpadding="6" cellspacing="0">
-	<tr id='nodes_image' style='display:none;'>
-		<td colspan="3"><img style="max-height:300px;max-width:300px;" onclick="$('#nodes_photo').trigger('click');"><div style='position:absolute;top:-1000px;display:none;'><input type='file' name='file' id='nodes_photo' onchange='document.getElementById("node_form").submit()'></div></td>
-	</tr>
-	<tr>
+    <table cellpadding="6" cellspacing="0">
+    <tr id='nodes_image' style='display:none;'>
+        <td colspan="3"><img style="max-height:300px;max-width:300px;" onclick="$('#nodes_photo').trigger('click');"><div style='position:absolute;top:-1000px;display:none;'><input type='file' name='file' id='nodes_photo' onchange='document.getElementById("node_form").submit()'></div></td>
+    </tr>
+    <tr>
         <td><label>^^[ID]^^</label><br><input type="text" name="node_id" id="nodes_node_id" style="width:240px;" readonly="readonly"></td>
         <td colspan='2'><label>^^[URL]^^</label><br><div style="position:absolute;"><div style="position:relative;padding:7px;color:#555" id="nodes_link_div"></div></div><input type="text" name="link" id="nodes_link" style="width:490px;"><div style="position:absolute;display:inline;" onclick="nodes_advanced_route()"><div style="background-image:url(img/config.png)" class="jquery_calendar_icon"></div></div></td>
     </tr>
@@ -28,6 +28,8 @@
                 <option value="folder">^^[Folder]^^</option>
                 <option value="link">^^[Link]^^</option>
                 <option value="contact">^^[Contact form]^^</option>
+                <option value="images" style="display:none">^^[Image]^^</option>
+                <option value="attach" style="display:none">^^[Download]^^</option>
             </optgroup>
             <optgroup label="^^[Special]^^">
                 <option value="googlemaps">^^[Google Maps]^^</option>
@@ -49,16 +51,16 @@
             <select name="locale" id="nodes_locale" style="width:240px;" onchange="nodes_locale_load(this.value)" disabled="disabled"></select>
         </td>
     </tr>
-	<tr>
-		<td><label>^^[Author]^^</label><br><input type="text" name="author" style="width:240px;"></td>
-		<td colspan='2'><label>^^[Title]^^</label><br><input type="text" name="title" id="nodes_title" style="width:490px;"></td>
-	</tr>
+    <tr>
+        <td><label>^^[Author]^^</label><br><input type="text" name="author" style="width:240px;"></td>
+        <td colspan='2'><label>^^[Title]^^</label><br><input type="text" name="title" id="nodes_title" style="width:490px;"></td>
+    </tr>
     <tr>
         <td><label>^^[Status]^^</label><br><select name="status" style="width:240px;"><option value='1'>^^[Enabled]^^</option><option value='0'>^^[Disabled]^^</option><option value='2'>^^[Not published]^^</option></select></td>
         <td><label>^^[Published From]^^</label><br><input type="text" name="published_from" id="nodes_published_from" style="width:240px;"></td>
         <td><label>^^[Published To]^^</label><br><input type="text" name="published_to" id="nodes_published_to" style="width:240px;"></td>
     </tr>
-	</table>
+    </table>
 </td>
 </tr>
 <tr id='tr_nodes_format' style='display:none;'>
@@ -73,7 +75,7 @@
 <td class='rotateText'><div><p>^^[Summary]^^</p></div></td>
 <td valign="top" style="padding:6px;">
 
-	<textarea id="editor1" name="summary"></textarea>
+    <textarea id="editor1" name="summary"></textarea>
 
 </td>
 </tr>
@@ -81,7 +83,7 @@
 <td class='rotateText'><div><p>^^[Content]^^</p></div></td>
 <td valign="top" style="padding:6px;">
 
-	<textarea id="editor2" name="content"></textarea>
+    <textarea id="editor2" name="content"></textarea>
 
 </td>
 </tr>
@@ -100,10 +102,10 @@
 <tr>
 <td></td>
 <td>
-	<input type="button" value="^^[Save]^^" onclick="nodes_save();" style="width:120px;">
-	<input type="reset" value="^^[New]^^" onclick="nodes_new()" style="width:120px;">
-	<input type="button" value="^^[Preview]^^" onclick="nodes_preview()" style="width:120px;">
-	<input type="button" value="^^[Attach]^^" style="width:90px;margin-left:400px;display:none;" onclick="nodes_attach()" disabled="disabled">
+    <input type="button" value="^^[Save]^^" onclick="nodes_save();" style="width:120px;">
+    <input type="reset" value="^^[New]^^" onclick="nodes_new()" style="width:120px;">
+    <input type="button" value="^^[Preview]^^" onclick="nodes_preview()" style="width:120px;">
+    <input type="button" value="^^[Attach]^^" style="width:90px;margin-left:400px;display:none;" onclick="nodes_attach()" disabled="disabled">
 </td>
 </tr>
 </table>
@@ -112,217 +114,217 @@
 <script>
 $(document).ready(function() {
 
-	$('#node_form').form({ url:'/admin/nodes', primarykey:'node_id' });
-	$('#nodes_published_from').calendar({ format:'dd/mm/YYYY HH24:MI' });
-	$('#nodes_published_to').calendar({ format:'dd/mm/YYYY HH24:MI' });
-	$('#nodes_locale').combo({ url:'/admin/locales', include_blank_option:0 });
-	$('#nodes_parent_id').val(node_id);
+    $('#node_form').form({ url:'/admin/nodes', primarykey:'node_id' });
+    $('#nodes_published_from').calendar({ format:'dd/mm/YYYY HH24:MI' });
+    $('#nodes_published_to').calendar({ format:'dd/mm/YYYY HH24:MI' });
+    $('#nodes_locale').combo({ url:'/admin/locales', include_blank_option:0 });
+    $('#nodes_parent_id').val(node_id);
 
-	CKEDITOR.config.autoParagraph = false;
+    CKEDITOR.config.autoParagraph = false;
 
-	CKEDITOR.replace( 'editor1', {
-		height:150,
-		extraPlugins: 'pastebase64',
-		toolbar: [
-					{ name: 'document', items: [ 'Source', '-', 'NewPage', 'Preview', '-', 'Templates' ] },
-					[ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ],
-					{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Strike', '-', 'RemoveFormat' ] },
-				]
-	} );
+    CKEDITOR.replace( 'editor1', {
+        height:150,
+        extraPlugins: 'pastebase64',
+        toolbar: [
+                    { name: 'document', items: [ 'Source', '-', 'NewPage', 'Preview', '-', 'Templates' ] },
+                    [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ],
+                    { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Strike', '-', 'RemoveFormat' ] },
+                ]
+    } );
 
-	CKEDITOR.replace( 'editor2', {
-		height:300,
-		extraPlugins: 'pastebase64,font',
-		stylesSet: [
-			{ name: 'Title' , element: 'h1', attributes: { 'class': 'title' } },
-			{ name: 'Red Title' , element: 'h3', styles: { 'color': 'Red' } },
-			{ name: 'Code block', element: 'pre', attributes: { 'class': 'prettyprint' }, styles: { 'padding': '20px' } },
-			{ name: 'Yellow Marker', element: 'span', styles: { 'background-color': 'Yellow' } },
-			{ name: 'Notes', element: 'div', styles: { 'border-radius':'10px;', 'padding':'20px', 'background-color':'#c7eaff', 'color':'#000;' } } 
-		],
-		extraAllowedContent: { '$1': { attributes:'alt,itemprop,itemtype,itemscope,class,valign,style' } },
-		filebrowserImageBrowseUrl: '/admin/nodes/images'
-	} );
+    CKEDITOR.replace( 'editor2', {
+        height:300,
+        extraPlugins: 'pastebase64,font',
+        stylesSet: [
+            { name: 'Title' , element: 'h1', attributes: { 'class': 'title' } },
+            { name: 'Red Title' , element: 'h3', styles: { 'color': 'Red' } },
+            { name: 'Code block', element: 'pre', attributes: { 'class': 'prettyprint' }, styles: { 'padding': '20px' } },
+            { name: 'Yellow Marker', element: 'span', styles: { 'background-color': 'Yellow' } },
+            { name: 'Notes', element: 'div', styles: { 'border-radius':'10px;', 'padding':'20px', 'background-color':'#c7eaff', 'color':'#000;' } } 
+        ],
+        extraAllowedContent: { '$1': { attributes:'alt,itemprop,itemtype,itemscope,class,valign,style' } },
+        filebrowserImageBrowseUrl: '/admin/nodes/images'
+    } );
 
-	$('#nodes_link_div').html($('#domain').html());
-	$('#nodes_link').css('padding-left', $('#domain').width()+6);
+    $('#nodes_link_div').html($('#domain').html());
+    $('#nodes_link').css('padding-left', $('#domain').width()+6);
     $('#nodes_keywords').tagEditor({ placeholder:'^^[Keywords]^^...', height:40 });
 });
 
 function nodes_save()
 {
-	$('#editor1').val(CKEDITOR.instances.editor1.getData());
-	$('#editor2').val(CKEDITOR.instances.editor2.getData());
+    $('#editor1').val(CKEDITOR.instances.editor1.getData());
+    $('#editor2').val(CKEDITOR.instances.editor2.getData());
 
-	$('#node_form').form('save', function (result) {
-		if (result.error) {
-			alert(result.message);
-		} else {
-	        $('#admin_nodes_tree').jstree('open_node', $('#'+node_id));
+    $('#node_form').form('save', function (result) {
+        if (result.error) {
+            alert(result.message);
+        } else {
+            $('#admin_nodes_tree').jstree('open_node', $('#'+node_id));
 
-	        title = $('#nodes_title').val();
-	        if (title.length > 30) {
-	            title = title.substr(0,27) + ' ...';
-	        }
+            title = $('#nodes_title').val();
+            if (title.length > 30) {
+                title = title.substr(0,27) + ' ...';
+            }
 
-	        if (result.id) {
-	            $("#admin_nodes_tree").jstree('create_node', node_id, { id:result.id, text:title, icon:'img/tree/' + $('#nodes_option_name').val() + '.png' }, 'last');
-	            $('#admin_nodes_tree').jstree("deselect_node", "#" + node_id);
-	            $('#admin_nodes_tree').jstree("select_node", "#" + result.id);
-	        } else {
-	            if ($('#nodes_locale').prop('selectedIndex') == 0) {
-	            	$("#admin_nodes_tree").jstree('set_text', $('#'+node_id), title);
-	            }
-	            $("#admin_nodes_tree").jstree('set_icon', $('#'+node_id), 'img/tree/' + $('#nodes_option_name').val() + '.png');
-	        }
+            if (result.id) {
+                $("#admin_nodes_tree").jstree('create_node', node_id, { id:result.id, text:title, icon:'img/tree/' + $('#nodes_option_name').val() + '.png' }, 'last');
+                $('#admin_nodes_tree').jstree("deselect_node", "#" + node_id);
+                $('#admin_nodes_tree').jstree("select_node", "#" + result.id);
+            } else {
+                if ($('#nodes_locale').prop('selectedIndex') == 0) {
+                    $("#admin_nodes_tree").jstree('set_text', $('#'+node_id), title);
+                }
+                $("#admin_nodes_tree").jstree('set_icon', $('#'+node_id), 'img/tree/' + $('#nodes_option_name').val() + '.png');
+            }
 
-	        $('#nodes_locale').prop('disabled', false);
-		}
-	})
+            $('#nodes_locale').prop('disabled', false);
+        }
+    })
 }
 
 function nodes_open(node_id)
 {
-	$('#tabs').tabs("open", 'nodes');
+    $('#tabs').tabs("open", 'nodes');
 
-	$('#node_form').form('open', node_id, function (result) {
-		nodes_update_type();
-		CKEDITOR.instances.editor1.setData($('#editor1').val());
-		CKEDITOR.instances.editor2.setData($('#editor2').val());
-		$('#nodes_keywords').next().html('<li style="width:1px">&nbsp;</li>');
-		$('#nodes_keywords').tagEditor('addTag', result.keywords, true);
-		$('#nodes_published_from').calendar('label');
-		$('#nodes_published_to').calendar('label');
-		$('#nodes_complement').val(result.complement);
-		$('#nodes_locale').prop('disabled', false);
+    $('#node_form').form('open', node_id, function (result) {
+        nodes_update_type();
+        CKEDITOR.instances.editor1.setData($('#editor1').val());
+        CKEDITOR.instances.editor2.setData($('#editor2').val());
+        $('#nodes_keywords').next().html('<li style="width:1px">&nbsp;</li>');
+        $('#nodes_keywords').tagEditor('addTag', result.keywords, true);
+        $('#nodes_published_from').calendar('label');
+        $('#nodes_published_to').calendar('label');
+        $('#nodes_complement').val(result.complement);
+        $('#nodes_locale').prop('disabled', false);
         nodes_advanced_format();
-	});
+    });
 }
 
 function nodes_locale_load(locale)
 {
-	var node_id = $('#nodes_node_id').val();
+    var node_id = $('#nodes_node_id').val();
 
-	// Open record 
-	$.getJSON('/admin/nodes/select/' + node_id + '/' + locale, function(result) {
-		$.each(result, function(k, v) {
-			obj = $('#node_form').find('[name="'+k+'"]');
+    // Open record 
+    $.getJSON('/admin/nodes/select/' + node_id + '/' + locale, function(result) {
+        $.each(result, function(k, v) {
+            obj = $('#node_form').find('[name="'+k+'"]');
 
-			if ($(obj).attr("type") == "checkbox") {
-				if (v == 1) {
-					$(obj).attr("checked", "checked");
-				} else {
-					$(obj).removeAttr("checked");
-				}
-			} else {
-				$(obj).val(v);
-			}
-		});
+            if ($(obj).attr("type") == "checkbox") {
+                if (v == 1) {
+                    $(obj).attr("checked", "checked");
+                } else {
+                    $(obj).removeAttr("checked");
+                }
+            } else {
+                $(obj).val(v);
+            }
+        });
 
-		CKEDITOR.instances.editor1.setData($('#editor1').val());
-		CKEDITOR.instances.editor2.setData($('#editor2').val());
-		$('#nodes_keywords').next().html('<li style="width:1px">&nbsp;</li>');
-		$('#nodes_keywords').tagEditor('addTag', result.keywords, true);
-	});
+        CKEDITOR.instances.editor1.setData($('#editor1').val());
+        CKEDITOR.instances.editor2.setData($('#editor2').val());
+        $('#nodes_keywords').next().html('<li style="width:1px">&nbsp;</li>');
+        $('#nodes_keywords').tagEditor('addTag', result.keywords, true);
+    });
 }
 
 function nodes_new()
 {
-	$('#editor1').val('');
-	$('#editor2').val('');
-	CKEDITOR.instances.editor1.setData('');
-	CKEDITOR.instances.editor2.setData('');
-	$('#nodes_keywords').next().html('<li style="width:1px">&nbsp;</li>');
+    $('#editor1').val('');
+    $('#editor2').val('');
+    CKEDITOR.instances.editor1.setData('');
+    CKEDITOR.instances.editor2.setData('');
+    $('#nodes_keywords').next().html('<li style="width:1px">&nbsp;</li>');
 
     $("#nodes_locale").prop("selectedIndex", 0)
-	$('#nodes_locale').prop('disabled', true);
+    $('#nodes_locale').prop('disabled', true);
 }
 
 function nodes_preview()
 {
-	if (!$('#nodes_link').val()) {
-		var url = '//' + document.domain + '/nodes/' + $('#nodes_node_id').val();
-	} else {
-		var url = '//' + document.domain + '/' + $('#nodes_link').val();
-	}
+    if (!$('#nodes_link').val()) {
+        var url = '//' + document.domain + '/nodes/' + $('#nodes_node_id').val();
+    } else {
+        var url = '//' + document.domain + '/' + $('#nodes_link').val();
+    }
 
-	if (!url) alert('^^[Please select a content node]^^');
-	else
-	{
-		window.open(url, '_new');
-	}
+    if (!url) alert('^^[Please select a content node]^^');
+    else
+    {
+        window.open(url, '_new');
+    }
 }
 
 function nodes_update_type()
 {
-	if ($('#nodes_option_name').val() == 'text') {
-		$('#nodes_complement_title').html('^^[Format]^^');
-	} else if ($('#nodes_option_name').val() == 'folder') {
-		$('#nodes_complement_title').html('^^[Render configuration]^^');
-	} else if ($('#nodes_option_name').val() == 'link') {
-		$('#nodes_complement_title').html('^^[URL destination]^^');
-	} else if ($('#nodes_option_name').val() == 'contact') {
-		$('#nodes_complement_title').html('^^[Email destination]^^');
-	} else {
-	}
+    if ($('#nodes_option_name').val() == 'text') {
+        $('#nodes_complement_title').html('^^[Format]^^');
+    } else if ($('#nodes_option_name').val() == 'folder') {
+        $('#nodes_complement_title').html('^^[Render configuration]^^');
+    } else if ($('#nodes_option_name').val() == 'link') {
+        $('#nodes_complement_title').html('^^[URL destination]^^');
+    } else if ($('#nodes_option_name').val() == 'contact') {
+        $('#nodes_complement_title').html('^^[Email destination]^^');
+    } else {
+    }
 
-	if ($('#nodes_option_name').val() == 'images' || $('#nodes_option_name').val() == 'attach') {
+    if ($('#nodes_option_name').val() == 'images' || $('#nodes_option_name').val() == 'attach') {
         $('#nodes_image').css('display', '');
-		$('.tr_nodes_images').css('display', 'none');
-		if ($('#nodes_option_name').val() == 'images') {
-			$('#nodes_image').find('img').attr('src', '/images/'+$('#nodes_node_id').val());
-		} else {
-			$('#nodes_image').find('img').attr('src', 'img/tree/attach.png');
-		}
-		// Do not change from image/attach to other types
-		$('#nodes_option_name').prop('disabled', true);
-	} else {
-		$('#nodes_image').css('display', 'none');
-		$('.tr_nodes_images').css('display', '');
+        $('.tr_nodes_images').css('display', 'none');
+        if ($('#nodes_option_name').val() == 'images') {
+            $('#nodes_image').find('img').attr('src', '/images/'+$('#nodes_node_id').val());
+        } else {
+            $('#nodes_image').find('img').attr('src', 'img/tree/attach.png');
+        }
+        // Do not change from image/attach to other types
+        $('#nodes_option_name').prop('disabled', true);
+    } else {
+        $('#nodes_image').css('display', 'none');
+        $('.tr_nodes_images').css('display', '');
 
         $('#nodes_option_name').prop('disabled', false);
-	}
+    }
 
-	if ($('#nodes_option_name').val() == 'folder') {
-		$('#nodes_complement_container').html('<select name="complement" id="nodes_complement" style="width:240px;" onchange="nodes_advanced_format()"><option value="0">^^[Simple list]^^</option><option value="1">^^[List with description]^^</option><option value="2">^^[Blog]^^</option><option value="99">^^[Custom]^^</option></select>');
-	} else if ($('#nodes_option_name').val() == 'text') {
-		$('#nodes_complement_container').html('<select name="complement" id="nodes_complement" style="width:240px;" onchange="nodes_advanced_format()"><option value="1">^^[Default]^^</option><option value="2">^^[Text with index]^^</option><option value="3">^^[Article]^^</option><option value="99">^^[Custom]^^</option></select>');
-	} else {
-		$('#nodes_complement_container').html('<input type="text" name="complement" id="nodes_complement" style="width:240px;">');
-	}
+    if ($('#nodes_option_name').val() == 'folder') {
+        $('#nodes_complement_container').html('<select name="complement" id="nodes_complement" style="width:240px;" onchange="nodes_advanced_format()"><option value="0">^^[Simple list]^^</option><option value="1">^^[List with description]^^</option><option value="2">^^[Blog]^^</option><option value="99">^^[Custom]^^</option></select>');
+    } else if ($('#nodes_option_name').val() == 'text') {
+        $('#nodes_complement_container').html('<select name="complement" id="nodes_complement" style="width:240px;" onchange="nodes_advanced_format()"><option value="1">^^[Default]^^</option><option value="2">^^[Text with index]^^</option><option value="3">^^[Article]^^</option><option value="99">^^[Custom]^^</option></select>');
+    } else {
+        $('#nodes_complement_container').html('<input type="text" name="complement" id="nodes_complement" style="width:240px;">');
+    }
 
-	nodes_advanced_format();
+    nodes_advanced_format();
 }
 
 function nodes_refresh_image()
 {
-	$('#nodes_image').find('img').attr('src', '/images/'+$('#nodes_node_id').val());
+    $('#nodes_image').find('img').attr('src', '/images/'+$('#nodes_node_id').val());
 }
 
 function nodes_advanced_route()
 {
     $.getJSON('/admin/routes/select?route=' + $('#nodes_link').val(), function(result) {
-    	if (result.message) {
-    		alert(result.message)
-    	} else {
-    	    if (! result) {
-    	    	$('#routes_reset_button').click();
-    	    	$('#routes_route').val($('#nodes_link').val());
-    	    } else {
+        if (result.message) {
+            alert(result.message)
+        } else {
+            if (! result) {
+                $('#routes_reset_button').click();
+                $('#routes_route').val($('#nodes_link').val());
+            } else {
                 routes_open(result.route_id);
-    	    }
+            }
 
-    	    $('#tabs').tabs('open', 'routes')
-    	}
+            $('#tabs').tabs('open', 'routes')
+        }
     });
 }
 
 function nodes_advanced_format()
 {
-	if ($('#nodes_complement').val() == 99) {
-		$('#tr_nodes_format').css('display', '');
-	} else {
-		$('#tr_nodes_format').css('display', 'none');
-	}
+    if ($('#nodes_complement').val() == 99) {
+        $('#tr_nodes_format').css('display', '');
+    } else {
+        $('#tr_nodes_format').css('display', 'none');
+    }
 }
 </script>

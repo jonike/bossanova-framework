@@ -75,8 +75,10 @@ var methods = {
 
             // Number of columns
             size = options.colHeaders.length;
-            if (options.data[0].length > size) {
-                size = options.data[0].length;
+            if (options.data[0]) {
+                if (options.data[0].length > size) {
+                    size = options.data[0].length;
+                }
             }
 
             // Preparations
@@ -97,12 +99,13 @@ var methods = {
                 }
 
                 // Load innitial source for json autocomplete
-                if (options.columns[i].type == 'autocomplete') {
+                if (options.columns[i].type == 'autocomplete' || options.columns[i].type == 'dropdown') {
                     // if remote content
                     if (options.columns[i].url) {
                         results.push($.ajax({
                             url: options.columns[i].url,
                             index: i,
+                            dataType:'json',
                             success: function (result) {
                                 // Create the dynamic sources
                                 $.fn.jexcel.defaults[id].columns[this.index].source = result;
@@ -114,9 +117,6 @@ var methods = {
                         // Combo
                         $.fn.jexcel.defaults[id].columns[i].combo = $(main).jexcel('createCombo', options.columns[i].source);
                     }
-                } else if (options.columns[i].type == 'dropdown') {
-                    // Creating the mapping
-                    $.fn.jexcel.defaults[id].columns[i].combo = $(main).jexcel('createCombo', options.columns[i].source);
                 } else if (options.columns[i].type == 'calendar') {
                     if (! $.fn.jexcel.defaults[id].columns[i].options) {
                         $.fn.jexcel.defaults[id].columns[i].options = [];
@@ -195,7 +195,7 @@ var methods = {
 
         // Create main menu table container
         var table = document.createElement('table');
-        $(table).prop('class', 'jexcel');
+        $(table).prop('class', 'jexcel bossanova-ui');
         $(table).prop('cellpadding', '0');
         $(table).prop('cellspacing', '0');
 
@@ -274,9 +274,14 @@ var methods = {
             $(textarea).prop('class', 'jexcel_textarea');
             $(textarea).prop('id', 'textarea');
 
+            var ads = document.createElement('div');
+            $(ads).css('display', 'none');
+            $(ads).html('<a href="http://github.com/paulhodel/jexcel">Jexcel Spreadsheets</a>');
+
             // Append elements
-            $(this).append(corner);
-            $(this).append(textarea);
+            $('body').append(corner);
+            $('body').append(textarea);
+            $('body').append(ads);
 
             // Prevent dragging
             $(corner).on('dragstart', function () {
@@ -314,23 +319,26 @@ var methods = {
 
                         // Header found
                         if ($(e.target).parent().parent().is('thead')) {
-                            var o = $(e.target).prop('id').split('-');
+                            var o = $(e.target).prop('id');
+                            if (o) {
+                                o = o.split('-');
 
-                            if ($.fn.jexcel.selectedHeader && (e.shiftKey || e.ctrlKey)) {
-                                var d = $($.fn.jexcel.selectedHeader).prop('id').split('-');
-                            } else {
-                                // Update selection single column
-                                var d = $(e.target).prop('id').split('-');
-                                // Keep track of which header was selected first
-                                $.fn.jexcel.selectedHeader = $(e.target);
+                                if ($.fn.jexcel.selectedHeader && (e.shiftKey || e.ctrlKey)) {
+                                    var d = $($.fn.jexcel.selectedHeader).prop('id').split('-');
+                                } else {
+                                    // Update selection single column
+                                    var d = $(e.target).prop('id').split('-');
+                                    // Keep track of which header was selected first
+                                    $.fn.jexcel.selectedHeader = $(e.target);
+                                }
+
+                                 // Get cell objects 
+                                var o1 = $('#' + $.fn.jexcel.current).find('#' + o[1] + '-0');
+                                var o2 = $('#' + $.fn.jexcel.current).find('#' + d[1] + '-' + parseInt($.fn.jexcel.defaults[$.fn.jexcel.current].data.length - 1));
+
+                                // Update selection
+                                $('#' + $.fn.jexcel.current).jexcel('updateSelection', o1, o2);
                             }
-
-                             // Get cell objects 
-                            var o1 = $('#' + $.fn.jexcel.current).find('#' + o[1] + '-0');
-                            var o2 = $('#' + $.fn.jexcel.current).find('#' + d[1] + '-' + parseInt($.fn.jexcel.defaults[$.fn.jexcel.current].data.length - 1));
-
-                            // Update selection
-                            $('#' + $.fn.jexcel.current).jexcel('updateSelection', o1, o2);
                         } else {
                             $.fn.jexcel.selectedHeader = false;
                         }
@@ -590,12 +598,18 @@ var methods = {
                         }
                     } else {
                         if (! e.shiftKey && ! e.ctrlKey) {
-                            // Start edition in case a valid character. 
-                            if (! $($.fn.jexcel.selectedCell).hasClass('edition')) {
-                                // TODO: check the sample characters able to start a edition
-                                if (/[a-zA-Z0-9]/.test(String.fromCharCode(e.keyCode))) {
-                                    $('#' + $.fn.jexcel.current).jexcel('setValue', $($.fn.jexcel.selectedCell), '', true);
-                                    $('#' + $.fn.jexcel.current).jexcel('openEditor', $($.fn.jexcel.selectedCell));
+                            if ($.fn.jexcel.selectedCell) {
+                                // Get cell id
+                                i = $($.fn.jexcel.selectedCell).prop('id').split('-');
+                                // If is not readonly
+                                if ($.fn.jexcel.defaults[$.fn.jexcel.current].columns[i[0]].type != 'readonly') {
+                                    // Start edition in case a valid character. 
+                                    if (! $($.fn.jexcel.selectedCell).hasClass('edition')) {
+                                        // TODO: check the sample characters able to start a edition
+                                        if (/[a-zA-Z0-9]/.test(String.fromCharCode(e.keyCode))) {
+                                            $('#' + $.fn.jexcel.current).jexcel('openEditor', $($.fn.jexcel.selectedCell), true);
+                                        }
+                                    }
                                 }
                             }
                         } else {
@@ -658,16 +672,6 @@ var methods = {
 
         // Load data
         $(this).jexcel('setData');
-
-        // Table is ready
-        if (typeof($.fn.jexcel.defaults[id].ready) == 'function') {
-            $.fn.jexcel.defaults[id].ready($(this));
-        }
-
-        // Dynamic updates
-        if ($.fn.jexcel.defaults[id].dynamicColumns.length > 0) {
-            $(this).jexcel('formula');
-        }
     },
 
     /**
@@ -780,6 +784,16 @@ var methods = {
 
         // Add or replace data from the main table
         $(tbody).html(content);
+
+        // Dynamic updates
+        if ($.fn.jexcel.defaults[id].dynamicColumns.length > 0) {
+            $(this).jexcel('formula');
+        }
+
+        // Table is ready
+        if (typeof($.fn.jexcel.defaults[id].onload) == 'function') {
+            $.fn.jexcel.defaults[id].onload($(this));
+        }
     },
 
     /**
@@ -818,7 +832,7 @@ var methods = {
      * @param object cell
      * @return void
      */
-    openEditor : function(cell) {
+    openEditor : function(cell, empty) {
         // Id
         var id = $(this).prop('id');
 
@@ -1029,7 +1043,9 @@ var methods = {
 
                     // Current value
                     $(editor).focus();
-                    $(editor).val(html);
+                    if (! empty) {
+                        $(editor).val(html);
+                    }
 
                     // Close editor handler
                     $(editor).blur(function () {
@@ -1111,18 +1127,13 @@ var methods = {
             // Get value from column and set the default
             $.fn.jexcel.defaults[id].data[position[1]][position[0]] = $(this).jexcel('getValue', $(cell));
 
-            // Dynamic updates
-            if ($.fn.jexcel.defaults[id].dynamicColumns.length > 0) {
-                $(this).jexcel('formula');
-            }
-
             // Change
             if (typeof(options.onchange) == 'function') {
                 options.onchange($(this), $(cell), value);
             }
 
-            // Update settings
-            $(this).jexcel('updateSettings');
+            // After changes
+            $(this).jexcel('afterChange');
         } else {
             // Restore value
             $(cell).html($.fn.jexcel.edition);
@@ -1196,7 +1207,7 @@ var methods = {
      * @param object value value
      * @return void
      */
-    setValue : function(cell, value, ignoreDynamic) {
+    setValue : function(cell, value) {
         // If is a string get the cell object
         if (typeof(cell) !== 'object') {
             // Convert in case name is excel liked ex. A10, BB92
@@ -1261,9 +1272,11 @@ var methods = {
                         }
                         $(v).html('<input type="hidden" value="' + value + '">' + val);
                     } else {
-                        if (value.substr(0,1) == '=') {
-                            if ($.fn.jexcel.defaults[id].dynamicColumns.indexOf($(cell).prop('id')) == -1) {
-                                $.fn.jexcel.defaults[id].dynamicColumns.push($(cell).prop('id'));
+                        if (value) {
+                            if (value.substr(0,1) == '=') {
+                                if ($.fn.jexcel.defaults[id].dynamicColumns.indexOf($(cell).prop('id')) == -1) {
+                                    $.fn.jexcel.defaults[id].dynamicColumns.push($(cell).prop('id'));
+                                }
                             }
                         }
 
@@ -1272,26 +1285,16 @@ var methods = {
                 }
 
                 // Get value from column and set the default
-                if (value !== null) {
-                    $.fn.jexcel.defaults[id].data[position[1]][position[0]] = value;
+                $.fn.jexcel.defaults[id].data[position[1]][position[0]] = value;
 
-                    // Change
-                    if (typeof(options.onchange) == 'function') {
-                        options.onchange($(this), $(v), value);
-                    }
+                // Change
+                if (typeof(options.onchange) == 'function') {
+                    options.onchange($(this), $(v), value);
                 }
             });
 
-            // Dynamic updates
-            if (! ignoreDynamic && $.fn.jexcel.defaults[id].dynamicColumns.length > 0) {
-                $(this).jexcel('formula');
-            }
-
-            // Get value from column and set the default
-            if (value !== null) {
-                // Update settings
-                $(this).jexcel('updateSettings');
-            }
+            // After changes
+            $(this).jexcel('afterChange');
 
             return true;
         } else {
@@ -1530,6 +1533,7 @@ var methods = {
 
         var str = '';
         var row = '';
+        var val = '';
         var pc = false;
         var pr = false;
 
@@ -1551,7 +1555,11 @@ var methods = {
                         row += delimiter;
                     }
                     // Get value
-                    row += $(this).jexcel('getValue', $(cell));
+                    val = $(this).jexcel('getValue', $(cell));
+                    if (val.match(/,/g)) {
+                        val = '"' + val + '"'; 
+                    }
+                    row += val;
                     pc = true;
                 }
             }
@@ -1589,29 +1597,44 @@ var methods = {
         data = data.split("\r\n");
 
         // Initial position
-        var position = $(cell).prop('id').split('-')
-        var x = position[0];
-        var y = position[1];
-
-        // Automatic adding new rows when the copied data is larger then the table
-        if (parseInt(y + data.length) > $.fn.jexcel.defaults[id].data.length) {
-            $(this).jexcel('insertRow', null, parseInt(y) + data.length - $.fn.jexcel.defaults[id].data.length);
-        }
-
-        // Go through the columns to get the data
-        for (j = 0; j < data.length; j++) {
-            // Explode column values
-            row = data[j].split("\t");
-            for (i = 0; i < row.length; i++) {
-                // Get cell
-                cell = $(this).find('#' + (parseInt(i) + parseInt(x))  + '-' + (parseInt(j) + parseInt(y)));
-
-                // If cell exists
-                if ($(cell).length > 0) {
-                    $(this).jexcel('setValue', $(cell), row[i]);
+        var position = $(cell).prop('id');
+        if (position) {
+            position = position.split('-');
+            var x = position[0];
+            var y = position[1];
+    
+            // Automatic adding new rows when the copied data is larger then the table
+            if (parseInt(y + data.length) > $.fn.jexcel.defaults[id].data.length) {
+                $(this).jexcel('insertRow', null, parseInt(y) + data.length - $.fn.jexcel.defaults[id].data.length);
+            }
+    
+            // Go through the columns to get the data
+            for (j = 0; j < data.length; j++) {
+                // Explode column values
+                row = data[j].split("\t");
+                for (i = 0; i < row.length; i++) {
+                    // Get cell
+                    cell = $(this).find('#' + (parseInt(i) + parseInt(x))  + '-' + (parseInt(j) + parseInt(y)));
+    
+                    // If cell exists
+                    if ($(cell).length > 0) {
+                        $(this).jexcel('setValue', $(cell), row[i]);
+                    }
                 }
             }
         }
+    },
+
+    /**
+     * TODO: Insert a new col
+     * 
+     * @param object relativeCol - add new col
+     * @param object numColumns - how many columns to be included
+     * 
+     * @return void
+     */
+    insertCol : function () {
+        // TODO
     },
 
     /**
@@ -1699,6 +1722,27 @@ var methods = {
     },
 
     /**
+     * After change
+     */
+    afterChange : function() {
+        // Id
+        var id = $(this).prop('id');
+
+        // Dynamic updates
+        if ($.fn.jexcel.defaults[id].dynamicColumns.length > 0) {
+            $(this).jexcel('formula');
+        }
+
+        // After Changes
+        if (typeof($.fn.jexcel.defaults[id].onafterchange) == 'function') {
+            $.fn.jexcel.defaults[id].onafterchange($(this));
+        }
+
+        // Update settings
+        $(this).jexcel('updateSettings');
+    },
+
+    /**
      * Helper function to copy data using the corner icon
      */
     copyData : function(o, d) {
@@ -1768,36 +1812,43 @@ var methods = {
             formula = $(main).jexcel('getValue', column);
 
             // Column value is a formula
-            if (formula.substr(0,1) == '=') {
-                // Get method name  TODO: Get a simple formula such as
-                fnc = /=([a-zA-Z]+)\(/.exec(formula);
-                if (fnc) {
-                    fnc = fnc[1].toLowerCase();
-                    // Get arguments from string
-                    arg = /\((.*)\)/.exec(formula);
-                    // Call method
-                    if (typeof(formulas[fnc]) == 'function') {
-                        value = formulas[fnc](arg[1]);
+            if (formula) {
+                if (formula.substr(0,1) == '=') {
+                    // Get method name  TODO: Get a simple formula such as
+                    fnc = /=([a-zA-Z]+)\(/.exec(formula);
+                    if (fnc) {
+                        fnc = fnc[1].toLowerCase();
+                        // Get arguments from string
+                        arg = /\((.*)\)/.exec(formula);
+                        // Call method
+                        if (typeof(formulas[fnc]) == 'function') {
+                            value = formulas[fnc](arg[1]);
+                        } else {
+                            value = formula;
+                            console.error('Jexcel: formula method not found: ' + fnc);
+                        }
                     } else {
-                        value = formula;
-                        console.error('Jexcel: formula method not found: ' + fnc);
+                        // Value format
+                        value = $(main).jexcel('basicFormula', formula);
+                    }
+
+                    // Set value
+                    if (value === null || isNaN(value)) {
+                        $(main).find('#' + column).addClass('error');
+                        value = '<input type="hidden" value="' + formula + '">#ERROR';
+                        // Update cell content
+                        $(main).find('#' + column).html(value);
+                    } else {
+                        $(main).find('#' + column).removeClass('error');
+                        value = '<input type="hidden" value="' + formula + '">' + value;
+                        // Update cell content
+                        $(main).find('#' + column).html(value);
                     }
                 } else {
-                    // Value format
-                    value = $(main).jexcel('basicFormula', formula);
-                }
-
-                // Set value
-                if (value === null) {
-                    $(main).find('#' + column).addClass('error');
-                    value = '<input type="hidden" value="' + formula + '">#ERROR';
-                    // Update cell content
-                    $(main).find('#' + column).html(value);
-                } else {
+                    // Remove any existing calculation error
                     $(main).find('#' + column).removeClass('error');
-                    value = '<input type="hidden" value="' + formula + '">' + value;
-                    // Update cell content
-                    $(main).find('#' + column).html(value);
+                    // No longer dynamic
+                    columns.splice(k, 1);
                 }
             } else {
                 // Remove any existing calculation error
@@ -1805,7 +1856,7 @@ var methods = {
                 // No longer dynamic
                 columns.splice(k, 1);
             }
-        });   
+        });
     },
 
     /**

@@ -1,0 +1,48 @@
+/**
+ * (c) 2013 jModal Bossanova UI
+ * http://www.github.com/paulhodel/bossanova-ui
+ *
+ * @author: Paul Hodel <paul.hodel@gmail.com>
+ * @description: Simple modal
+ */
+
+.jmodal
+{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	background-color:#000;
+	margin:auto;
+	z-index:3;
+	background-color:rgba(0,0,0,0.2);
+}
+
+.jmodal_container
+{
+	width:550px;
+	height:300px;
+    margin:auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+	-webkit-box-shadow: 0 2px 10px rgba(0,0,0,.2);
+	-moz-box-shadow: 0 2px 10px rgba(0,0,0,.2);
+	border:1px solid #ccc;
+	background-color:#fff;
+}
+
+.jmodal_title
+{
+	padding:15px;
+	font-size:1.2em;
+    background: #e3e3e3;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#e3e3e3');
+    background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#e3e3e3));
+    background: -moz-linear-gradient(top,  #ededed,  #e3e3e3);
+}
+
+.jmodal_content
+{
+	padding:15px;
+}

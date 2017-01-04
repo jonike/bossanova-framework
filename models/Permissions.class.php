@@ -214,14 +214,14 @@ class Permissions extends Model
                     ->column("permission_order")
                     ->argument(1, "permission_id", $_SESSION['permission_id'])
                     ->select()
-                    ->execute(2);
+                    ->execute();
                 $row1 = $this->database->fetch_assoc($result);
 
                 $result = $this->database->table("permissions")
                     ->column("permission_order")
                     ->argument(1, "permission_id", $id)
                     ->select()
-                    ->execute(2);
+                    ->execute();
                 $row2 = $this->database->fetch_assoc($result);
 
                 $bool = ($row1['permission_order'] > $row2['permission_order']) ? false : true;

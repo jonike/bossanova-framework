@@ -140,7 +140,7 @@ class Render
         }
 
         // If is an ajax call don't show the main template. This can be overwrite by the module.
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+        if (self::isAjax()) {
             self::$configuration['template_render'] = 0;
             // Only load the view for GET requestse (Don't load for POST, PUT, DELETE)
             if ($_SERVER['REQUEST_METHOD'] != "GET") {
@@ -167,14 +167,14 @@ class Render
         // Recheck permission after the module being loaded
         if ($restricted) {
             // If not login send user to the login page
-            if (isset($_SESSION['user_id']) || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            if (isset($_SESSION['user_id']) || self::isAjax()) {
                 // Default template for errors
                 if (defined("TEMPLATE_ERROR")) {
                     self::$configuration['template_path'] = TEMPLATE_ERROR;
                 }
 
                 // User message
-                if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                if (self::isAjax()) {
                     $content = json_encode(array('error'=>'1', 'message' => '^^[Permission denied]^^'));
                 } else {
                     header("HTTP/1.1 403 Forbidden");
@@ -202,7 +202,7 @@ class Render
                 }
 
                 // User message
-                if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                if (self::isAjax()) {
                     $content = json_encode(array('error'=>'1', 'message' => '^^[Permission denied]^^'));
                 } else {
                     header("HTTP/1.1 404 Not found");
@@ -886,6 +886,16 @@ class Render
         }
 
         return isset($restricted) ? true : false;
+    }
+
+    /**
+     * Is ajax?
+     *
+     * @return bool
+     */
+    public static function isAjax()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false;
     }
 
     /**

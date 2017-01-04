@@ -1,0 +1,26 @@
+<script src="../../components/jquery/jquery.min.js"></script>
+<script src="../../components/bossanova/js/jquery.jexcel.js"></script>
+<script src="../../components/bossanova/js/jquery.calendar.js"></script>
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.jexcel.css" type="text/css" />
+<link rel="stylesheet" href="../../components/bossanova/css/blue/jquery.calendar.css" type="text/css" />
+<style>
+body,td,div
+{
+    font:12px verdana;
+}
+</style>
+<div id="my1"></div><br><br>
+<div id="my2"></div>
+<script>
+var data1 = $.fn.jexcel('helper', { action:'createEmptyData', cols:40, rows:3 });
+var data2 = $.fn.jexcel('helper', { action:'createEmptyData', cols:40, rows:3 });
+
+$('#my1').jexcel({
+	data:data1
+});
+
+$('#my2').jexcel({
+    data:data2
+});
+
+</script>

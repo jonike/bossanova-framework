@@ -298,7 +298,7 @@ class Model extends \stdClass
 
         $column_name = isset($row['Column_name']) ? $row['Column_name'] : $row['column_name'];
         $row['primaryKey'] = $column_name;
-        $row['sequence'] = str_replace(array("nextval","regclass","(",")","::","'"), "", $row['column_default']);
+        $row['sequence'] = str_replace(array("nextval","regclass","(",")","::","'"), "", $column_name);
 
         return $row;
     }

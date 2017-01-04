@@ -4,15 +4,8 @@
  * (c) 2013 Bossanova PHP Framework
  * http://www.bossanova-framework.com
  *
- * PHP version 5
- *
- * @category PHP
- * @package  bossanova-framework
- * @author   Paul Hodel <paul.hodel@gmail.com>
- * @license  The MIT License (MIT)
- * @link     http://www.bossanova-framework.com
- *
- * Bossanova PHP Framework Autoload
+ * @author: Paul Hodel <paul.hodel@gmail.com>
+ * @description: Autoload
  */
 
 if (file_exists('vendor/autoload.php')) {
@@ -21,24 +14,23 @@ if (file_exists('vendor/autoload.php')) {
 
 spl_autoload_register('autoloader');
 
-/**
- * Autoloader
- *
- * @param string $class_name Classname
- *
- * @return void
- */
 function autoloader($class_name)
 {
     $filename = str_replace('\\', '/', $class_name) . '.class.php';
 
     if (file_exists($filename)) {
-        include $filename;
+        require $filename;
     } else {
-        $filename = str_replace('\\', '/', $class_name) . '.class.php';
         $filename = str_replace('Bossanova/', 'vendor/bossanova/', $filename);
         if (file_exists($filename)) {
-            include $filename;
+            require $filename;
+        } else {
+            $class_name = 'vendor\\' . $class_name;
+            $filename = str_replace('\\', '/', $class_name) . '.class.php';
+
+            if (file_exists($filename)) {
+                require $filename;
+            }
         }
     }
 }
