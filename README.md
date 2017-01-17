@@ -10,5 +10,3 @@ http://www.bossanova-framework.com/articles/articles/a-crud-in-five-minutes-with
 
 BF Documentation<br>
 http://www.bossanova-framework.com/docs
-
-x

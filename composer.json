@@ -1,42 +1,20 @@
-<<<<<<< HEAD
 {
-	"name" : "bossanova2/php-framework",
-	"description" : "Bossanova PHP Framework",
-	"keywords" : [
-		"framework",
-		"php",
-		"bossanova"
-	],
-	"license" : "MIT",
-	"type" : "project",
-	"authors" : [{
-			"name" : "Paul Hodel",
-			"email" : "paul.hodel@gmail.com"
-		}
-	],
-	"require" : {
-		"phpmailer/phpmailer" : "~5.2"
-	},
-	"autoload-dev" : {}
-=======
-{
-	"name" : "bossanova2/php-framework",
-	"description" : "Bossanova PHP Framework",
-	"keywords" : [
-		"framework",
-		"php",
-		"bossanova"
-	],
-	"license" : "MIT",
-	"type" : "project",
-	"authors" : [{
-			"name" : "Paul Hodel",
-			"email" : "paul.hodel@gmail.com"
-		}
-	],
-	"require" : {
-		"phpmailer/phpmailer" : "~5.2"
-	},
-	"autoload-dev" : {}
->>>>>>> refs/remotes/origin/master
+    "name" : "bossanova2/php-framework",
+    "description" : "Bossanova PHP Framework",
+    "keywords" : [
+        "framework",
+        "php",
+        "bossanova"
+    ],
+    "license" : "MIT",
+    "type" : "project",
+    "authors" : [{
+            "name" : "Paul Hodel",
+            "email" : "paul.hodel@gmail.com"
+        }
+    ],
+    "require" : {
+        "phpmailer/phpmailer" : "~5.2"
+    },
+    "autoload-dev" : {}
 }
