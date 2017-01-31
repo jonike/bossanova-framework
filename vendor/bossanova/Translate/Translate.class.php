@@ -66,21 +66,7 @@ class Translate
                 // Check if the language file exists
                 if (file_exists("resources/locales/{$locale}.csv")) {
                     // Open the file and load all words in memory
-                    $dictionary = array();
-
-                    $dic = fopen("resources/locales/{$locale}.csv", "r");
-
-                    while (!feof($dic)) {
-                        // Open word index and translate word
-                        $buffer = fgets($dic);
-                        $buffer = explode("|", $buffer);
-
-                        if ($buffer[0]) {
-                            // Make sure to remove all white spaces and create a index based on the hash
-                            $val = isset($buffer[1]) && trim($buffer[1]) ? $buffer[1] : $buffer[0];
-                            $dictionary[md5(trim($buffer[0]))] = trim($val);
-                        }
-                    }
+                    $dictionary = $this->loadfile($locale);
 
                     if (count($dictionary)) {
                         // Keep dictionary in the session
@@ -100,6 +86,37 @@ class Translate
         }
     }
 
+    /**
+     * Load dictionary information, index and cache usign APC.
+     *
+     * @param string $locale dicionary name.
+     * @return void
+     */
+    public function loadfile($locale)
+    {
+        // Open the file and load all words in memory
+        $dictionary = array();
+
+        if (file_exists("resources/locales/{$locale}.csv")) {
+            $dic = fopen("resources/locales/{$locale}.csv", "r");
+
+            while (!feof($dic)) {
+                // Open word index and translate word
+                $buffer = fgets($dic);
+                $buffer = explode("|", $buffer);
+
+                if ($buffer[0]) {
+                    // Make sure to remove all white spaces and create a index based on the hash
+                    $val = isset($buffer[1]) && trim($buffer[1]) ? $buffer[1] : $buffer[0];
+                    $dictionary[md5(trim($buffer[0]))] = trim($val);
+                }
+            }
+
+            fclose($dic);
+        }
+
+        return $dictionary;
+    }
     /**
     * Reload dictionary information, index and cache usign APC.
     *
@@ -124,8 +141,14 @@ class Translate
     * @param string $buffer Output buffer
     * @return string $result Return buffer with all translations
     */
-    public static function run($buffer)
+    public function run($buffer, $locale = null)
     {
+        if (! isset($locale)) {
+            $dictionary = $_SESSION['dictionary'];
+        } else {
+            $dictionary = $this->loadfile($locale);
+        }
+
         // Processing buffer
         $result = '';
         $index  = '';
@@ -166,8 +189,8 @@ class Translate
                     $key = md5($index);
 
                     // Translate word
-                    if (isset($_SESSION['dictionary'][$key])) {
-                        $result .= $_SESSION['dictionary'][$key];
+                    if (isset($dictionary[$key])) {
+                        $result .= $dictionary[$key];
                     } else {
                         $result .= $index;
                     }
@@ -176,10 +199,14 @@ class Translate
                 }
 
                 // Append to the final result
-                $result .= $buffer{$i};
+                if (isset($buffer{$i})) {
+                    $result .= $buffer{$i};
+                }
             } else {
-                // Capturing a new word
-                $index .= $buffer{$i};
+                if (isset($buffer{$i})) {
+                    // Capturing a new word
+                    $index .= $buffer{$i};
+                }
             }
         }
 

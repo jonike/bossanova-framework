@@ -598,10 +598,11 @@ class Auth
             'resources/texts/recover.txt';
 
         try {
+            $translate = new Translate;
             $mail = new Mail;
             // Prepare the content
             $content = file_get_contents($filename);
-            $content = Translate::run($content);
+            $content = $translate->run($content);
             $content = $mail->replaceMacros($content, $row);
 
             // Send email to the user
