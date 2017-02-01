@@ -123,6 +123,7 @@ class Module
             $table = $this->getParam(1);
             $action = $this->getParam(0) . '/' . $table;
         } else {
+            $table = $this->getParam(0);
             $action = $this->getParam(0);
         }
 
