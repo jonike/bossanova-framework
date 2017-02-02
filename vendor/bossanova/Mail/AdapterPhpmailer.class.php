@@ -13,7 +13,7 @@
  *
  * PHPMailer abstraction
  */
-namespace Bossanova\Mail;
+namespace bossanova\Mail;
 
 class AdapterPhpmailer implements MailService
 {

@@ -13,10 +13,10 @@
  *
  * Render Library
  */
-namespace Bossanova\Render;
+namespace bossanova\Render;
 
-use Bossanova\Database\Database;
-use Bossanova\Error\Error;
+use bossanova\Database\Database;
+use bossanova\Error\Error;
 
 class Render
 {

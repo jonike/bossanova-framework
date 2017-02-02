@@ -13,10 +13,10 @@
  *
  * Model Library
  */
-namespace Bossanova\Model;
+namespace bossanova\Model;
 
-use Bossanova\Database\Database;
-use Bossanova\Common\Post;
+use bossanova\Database\Database;
+use bossanova\Common\Post;
 
 class Model extends \stdClass
 {

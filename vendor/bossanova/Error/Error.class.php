@@ -13,7 +13,7 @@
  *
  * Error Handler
  */
-namespace Bossanova\Error;
+namespace bossanova\Error;
 
 class Error
 {

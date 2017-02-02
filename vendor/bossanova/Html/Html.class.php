@@ -13,7 +13,7 @@
  *
  * HTML tag creation helper
  */
-namespace Bossanova\Html;
+namespace bossanova\Html;
 
 class Html
 {

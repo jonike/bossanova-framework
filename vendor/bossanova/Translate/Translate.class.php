@@ -13,7 +13,7 @@
  *
  * Translation Library
  */
-namespace Bossanova\Translate;
+namespace bossanova\Translate;
 
 class Translate
 {

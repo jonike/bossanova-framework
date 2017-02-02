@@ -13,7 +13,7 @@
  *
  * Database Exceptions
  */
-namespace Bossanova\Database;
+namespace bossanova\Database;
 
 class DatabaseException extends Exception
 {
