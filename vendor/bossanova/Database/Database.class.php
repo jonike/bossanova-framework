@@ -13,9 +13,9 @@
  *
  * Database Library
  */
-namespace Bossanova\Database;
+namespace bossanova\Database;
 
-use Bossanova\Model\Model;
+use bossanova\Model\Model;
 
 class Database
 {

@@ -14,7 +14,7 @@
  * Common traits
  */
 
-namespace Bossanova\Common;
+namespace bossanova\Common;
 
 trait Post
 {

@@ -13,7 +13,7 @@
  *
  * Mail library
  */
-namespace Bossanova\Mail;
+namespace bossanova\Mail;
 
 class Mail
 {

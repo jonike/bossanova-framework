@@ -13,7 +13,7 @@
  *
  * Model Library
  */
-namespace Bossanova\Model;
+namespace bossanova\Model;
 
 class ModelException extends Exception
 {

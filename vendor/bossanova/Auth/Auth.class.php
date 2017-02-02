@@ -13,12 +13,12 @@
  *
  * Authentication Library
  */
-namespace Bossanova\Auth;
+namespace bossanova\Auth;
 
-use Bossanova\Database\Database;
-use Bossanova\Translate\Translate;
-use Bossanova\Render\Render;
-use Bossanova\Mail\Mail;
+use bossanova\Database\Database;
+use bossanova\Translate\Translate;
+use bossanova\Render\Render;
+use bossanova\Mail\Mail;
 
 class Auth
 {

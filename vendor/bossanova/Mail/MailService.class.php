@@ -13,7 +13,7 @@
  *
  * Mail Library Interface
  */
-namespace Bossanova\Mail;
+namespace bossanova\Mail;
 
 interface MailService
 {

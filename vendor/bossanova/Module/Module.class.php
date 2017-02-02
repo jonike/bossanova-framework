@@ -13,13 +13,13 @@
  *
  * Module Library
  */
-namespace Bossanova\Module;
+namespace bossanova\Module;
 
-use Bossanova\Auth\Auth;
-use Bossanova\Render\Render;
-use Bossanova\Database\Database;
-use Bossanova\Mail\Mail;
-use Bossanova\Common\Post;
+use bossanova\Auth\Auth;
+use bossanova\Render\Render;
+use bossanova\Database\Database;
+use bossanova\Mail\Mail;
+use bossanova\Common\Post;
 
 class Module
 {

@@ -13,7 +13,7 @@
  *
  * Sendgrid abstraction
  */
-namespace Bossanova\Mail;
+namespace bossanova\Mail;
 
 class AdapterSendgrid implements MailService
 {
