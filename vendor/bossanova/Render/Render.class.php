@@ -76,27 +76,36 @@ class Render
      */
     public function __construct()
     {
+        $params = array();
+
         // Identifing a CLI call
         if (isset($_SERVER['argv']) && $_SERVER['argv'][1]) {
-            $_GET["bossanova"] = $_SERVER['argv'][1];
+            $params = $_SERVER['argv'][1];
+        } else {
+            $params = $_SERVER['REQUEST_URI'];
         }
 
+        // First param can't be null
+        if (substr($params, 0, 1) == '/') {
+            $params = substr($params, 1);
+        }
+
+        // Remove query string
+        $requestUri = explode('?', $params);
+
         // Get the route URL
-        if (isset($_GET["bossanova"])) {
+        if ($requestUri[0]) {
             // Windows compatibility
-            $_GET["bossanova"] = str_replace('\\', '/', str_replace("'", "", $_GET["bossanova"]));
+            $requestUri[0] = str_replace('\\', '/', str_replace("'", "", $requestUri[0]));
 
             // Custom sitemap call
-            if ($_GET["bossanova"] == 'sitemap.xml') {
+            if ($requestUri[0] == 'sitemap.xml') {
                 self::$urlParam[0] = 'nodes';
                 self::$urlParam[1] = 'sitemap';
             } else {
                 // Explode route based the URL
-                self::$urlParam = explode("/", $this->escape($_GET["bossanova"]));
+                self::$urlParam = explode("/", $this->escape($requestUri[0]));
             }
-
-            // Remove bossanova GET variable
-            unset($_GET['bossanova']);
 
             // Check if last item is empty
             $index = count(self::$urlParam) - 1;
@@ -106,7 +115,7 @@ class Render
                 unset(self::$urlParam[$index]);
                 // Bossanova URL
                 if (! count($_POST) && ! count($_GET)) {
-                    $url = substr(str_replace('\\', '/', $_SERVER['REQUEST_URI']), 0, - 1);
+                    $url = '/' . substr($params, 0, -1);
                     header("Location: $url");
                 }
             }
