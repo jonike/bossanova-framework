@@ -940,4 +940,37 @@ class Database
             return null;
         }
     }
+
+    /**
+     * Find a model
+     * @param string $table table name
+     * @return object instance from a model
+     */
+    public function find($name, $id)
+    {
+        if ($this->getTableInfo($name)) {
+            $model = new Model($this, $name);
+            $model->get($id);
+        } else {
+            $model = false;
+        }
+
+        return $model;
+    }
+
+    /**
+     * Create automatic models in case table match name
+     * @param unknown $name
+     * @param unknown $value
+     */
+    public function __get($name)
+    {
+        if ($this->getTableInfo($name)) {
+            $this->{$name} = new Model($this, $name);
+        } else {
+            $this->{$name} = false;
+        }
+
+        return $this->{$name};
+    }
 }
