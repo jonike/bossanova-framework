@@ -294,13 +294,21 @@ class Auth
      */
     public function logout()
     {
+        // Force logout
+        if ($user_id = $this->getUser()) {
+            $this->database->table("users")
+                ->column(array('user_hash' => 'null'))
+                ->argument(1, "user_id", $user_id)
+                ->update()
+                ->execute();
+        }
+
         // Removing session
         $_SESSION = array();
+        session_destroy();
 
         // Removing cookie
-        if (isset($_COOKIE['bossanova'])) {
-            $this->destroySession();
-        }
+        $this->destroySession();
 
         // Redirect to the main page
         $url = $this->getLink('login');
@@ -579,10 +587,12 @@ class Auth
      */
     private function destroySession()
     {
-        $_COOKIE['bossanova'] = '';
-        $expire = time();
-        $base_domain = Render::getDomain();
-        setcookie('bossanova', '', $expire);
+        if (isset($_COOKIE['bossanova'])) {
+            $expire = time();
+            $base_domain = Render::getDomain();
+            setcookie('bossanova', null, -1);
+            $_COOKIE['bossanova'] = '';
+        }
     }
 
     /**
