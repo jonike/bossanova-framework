@@ -946,11 +946,13 @@ class Database
      * @param string $table table name
      * @return object instance from a model
      */
-    public function find($name, $id)
+    public function find($name, $id = null)
     {
         if ($this->getTableInfo($name)) {
             $model = new Model($this, $name);
-            $model->get($id);
+            if ($id) {
+                $model->get($id);
+            }
         } else {
             $model = false;
         }
@@ -966,11 +968,11 @@ class Database
     public function __get($name)
     {
         if ($this->getTableInfo($name)) {
-            $this->{$name} = new Model($this, $name);
+            $model = new Model($this, $name);
         } else {
-            $this->{$name} = false;
+            $model = false;
         }
 
-        return $this->{$name};
+        return $model;
     }
 }

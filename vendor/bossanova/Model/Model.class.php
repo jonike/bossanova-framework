@@ -123,6 +123,15 @@ class Model extends \stdClass
         return $this->getMeta();
     }
 
+    public function createFromMeta()
+    {
+        $data = $this->getMeta();
+
+        foreach ($data as $k => $v) {
+            $this->{$k} = $v;
+        }
+    }
+
     /**
      * Return the record in a object format
      *
@@ -187,6 +196,19 @@ class Model extends \stdClass
         }
 
         return $this->config->recordId;
+    }
+
+    /**
+     * Update or insert the data on the database
+     *
+     * @return integer last inserted id, sequence or record id
+     */
+    public function flush()
+    {
+        $this->save();
+
+        // Clear record reference
+        $this->config->recordId = 0;
     }
 
     /**

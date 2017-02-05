@@ -81,6 +81,10 @@ class Render
         // Identifing a CLI call
         if (isset($_SERVER['argv']) && $_SERVER['argv'][1]) {
             $params = $_SERVER['argv'][1];
+        } else if (isset($_GET['bossanova']) && $_GET['bossanova']) {
+            // Keep compatibility with old BF versions
+            $params = $_GET['bossanova'];
+            unset($_GET['bossanova']);
         } else {
             $params = $_SERVER['REQUEST_URI'];
         }
