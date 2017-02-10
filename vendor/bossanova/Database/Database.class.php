@@ -116,7 +116,7 @@ class Database
                         self::$instance[$id]->connection = new \PDO("{$tp}:host={$host};dbname={$name}", $user, $pass);
                     } catch (\PDOException $e) {
                         self::$instance[$id] = null;
-                        \Bossanova\Error\Error::handler("It was not possible to connect to the database {$name}", $e);
+                        \bossanova\Error\Error::handler("It was not possible to connect to the database {$name}", $e);
                     }
 
                     // Keep the database name for this connection
@@ -128,7 +128,7 @@ class Database
             } catch (\Exception $e) {
                 // Not possible to connect in the database
                 self::$instance[$id] = null;
-                \Bossanova\Error\Error::handler("It was not possible to connect to the database {$config[4]}", $e);
+                \bossanova\Error\Error::handler("It was not possible to connect to the database {$config[4]}", $e);
             }
         }
 

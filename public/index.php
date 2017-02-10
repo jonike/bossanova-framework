@@ -12,8 +12,8 @@ if (!defined('APPLICATION_ENV')) {
 include 'autoload.php';
 include 'config.inc.php';
 
-use Bossanova\Translate\Translate;
-use Bossanova\Render\Render;
+use bossanova\Translate\Translate;
+use bossanova\Render\Render;
 
 // Init session if is not already started
 session_start();

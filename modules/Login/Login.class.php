@@ -10,7 +10,7 @@
 
 namespace modules\Login;
 
-use Bossanova\Module\Module;
+use bossanova\Module\Module;
 
 class Login extends Module
 {
