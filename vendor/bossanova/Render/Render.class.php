@@ -521,16 +521,17 @@ class Render
             $url = '';
 
             foreach (self::$urlParam as $k => $v) {
-                // Loading configuration
-                if (isset($GLOBALS['persistent_elements'][$url])) {
-                    $persistentElem = $GLOBALS['persistent_elements'][$url];
-                }
-
+                // Requested URL piece from less relevant recursivelly to most relevant and match full URL
                 if ($url) {
                     $url .= '/';
                 }
 
                 $url .= $v;
+
+                // Loading configuration
+                if (isset($GLOBALS['persistent_elements'][$url])) {
+                    $persistentElem = $GLOBALS['persistent_elements'][$url];
+                }
             }
         }
 

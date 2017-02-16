@@ -32,7 +32,9 @@ class Translate
         if (!self::$instance) {
             self::$instance = $this;
             // Callback for the translation
-            ob_start(array($this, 'run'));
+            ob_start(function($b) {
+                return $this->run($b);
+            });
         }
 
         return self::$instance;
