@@ -34,7 +34,7 @@ trait Post
         } else {
             // Return only what you have defined as important
             if (is_string($filter)) {
-                $row = $_POST[$filter];
+                $row = isset($_POST[$filter]) ? $_POST[$filter] : null;
             } else {
                 foreach ($filter as $k => $v) {
                     if (isset($_POST[$v])) {
