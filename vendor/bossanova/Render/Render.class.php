@@ -303,7 +303,7 @@ class Render
                     ob_start();
                     $content = $instance->$method_name();
                     if (is_array($content)) {
-                        $content = print_r($content, true);
+                        $content = json_encode($content);
                     }
                     $content .= ob_get_clean();
                 } else {
@@ -544,7 +544,7 @@ class Render
         // Looking for modules or CMS elements
         if (isset(self::$urlParam[0])) {
             // Module information, check if the call referes to a existing module
-            $module_name = ucfirst(strtolower(self::$urlParam[0]));
+            $module_name = ucfirst(strtolower(str_replace('-', '_', self::$urlParam[0])));
 
             // Module exists TODO: improve speed by cache the the IO checkings
             if (file_exists("modules/$module_name/$module_name.class.php")) {
@@ -562,7 +562,7 @@ class Render
                     } else {
                         if (isset(self::$urlParam[2]) && is_numeric(self::$urlParam[1])) {
                             // Check if exists any controller that matches this call
-                            $controller_name = ucfirst(strtolower(self::$urlParam[2]));
+                            $controller_name = ucfirst(strtolower(str_replace('-', '_', self::$urlParam[2])));
 
                             if (file_exists("modules/$module_name/controllers/$controller_name.class.php")) {
                                 // Controller found
@@ -570,7 +570,7 @@ class Render
                             }
                         } else {
                             // Check if exists any controller that matches this call
-                            $controller_name = ucfirst(strtolower(self::$urlParam[1]));
+                            $controller_name = ucfirst(strtolower(str_replace('-', '_', self::$urlParam[1])));
 
                             if (file_exists("modules/$module_name/controllers/$controller_name.class.php")) {
                                 // Controller found
