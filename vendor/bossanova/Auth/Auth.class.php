@@ -49,7 +49,7 @@ class Auth
             }
             $this->database = $query;
         } catch (\Exception $e) {
-            \Bossanova\Error\Error::handler("It was not possible to connect to the database", $e);
+            \bossanova\Error\Error::handler("It was not possible to connect to the database", $e);
         }
     }
 

@@ -84,7 +84,7 @@ class Translate
                 }
             }
         } catch (Expection $e) {
-            \Bossanova\Error\Error::handler("Translation error {$config[4]}", $e);
+            \bossanova\Error\Error::handler("Translation error {$config[4]}", $e);
         }
     }
 
@@ -146,7 +146,7 @@ class Translate
     public function run($buffer, $locale = null)
     {
         if (! isset($locale)) {
-            $dictionary = $_SESSION['dictionary'];
+            $dictionary = isset($_SESSION['dictionary']) ? $_SESSION['dictionary'] : [];
         } else {
             $dictionary = $this->loadfile($locale);
         }

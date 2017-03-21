@@ -40,7 +40,7 @@ class Mail
 
             // Connect to the default adapter
             try {
-                $component = 'Bossanova\\Mail\\Adapter' . $adapter;
+                $component = 'bossanova\\Mail\\Adapter' . $adapter;
                 $this->adapter = new $component;
             } catch (\Exception $e) {
                 Error::handler("^^[It was not possible to find the mail adapter]^^" . $component, $e);
