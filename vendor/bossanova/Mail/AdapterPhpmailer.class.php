@@ -50,7 +50,7 @@ class AdapterPhpmailer implements MailService
             $this->instance->SMTPAuth = true;
             $this->instance->Host = $config['MS_CONFIG_HOST'];
             $this->instance->Port = $config['MS_CONFIG_PORT'];
-            if (defined("MS_CONFIG_USER")) {
+            if ($config['MS_CONFIG_USER']) {
                 $this->instance->Username = $config['MS_CONFIG_USER'];
                 $this->instance->Password = $config['MS_CONFIG_PASS'];
 

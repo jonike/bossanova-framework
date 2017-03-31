@@ -352,6 +352,18 @@ class Database
     }
 
     /**
+     * Offset
+     * @param  string $offset
+     * @return void
+     */
+    public function offset($offset)
+    {
+        $this->query['offset'] = $offset;
+
+        return $this;
+    }
+
+    /**
      * Keep the having by string to assembly the query
      *
      * @param string $having having

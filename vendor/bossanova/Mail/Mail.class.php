@@ -64,6 +64,7 @@ class Mail
         $config['MS_CONFIG_PORT'] = defined('MS_CONFIG_PORT') ? MS_CONFIG_PORT : '';
         $config['MS_CONFIG_USER'] = defined('MS_CONFIG_USER') ? MS_CONFIG_USER : '';
         $config['MS_CONFIG_PASS'] = defined('MS_CONFIG_PASS') ? MS_CONFIG_PASS : '';
+        $config['MS_CONFIG_AUTH'] = defined('MS_CONFIG_AUTH') ? MS_CONFIG_AUTH : '';
 
         // Sendgrid configuration
         $config['MS_CONFIG_KEY'] = defined('MS_CONFIG_KEY') ? MS_CONFIG_KEY : '';
