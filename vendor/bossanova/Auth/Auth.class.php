@@ -296,7 +296,7 @@ class Auth
     {
         // Force logout
         if ($user_id = $this->getUser()) {
-            $this->database->table("users")
+            $this->database->table("public.users")
                 ->column(array('user_hash' => 'null'))
                 ->argument(1, "user_id", $user_id)
                 ->update()
