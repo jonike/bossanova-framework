@@ -202,6 +202,7 @@ class Render
                 $base .= 'login';
                 $url = self::getLink($base);
                 header("Location: $url");
+                exit;
             }
         } else {
             // Executing module
