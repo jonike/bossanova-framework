@@ -384,7 +384,7 @@ class Auth
 
         // After all process check if the user is logged
         if (! $this->getUser()) {
-            $param = isset(Render::$urlParam[1]) ? Render::$urlParam[1] : '';
+           $param = Render::$urlParam[count(Render::$urlParam)-1];
 
             // Redirect the user to the login page
             if ($param != 'login') {
