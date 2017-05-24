@@ -505,6 +505,9 @@ class Database
         if (isset($this->query['limit'])) {
             $this->query['query'] .= " LIMIT " . $this->query['limit'];
         }
+        if (isset($this->query['offset'])) {
+            $this->query['query'] .= " OFFSET " . $this->query['offset'];
+        }
 
         return $this;
     }
