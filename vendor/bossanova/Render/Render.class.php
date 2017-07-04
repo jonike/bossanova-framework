@@ -163,7 +163,6 @@ class Render
 
         // Check for restriction
         if ($restricted = self::isRestricted()) {
-
             if (! isset($_SESSION['user_id'])) {
                 $module_name = (isset(self::$urlParam[0])) ? ucfirst(strtolower(self::$urlParam[0])) : '';
                 if ($module_name && file_exists("modules/$module_name/$module_name.class.php")) {
@@ -264,12 +263,14 @@ class Render
 
                 if (isset(self::$urlParam[2])) {
                     if ((isset(self::$urlParam[3])) && (is_numeric(self::$urlParam[1]))) {
-                        if (method_exists($instance, self::$urlParam[3])) {
-                            $method_name = self::$urlParam[3];
+                        $m = str_replace('-', '_', self::$urlParam[3]);
+                        if (method_exists($instance, $m)) {
+                            $method_name = $m;
                         }
                     } else {
-                        if (method_exists($instance, self::$urlParam[2])) {
-                            $method_name = self::$urlParam[2];
+                        $m = str_replace('-', '_', self::$urlParam[2]);
+                        if (method_exists($instance, $m)) {
+                            $method_name = $m;
                         }
                     }
                 }
@@ -281,16 +282,18 @@ class Render
 
                 if (isset(self::$urlParam[1])) {
                     if ((isset(self::$urlParam[2])) && (is_numeric(self::$urlParam[1]))) {
-                        if (method_exists($instance, self::$urlParam[2])) {
+                        $m = str_replace('-', '_', self::$urlParam[2]);
+                        if (method_exists($instance, $m)) {
                             // Define other method to call diferent from
                             // default that was defined in the route call
-                            $method_name = self::$urlParam[2];
+                            $method_name = $m;
                         }
                     } else {
-                        if (method_exists($instance, self::$urlParam[1])) {
+                        $m = str_replace('-', '_', self::$urlParam[1]);
+                        if (method_exists($instance, $m)) {
                             // Define other method to call diferent from
                             // default that was defined in the route call
-                            $method_name = self::$urlParam[1];
+                            $method_name = $m;
                         }
                     }
                 }
