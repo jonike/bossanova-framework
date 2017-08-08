@@ -913,7 +913,12 @@ class Render
      */
     public static function isAjax()
     {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false;
+        $ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false) ||
+            (isset($_SERVER['HTTP_ACCEPT']) &&
+             strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'json') !== false);
+
+        return $ajax;
     }
 
     /**

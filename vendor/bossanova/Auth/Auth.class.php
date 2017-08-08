@@ -158,6 +158,7 @@ class Auth
                             $this->setLocale($row['user_locale']);
 
                             $data['message'] = "^^[Login successfully]^^";
+                            $data['token'] = $access_token;
                             $data['success'] = 1;
 
                             // keep the logs for that transaction
@@ -697,6 +698,6 @@ class Auth
 
     public function isAjax()
     {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false;
+        return Render::isAjax();
     }
 }
