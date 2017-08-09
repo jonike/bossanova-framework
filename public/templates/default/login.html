@@ -12,79 +12,118 @@
 <table height="90%" align="center">
 <td>
 
-	<div class="login">
-	<table cellpadding='6'>
-	<tr><td colspan='2'><img src='img/logo.png'></td></tr>
-	<tr id='username'><td><b>^^[E-mail]^^</b><br><input name='username' id='username' style='width:200px;'></td></tr>
-	<tr id='password'><td><b>^^[Password]^^</b><br><input type='hidden' name='password'><input type='password' style='width:200px;' onkeyup='if (event.keyCode == 13) doAction();'></td></tr>
-    <tr><td><input type='hidden' name='recovery' id='recovery'><a onclick="loginRecovery();" style='cursor:pointer;text-decoration:underline'>^^[Forget your password]^^?</a></td></tr>
-	<tr><td><input type="checkbox" name="remember" id="remember" value="1" checked="checked"><span>^^[Remember me on this computer]^^</span></td></tr>
-    <tr><td><input type='button' id='login_buttom' value='^^[Login]^^' style='width:200px;' class='circ1' onclick='doAction()'></td></tr>
-	</table>
-	</div>
+    <div class="login" id='a1'>
+        <table cellpadding='6'>
+        <tr><td colspan='2'><img src='img/logo.png'></td></tr>
+        <tr><td><b>^^[E-mail]^^</b><br><input name='username' id='username' style='width:200px;'></td></tr>
+        <tr><td><b>^^[Password]^^</b><br><input type='hidden' name='password'><input type='password' style='width:200px;' onkeyup='if (event.keyCode == 13) doAction();'></td></tr>
+        <tr><td><a onclick="action(2);" style='cursor:pointer;text-decoration:underline'>^^[Forget your password]^^?</a></td></tr>
+        <tr><td><input type="checkbox" name="remember" id="remember" value="1" checked="checked"><span>^^[Remember me on this computer]^^</span></td></tr>
+        <tr><td><input type='button' value='^^[Login]^^' style='width:200px;' class='circ1' onclick='doAction(1)'></td></tr>
+        </table>
+    </div>
+
+    <div class="login" id='a2' style='display:none;'>
+        <input type='hidden' name='recovery' id='recovery' value='1'>
+        <table cellpadding='6'>
+        <tr><td colspan='2'><img src='img/logo.png'></td></tr>
+        <tr><td><b>^^[E-mail]^^</b><br><input name='username' id='username' style='width:200px;'></td></tr>
+        <tr><td><input type='button' value='^^[Login]^^' style='width:200px;' class='circ1' onclick='doAction(2)'></td></tr>
+        </table>
+        <a onclick="action(1);" style='cursor:pointer;text-decoration:underline'>^^[Back]^^</a>
+    </div>
+
+    <div class="login" id='a3' style='display:none;'>
+        <input type='hidden' name='token' value=''>
+        <table cellpadding='6'>
+        <tr><td colspan='2'><img src='img/logo.png'></td></tr>
+        <tr><td><b>^^[Password]^^</b><br><input type='password' name='password' id='password1' style='width:200px;'></td></tr>
+        <tr><td><b>^^[Confirm Password]^^</b><br><input type='password' id='password2' style='width:200px;'></td></tr>
+        <tr><td><input type='button' value='^^[Reset password]^^' style='width:200px;' class='circ1' onclick='doAction(3)'></td></tr>
+        </table>
+        <a onclick="action(1);" style='cursor:pointer;text-decoration:underline'>^^[Cancel]^^</a>
+    </div>
 
 </td>
 </table>
 </form>
 
 <script>
-function loginRecovery ()
-{
-	if ($('#password').css('display') == 'none') {
-		$('#login_buttom').val('^^[Login]^^');
-		$('#password').css('display', '');
-		$('#remember').parent().parent().css('display','');
-		$('#recovery').val(0);
-		$('#recovery').next().html('^^[Remember my password]^^');
-	} else {
-		$('#login_buttom').val('^^[Login recovery]^^');
-		$('#password').css('display', 'none');
-		$('#remember').parent().parent().css('display','none');
-		$('#recovery').val(1);
-		$('#recovery').next().html('^^[Back]^^');
-	}
+$(document).ready(function () {
+    // Query string
+    var q = window.location.href.split('?');
+    // Restore procedure
+    if (q[1] && q[1].substr(0,2) == 'h=') {
+        action(3);
+        $('input[name=token]').val(q[1].substr(2));
+    }
+});
 
-	return false;
+function action (i)
+{
+    $('#a1').css('display', 'none');
+    $('#a2').css('display', 'none');
+    $('#a3').css('display', 'none');
+    $('#a' + i).css('display', '');
 }
 
-function doAction ()
+function doAction (i)
 {
-	var string = '#login input, #login select';
+    if (i == 2) {
+        // Restore password
+        var string = '#a1 input, #a1 select';
+    } else if (i == 3) {
+        // Reset password
+        var string = '#a3 input, #a3 select';
+        string = $(string);
 
-	string = $(string);
+        // Create your policy
+        if ($('#password1').val()) {
+            if ($('#password1').val() == $('#password2').val()) {
+                $(string[1]).val(SHA512($(string[2]).val()));
+            } else {
+                alert('^^[Passwords must match]^^')^;
+            }
+        } else {
+            alert('^^[Please enter a valid password]^^')^;
+        }
+    } else {
+        // Normal login
+        var string = '#a1 input, #a1 select';
+        string = $(string);
+        $(string[1]).val(SHA512($(string[2]).val()));
+    }
 
-	$(string[1]).val(SHA512($(string[2]).val()));
-
-	$.ajax({
-		url:bossanova_url + bossanova_base,
-		type: 'POST',
-		dataType:'json',
-		data: $(string).serializeArray(),
-		success: function(result) {
-			if ($('#recovery').val() == 1) {
-				loginRecovery();
-				alert(result.message);
-			} else {
-				if (result && result.message) {
-					if (!result.success) {
-						alert(result.message);
-					} else {
-						if (bossanova_referer) {
-							window.open('/'+bossanova_referer,'_top');
-						} else {
-							window.open('/admin','_top');
-						}
-					}
-				} else {
-					if (bossanova_referer) {
-						window.open('/'+bossanova_referer,'_top');
-					} else {
-						window.open('/admin','_top');
-					}
-				}
-			}
-		}
-	});
+    $.ajax({
+        url:bossanova_url + bossanova_base,
+        type: 'POST',
+        dataType:'json',
+        data: $(string).serializeArray(),
+        success: function(result) {
+            if (i == 2) {
+                loginRecovery();
+                alert(result.message);
+            } else {
+                if (result && result.message) {
+                    if (!result.success) {
+                        alert(result.message);
+                    } else {
+                        if (bossanova_referer) {
+                            window.open('/'+bossanova_referer,'_top');
+                        } else {
+                            window.open('/admin','_top');
+                        }
+                    }
+                } else {
+                    if (bossanova_referer) {
+                        window.open('/'+bossanova_referer,'_top');
+                    } else {
+                        window.open('/admin','_top');
+                    }
+                }
+            }
+        }
+    });
 }
 </script>
 </body>

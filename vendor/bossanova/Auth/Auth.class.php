@@ -158,6 +158,7 @@ class Auth
                             $this->setLocale($row['user_locale']);
 
                             $data['message'] = "^^[Login successfully]^^";
+                            $data['token'] = $access_token;
                             $data['success'] = 1;
 
                             // keep the logs for that transaction
@@ -181,11 +182,12 @@ class Auth
                     $this->database->argument(2, "user_status", 1);
                     $this->database->argument(3, "user_hash", $hash);
                     $this->database->select();
-                    $result = $this->database->execute();
+                    $result = $this->database->execute(2);
 
                     if ($row = $this->database->fetch_assoc($result)) {
+                        echo $_POST['password'];
                         // Update hash
-                        $this->database->table("users");
+                        /*$this->database->table("users");
                         $this->database->column(array(
                             'user_hash' => "NULL",
                             "user_recovery" => "NULL",
@@ -220,7 +222,7 @@ class Auth
 
                         $url = $this->getLink($base);
                         header("Location: $url");
-                        exit();
+                        exit();*/
                     } else {
                         // User activation
                         $this->database->table("users");
@@ -296,7 +298,7 @@ class Auth
     {
         // Force logout
         if ($user_id = $this->getUser()) {
-            $this->database->table("users")
+            $this->database->table("public.users")
                 ->column(array('user_hash' => 'null'))
                 ->argument(1, "user_id", $user_id)
                 ->update()
@@ -384,7 +386,7 @@ class Auth
 
         // After all process check if the user is logged
         if (! $this->getUser()) {
-            $param = isset(Render::$urlParam[1]) ? Render::$urlParam[1] : '';
+           $param = Render::$urlParam[count(Render::$urlParam)-1];
 
             // Redirect the user to the login page
             if ($param != 'login') {
@@ -697,6 +699,6 @@ class Auth
 
     public function isAjax()
     {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false;
+        return Render::isAjax();
     }
 }
