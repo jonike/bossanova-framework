@@ -741,13 +741,13 @@ class Database
             // Debug mode two show SQL debug information
                 $t = $f - $i;
 
-                echo $this->query['query'] . "($t)<br>\n". $row[1] . " " . $row[2];
+                echo $this->query['query'] . "<br>\n($t)<br>\n". $row[1] . " " . $row[2];
             } elseif ($debug == 3) {
             // Debug mode three interrupt the script if any error is found
                 if ($row[1] && $row[2]) {
                     $t = $f - $i;
 
-                    echo $this->query['query'] . "($t)<br>\n". $row[1] . " " . $row[2];
+                    echo $this->query['query'] . "<br>\n($t)<br>\n". $row[1] . " " . $row[2];
 
                     exit;
                 }
@@ -769,7 +769,7 @@ class Database
                         $debug_text = $this->errorInformation();
 
                         // Preparent email content
-                        $text = $this->query['query'] . "($t)<br>\n". $row[1] . " " . $row[2] . "$debug_text\n";
+                        $text = $this->query['query'] . "<br>\n($t)<br>\n". $row[1] . " " . $row[2] . "$debug_text\n";
 
                         // Send debug email
                         mail($email, "Bossanova::debug ($server)", "$text", "From:$email\r\n");

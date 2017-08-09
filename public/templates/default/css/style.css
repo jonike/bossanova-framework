@@ -2,10 +2,6 @@ body, div, td
 {
 	font: 13px 'Open Sans';
 }
-div, #content > table td
-{
-    line-height:2em;
-}
 .prettyprint
 {
 	line-height:1.2em;

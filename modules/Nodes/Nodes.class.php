@@ -9,7 +9,7 @@
  */
 namespace modules\Nodes;
 
-use Bossanova\Module\Module;
+use bossanova\Module\Module;
 
 class Nodes extends Module
 {

@@ -566,7 +566,7 @@ class Module
     {
         Render::$configuration['template_render'] = ($render) ? 1 : 0;
 
-        if (isset($template)) {
+        if (isset($template_path)) {
             Render::$configuration['template_path'] = $template_path;
         }
     }
