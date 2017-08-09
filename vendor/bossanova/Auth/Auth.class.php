@@ -60,6 +60,8 @@ class Auth
      */
     public function login()
     {
+        $url = $this->getLink();
+
         if (! isset($_SESSION['user_id']) || ! $_SESSION['user_id']) {
             // Check any login information been posted
             if (isset($_POST['username'])) {
@@ -69,7 +71,7 @@ class Auth
 
                     $this->database->table("users");
                     $this->database->column("user_id, user_email, user_name, user_login");
-                    $this->database->argument(1, "lower(user_email)", "lower($username)");
+                    $this->database->argument(1, "lower(user_email) = lower($username) OR lower(user_login) = lower($username)", "", "");
                     $this->database->argument(2, "user_status", "0", ">");
                     $this->database->select();
                     $result = $this->database->execute();
@@ -77,7 +79,11 @@ class Auth
                     if (! $row = $this->database->fetch_assoc($result)) {
                         $data['message'] = "^^[User not found]^^";
                     } else {
+                        // Hash
                         $row['user_hash'] = md5(uniqid(mt_rand(), true));
+
+                        // Full Url
+                        $row['url'] = $this->getLink('login');
 
                         // Save hash in the user table, is is a one time code to access the system
                         $this->database->table("users");
@@ -90,14 +96,12 @@ class Auth
                         $this->database->update();
                         $this->database->execute();
 
+                        $data['url'] = $row['url'];
                         $data['message'] = "^^[The instructions to recovery your password was sent to your email]^^";
                         $data['success'] = 1;
 
                         // Destroy any cookie
                         $this->destroySession();
-
-                        // Full Url
-                        $row['url'] = $this->getLink('login');
 
                         // Call login recovery method
                         $this->loginRecovery($row);
@@ -142,29 +146,15 @@ class Auth
                             $this->database->update();
                             $this->database->execute();
 
-                            // Registering permissions
-                            $_SESSION['permission'] = $this->loadPermissions($row['user_id']);
-
-                            // Check if the user is a superuser
-                            $_SESSION['superuser'] = $this->getSuperuser($row['user_id']);
-
-                            // User session
-                            $_SESSION['user_id'] = $row['user_id'];
-
-                            // Permission
-                            $_SESSION['permission_id'] = $row['permission_id'];
-
-                            // Locale registration
-                            $this->setLocale($row['user_locale']);
-
                             $data['message'] = "^^[Login successfully]^^";
-                            $data['token'] = $access_token;
                             $data['success'] = 1;
+                            $data['token'] = $access_token;
+                            $data['url'] = $url;
 
-                            // keep the logs for that transaction
-                            $_SESSION['user_access_id'] = $this->accessLog($row['user_id'], $data['message'], 1);
+                            $this->authenticate($row, $data['message']);
                         } else {
                             $data['message'] = "^^[Incorrect Password]^^";
+                            $data['success'] = 0;
 
                             // keep the logs for that transaction
                             $this->accessLog($row['user_id'], $data['message'], 0);
@@ -177,116 +167,103 @@ class Auth
                     $hash = $this->database->bind($_GET['h']);
 
                     $this->database->table("users");
-                    $this->database->column("user_id, permission_id, user_locale");
-                    $this->database->argument(1, "user_recovery", 1);
-                    $this->database->argument(2, "user_status", 1);
-                    $this->database->argument(3, "user_hash", $hash);
+                    $this->database->column("user_id, permission_id, user_locale, user_recovery, user_status");
+                    $this->database->argument(1, "user_hash", $hash);
                     $this->database->select();
-                    $result = $this->database->execute(2);
+                    $result = $this->database->execute();
 
                     if ($row = $this->database->fetch_assoc($result)) {
-                        echo $_POST['password'];
-                        // Update hash
-                        /*$this->database->table("users");
-                        $this->database->column(array(
-                            'user_hash' => "NULL",
-                            "user_recovery" => "NULL",
-                            "user_recovery_date" => "NULL"
-                        ));
-                        $this->database->argument(1, "user_id", "{$row['user_id']}");
-                        $this->database->update();
-                        $this->database->execute();
-
-                        // Registering permissions
-                        $_SESSION['permission'] = $this->loadPermissions($row['user_id']);
-
-                        // Check if the user is a superuser
-                        $_SESSION['superuser'] = $this->getSuperuser($row['user_id']);
-
-                        // User session
-                        $_SESSION['user_id'] = $row['user_id'];
-
-                        // Permission
-                        $_SESSION['permission_id'] = $row['permission_id'];
-
-                        // Recovery flag
-                        $_SESSION['recovery'] = 1;
-
-                        // Locale registration
-                        $this->setLocale($row['user_locale']);
-
-                        // keep the logs for that transaction
-                        $_SESSION['user_access_id'] = $this->accessLog($row['user_id'], '^^[Login Successfully]^^', 1);
-
-                        // Redirect to the main page
-
-                        $url = $this->getLink($base);
-                        header("Location: $url");
-                        exit();*/
-                    } else {
                         // User activation
-                        $this->database->table("users");
-                        $this->database->column("user_id");
-                        $this->database->argument(1, "user_hash", $hash);
-                        $this->database->argument(2, "user_status", 2);
-                        $this->database->select();
-                        $result = $this->database->execute();
+                        if ($row['user_status'] == 2) {
+                            $this->database->table("users")
+                                ->column(array(
+                                    "user_status" => 1,
+                                    "user_hash" => "NULL"
+                                ))
+                                ->argument(1, "user_id", $row['user_id'])
+                                ->update()
+                                ->execute();
 
-                        if ($row = $this->database->fetch_assoc($result)) {
-                            $this->database->table("users");
-                            $this->database->column(array("user_status" => 1, 'user_hash' => "NULL"));
-                            $this->database->argument(1, "user_id", $row['user_id']);
-                            $this->database->update();
-                            $result = $this->database->execute();
+                                $data['url'] = $url;
+                                $data['message'] = "^^[User Activated]^^";
+                                $data['success'] = 1;
 
-                            // Registering permissions
-                            $_SESSION['permission'] = $this->loadPermissions($row['user_id']);
+                                $this->authenticate($row, $data['message']);
+                        } else if ($row['user_status'] == 1 && $row['user_recovery'] == 1) {
+                            if (isset($_POST['password'])) {
+                                // Update user password
+                                $salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
+                                $pass = hash('sha512', $_POST['password'] . $salt);
 
-                            // Check if the user is a superuser
-                            $_SESSION['superuser'] = $this->getSuperuser($row['user_id']);
+                                // Columns
+                                $column = array();
+                                $column['user_salt'] = "'$salt'";
+                                $column['user_password'] = "'$pass'";
+                                $column['user_hash'] = "null";
+                                $column['user_recovery'] = "null";
+                                $column['user_recovery_date'] = "null";
 
-                            // User session
-                            $_SESSION['user_id'] = $row['user_id'];
+                                // Password Recovery
+                                $this->database->table("users")
+                                    ->column($column)
+                                    ->argument(1, "user_id", "{$row['user_id']}")
+                                    ->update()
+                                    ->execute();
 
-                            // Permission
-                            $_SESSION['permission_id'] = $row['permission_id'];
-
-                            // Recovery flag
-                            $_SESSION['activated'] = 1;
-
-                            // Locale registration
-                            $this->setLocale($row['user_locale']);
-
-                            // keep the logs for that transaction
-                            $_SESSION['user_access_id'] = $this->accessLog($row['user_id'], "^^[User Activated]^^", 1);
-
-                            // Redirect to the main page
-                            $url = $this->getLink();
-                            header("Location: $url");
+                                $data['url'] = $url;
+                                $data['message'] = "^^[Password updated]^^";
+                                $data['success'] = 1;
+                            }
                         }
+                    } else {
+                        // No recovery or user activation
+                        $data['url'] = $url;
+                        $data['success'] = 0;
                     }
                 }
             }
         } else {
             $data['message'] = "^^[User already logged in]^^";
             $data['success'] = 1;
-
-            // Redirect to the main page
-            if (! $this->isAjax()) {
-                 $url = $this->getLink();
-                 header("Location: $url");
-                 exit();
-            }
+            $data['url'] = $url;
         }
 
         // Print any message
         if (isset($data)) {
+            // Redirect to the main page
             if ($this->isAjax()) {
                 echo json_encode($data);
             } else {
-                echo $data['message'];
+                if (isset($data['url'])) {
+                    header("Location:{$data['url']}\r\n");
+                    exit;
+                }
             }
         }
+    }
+
+    public function authenticate($row, $message = '')
+    {
+        // Registering permissions
+        $_SESSION['permission'] = $this->loadPermissions($row['user_id']);
+
+        // Check if the user is a superuser
+        $_SESSION['superuser'] = $this->getSuperuser($row['user_id']);
+
+        // User session
+        $_SESSION['user_id'] = $row['user_id'];
+
+        // Permission
+        $_SESSION['permission_id'] = $row['permission_id'];
+
+        // keep the logs for that transaction
+        $_SESSION['user_access_id'] = $this->accessLog($row['user_id'], $message, 1);
+
+        // Locale registration
+        $this->setLocale($row['user_locale']);
+
+        // Redirect to the main page
+        $url = $this->getLink();
     }
 
     /**

@@ -34,10 +34,10 @@
     </div>
 
     <div class="login" id='a3' style='display:none;'>
-        <input type='hidden' name='token' value=''>
+        <input type='hidden' name='password' value=''>
         <table cellpadding='6'>
         <tr><td colspan='2'><img src='img/logo.png'></td></tr>
-        <tr><td><b>^^[Password]^^</b><br><input type='password' name='password' id='password1' style='width:200px;'></td></tr>
+        <tr><td><b>^^[Password]^^</b><br><input type='password' id='password1' style='width:200px;'></td></tr>
         <tr><td><b>^^[Confirm Password]^^</b><br><input type='password' id='password2' style='width:200px;'></td></tr>
         <tr><td><input type='button' value='^^[Reset password]^^' style='width:200px;' class='circ1' onclick='doAction(3)'></td></tr>
         </table>
@@ -55,11 +55,10 @@ $(document).ready(function () {
     // Restore procedure
     if (q[1] && q[1].substr(0,2) == 'h=') {
         action(3);
-        $('input[name=token]').val(q[1].substr(2));
     }
 });
 
-function action (i)
+function action(i)
 {
     $('#a1').css('display', 'none');
     $('#a2').css('display', 'none');
@@ -67,11 +66,11 @@ function action (i)
     $('#a' + i).css('display', '');
 }
 
-function doAction (i)
+function doAction(i)
 {
     if (i == 2) {
         // Restore password
-        var string = '#a1 input, #a1 select';
+        var string = '#a2 input, #a2 select';
     } else if (i == 3) {
         // Reset password
         var string = '#a3 input, #a3 select';
@@ -80,12 +79,16 @@ function doAction (i)
         // Create your policy
         if ($('#password1').val()) {
             if ($('#password1').val() == $('#password2').val()) {
-                $(string[1]).val(SHA512($(string[2]).val()));
+                $(string[0]).val(SHA512($(string[2]).val()));
             } else {
-                alert('^^[Passwords must match]^^')^;
+                alert('^^[Passwords must match]^^');
+
+                return false;
             }
         } else {
-            alert('^^[Please enter a valid password]^^')^;
+            alert('^^[Please enter a valid password]^^');
+
+            return false;
         }
     } else {
         // Normal login
@@ -95,31 +98,17 @@ function doAction (i)
     }
 
     $.ajax({
-        url:bossanova_url + bossanova_base,
+        url: window.location.href,
         type: 'POST',
         dataType:'json',
         data: $(string).serializeArray(),
         success: function(result) {
-            if (i == 2) {
-                loginRecovery();
-                alert(result.message);
-            } else {
-                if (result && result.message) {
-                    if (!result.success) {
-                        alert(result.message);
-                    } else {
-                        if (bossanova_referer) {
-                            window.open('/'+bossanova_referer,'_top');
-                        } else {
-                            window.open('/admin','_top');
-                        }
-                    }
-                } else {
-                    if (bossanova_referer) {
-                        window.open('/'+bossanova_referer,'_top');
-                    } else {
-                        window.open('/admin','_top');
-                    }
+            if (result) {
+                if (result.message) {
+                    alert(result.message);
+                }
+                if (result.url) {
+                    window.open(result.url, '_top');
                 }
             }
         }
