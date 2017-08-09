@@ -182,11 +182,12 @@ class Auth
                     $this->database->argument(2, "user_status", 1);
                     $this->database->argument(3, "user_hash", $hash);
                     $this->database->select();
-                    $result = $this->database->execute();
+                    $result = $this->database->execute(2);
 
                     if ($row = $this->database->fetch_assoc($result)) {
+                        echo $_POST['password'];
                         // Update hash
-                        $this->database->table("users");
+                        /*$this->database->table("users");
                         $this->database->column(array(
                             'user_hash' => "NULL",
                             "user_recovery" => "NULL",
@@ -221,7 +222,7 @@ class Auth
 
                         $url = $this->getLink($base);
                         header("Location: $url");
-                        exit();
+                        exit();*/
                     } else {
                         // User activation
                         $this->database->table("users");
