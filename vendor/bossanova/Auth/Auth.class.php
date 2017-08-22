@@ -149,6 +149,13 @@ class Auth
                             $data['message'] = "^^[Login successfully]^^";
                             $data['success'] = 1;
                             $data['token'] = $access_token;
+
+                            // Redirection to the referer
+                            if (isset($_SESSION['HTTP_REFERER'])) {
+                                $url = $_SESSION['HTTP_REFERER'];
+                                unset($_SESSION['HTTP_REFERER']);
+                            }
+
                             $data['url'] = $url;
 
                             $this->authenticate($row, $data['message']);
@@ -210,9 +217,8 @@ class Auth
                                     ->update()
                                     ->execute();
 
-                                $data['url'] = $url;
+                                $data['url'] = $this->getLink('login');
                                 $data['message'] = "^^[Password updated]^^";
-                                $data['success'] = 1;
                             }
                         }
                     } else {
@@ -287,8 +293,12 @@ class Auth
         $this->destroySession();
 
         // Redirect to the main page
-        $url = $this->getLink('login');
-        header("Location: $url");
+        $url = Render::$urlParam[0];
+        if ($url != 'login') {
+            $url .= '/login';
+        }
+
+        header("Location: /$url");
         exit();
     }
 
@@ -334,24 +344,10 @@ class Auth
                             // Update cookie
                             $this->access_token = $row['user_hash'];
 
-                            // Registering permissions
-                            $_SESSION['permission'] = $this->loadPermissions($row['user_id']);
-
-                            // Check if the user is a superuser
-                            $_SESSION['superuser'] = $this->getSuperuser($row['user_id']);
-
-                            // User session
-                            $_SESSION['user_id'] = $row['user_id'];
-
-                            // Permission
-                            $_SESSION['permission_id'] = $row['permission_id'];
-
                             // keep the logs for that transaction
-                            $message = "Recovery session from cookie {$row['user_hash']}";
-                            $_SESSION['user_access_id'] = $this->accessLog($row['user_id'], $message, 1);
+                            $data['message'] = "Recovery session from cookie {$row['user_hash']}";
 
-                            // Locale registration
-                            $this->setLocale($row['user_locale']);
+                            $this->authenticate($row, $data['message']);
                         }
                     }
                 }
@@ -369,7 +365,7 @@ class Auth
                     echo json_encode(array('error' => '1', 'message' => '^^[User not authenticated]^^'));
                 } else {
                     // Keep the reference to redirect to this page after the login
-                    $_SESSION['HTTP_REFERER'] = implode("/", Render::$urlParam);
+                    $_SESSION['HTTP_REFERER'] = '/' . implode("/", Render::$urlParam);
 
                     // Redirect
                     $base = strtolower(Render::$configuration['module_name']) . '/login';
@@ -580,8 +576,7 @@ class Auth
     private function loginRecovery($row)
     {
         $filename = defined('EMAIL_RECOVERY_FILE') && file_exists(EMAIL_RECOVERY_FILE) ?
-            EMAIL_RECOVERY_FILE :
-            'resources/texts/recover.txt';
+            EMAIL_RECOVERY_FILE : 'resources/texts/recover.txt';
 
         try {
             $translate = new Translate;

@@ -731,29 +731,6 @@ class Render
 
         // Dynamic Tags (TODO: implement a more effient replace)
         $html = str_replace("<head>", "<head>\n<base href='$request_scheme//$url/templates/$baseurl/'>$extra", $html);
-        $html = str_replace("</html>", "", $html);
-
-        // Loading params based on the URL
-        $bossanova = implode('/', self::$urlParam);
-
-        // Bossanova JS controllers
-        $html .= "<script src='$request_scheme//$url/bossanova.js'></script>\n\n";
-        $html .= "<script>\n";
-        $html .= "var bossanova_base = '$bossanova';\n";
-        $html .= "var bossanova_url = '$request_scheme//$url/';\n";
-
-        if (isset($_SESSION['HTTP_REFERER'])) {
-            $html .= "var bossanova_referer = '{$_SESSION['HTTP_REFERER']}'\n";
-        } else {
-            $html .= "var bossanova_referer = ''\n";
-        }
-
-        $token = (isset($_SESSION['user_id'])) ? md5($_SESSION['user_id']) : '';
-
-        $template_area = self::$configuration['template_area'];
-        $html .= "$(document).ready(function () { load('{$template_area}', '{$token}'); });";
-        $html .= "</script>\n";
-        $html .= "</html>";
 
         // Looking for the template area to insert the content
         if ($contents) {

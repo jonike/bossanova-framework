@@ -815,7 +815,7 @@ class Module
 
         return $this->auth->getPermissions();
     }
-    
+
     /**
      * Get the registered permission_id
      *
@@ -823,7 +823,7 @@ class Module
      */
     public function redirect($url)
     {
-		header('Location:' . $url);
-		exit;
+        header('Location:' . $url);
+        exit;
     }
 }
