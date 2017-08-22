@@ -184,11 +184,11 @@ class Auth
                                 ->update()
                                 ->execute();
 
-                                $data['url'] = $url;
-                                $data['message'] = "^^[User Activated]^^";
-                                $data['success'] = 1;
+                            $data['url'] = $url;
+                            $data['message'] = "^^[User Activated]^^";
+                            $data['success'] = 1;
 
-                                $this->authenticate($row, $data['message']);
+                            $this->authenticate($row, $data['message']);
                         } else if ($row['user_status'] == 1 && $row['user_recovery'] == 1) {
                             if (isset($_POST['password'])) {
                                 // Update user password
@@ -261,9 +261,6 @@ class Auth
 
         // Locale registration
         $this->setLocale($row['user_locale']);
-
-        // Redirect to the main page
-        $url = $this->getLink();
     }
 
     /**
@@ -363,7 +360,7 @@ class Auth
 
         // After all process check if the user is logged
         if (! $this->getUser()) {
-           $param = Render::$urlParam[count(Render::$urlParam)-1];
+            $param = isset(Render::$urlParam[1]) ? Render::$urlParam[1] : '';
 
             // Redirect the user to the login page
             if ($param != 'login') {
