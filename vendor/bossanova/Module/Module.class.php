@@ -551,9 +551,13 @@ class Module
      * @param integer $mode - set to show the view in case exists
      * @return void
      */
-    public function setView($mode)
+    public function setView($render = false)
     {
-        Render::$configuration['module_view'] = ($mode) ? 1 : 0;
+        Render::$configuration['module_render'] = ($render) ? 1 : 0;
+
+        if (isset($render) && is_string($render)) {
+            Render::$configuration['module_view'] = $render;
+        }
     }
 
     /**
@@ -562,12 +566,12 @@ class Module
      * @param integer $mode
      * @return void
      */
-    public function setLayout($render, $template_path = null)
+    public function setLayout($render = false)
     {
         Render::$configuration['template_render'] = ($render) ? 1 : 0;
 
-        if (isset($template_path)) {
-            Render::$configuration['template_path'] = $template_path;
+        if (isset($render) && is_string($render)) {
+            Render::$configuration['template_path'] = $render;
         }
     }
 
@@ -612,6 +616,17 @@ class Module
     public function setKeywords($data)
     {
         Render::$configuration['template_meta']['keywords'] = $data;
+    }
+
+    /**
+     * Set new content area
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setContent($data)
+    {
+        Render::$configuration['extra_config'][] = $data;
     }
 
     /**
@@ -799,5 +814,16 @@ class Module
         }
 
         return $this->auth->getPermissions();
+    }
+    
+    /**
+     * Get the registered permission_id
+     *
+     * @return integer $permission_id
+     */
+    public function redirect($url)
+    {
+		header('Location:' . $url);
+		exit;
     }
 }

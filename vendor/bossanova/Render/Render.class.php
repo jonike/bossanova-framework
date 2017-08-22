@@ -55,7 +55,8 @@ class Render
         'template_meta' => array(),
         'module_name' => null,
         'module_controller' => null,
-        'module_view' => 1,
+        'module_view' => null,
+        'module_render' => 1,
         'node_id' => null,
         'content' => array(),
         'extra_config' => array()
@@ -157,7 +158,7 @@ class Render
             self::$configuration['template_render'] = 0;
             // Only load the view for GET requestse (Don't load for POST, PUT, DELETE)
             if ($_SERVER['REQUEST_METHOD'] != "GET") {
-                self::$configuration['module_view'] = 0;
+                self::$configuration['module_render'] = 0;
             }
         }
 
@@ -317,26 +318,8 @@ class Render
             }
 
             // Automatic load view
-            if (self::$configuration['module_view'] == 1) {
-                if (count(self::$urlParam) <= 3) {
-                    if (isset(self::$urlParam[2])) {
-                        if (is_numeric(self::$urlParam[2])) {
-                            $view = $instance->loadView(self::$urlParam[1], $module_name);
-                        } else {
-                            if (is_numeric(self::$urlParam[1])) {
-                                $view = $instance->loadView(self::$urlParam[2], $module_name);
-                            }
-                        }
-                    } else if (isset(self::$urlParam[1])) {
-                        if (is_numeric(self::$urlParam[1])) {
-                            $view = $instance->loadView(self::$urlParam[0], $module_name);
-                        } else {
-                            $view = $instance->loadView(self::$urlParam[1], $module_name);
-                        }
-                    } else if (isset(self::$urlParam[0])) {
-                        $view = $instance->loadView(self::$urlParam[0], $module_name);
-                    }
-                }
+            if (self::$configuration['module_render'] == 1 && self::$configuration['module_view']) {
+                $view = $instance->loadView(self::$configuration['module_view'], $module_name);
 
                 if (isset($view)) {
                     $content = $view . $content;
@@ -588,6 +571,27 @@ class Render
                         }
                     }
                 }
+
+                // View information
+                if (count(self::$urlParam) <= 3) {
+                    if (isset(self::$urlParam[2])) {
+                        if (is_numeric(self::$urlParam[2])) {
+                            self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[1]));
+                        } else {
+                            if (is_numeric(self::$urlParam[1])) {
+                                self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[2]));
+                            }
+                        }
+                    } else if (isset(self::$urlParam[1])) {
+                        if (is_numeric(self::$urlParam[1])) {
+                            self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[0]));
+                        } else {
+                            self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[1]));
+                        }
+                    } else if (isset(self::$urlParam[0])) {
+                        self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[0]));
+                    }
+                }
             } else {
                 // Default for page not found
                 self::$notFound = 1;
@@ -607,16 +611,15 @@ class Render
 
                     // Is there any nodes for this URL
                     $this->database->table("nodes n");
-                    $this->database->leftjoin("nodes_content c", "n.node_id = c.node_id");
-                    $this->database->column("n.node_id, n.module_name");
-                    $this->database->argument(1, "c.link", "'{$route}'");
-                    $this->database->argument(2, "n.status", 1);
+                    $this->database->column("n.node_id");
+                    $this->database->argument(1, "n.node_link", "'{$route}'");
+                    $this->database->argument(2, "n.node_status", 1);
                     $this->database->select();
                     $result = $this->database->execute();
 
                     if ($row = $this->database->fetch_assoc($result)) {
                         self::$configuration['node_id'] = $row['node_id'];
-                        self::$configuration['module_name'] = $row['module_name'];
+                        self::$configuration['module_name'] = 'nodes';
                         self::$notFound = 0;
                     } else {
                         if (defined('SOCIAL_NETWORK_EXTENSION') && SOCIAL_NETWORK_EXTENSION) {
@@ -916,7 +919,7 @@ class Render
         $ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false) ||
             (isset($_SERVER['HTTP_ACCEPT']) &&
-             strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'json') !== false);
+            strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'json') !== false);
 
         return $ajax;
     }
