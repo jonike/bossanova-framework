@@ -1,9 +1,7 @@
 <?php
 /**
- * (c) 2013 Bossanova PHP Framework
+ * (c) 2013 Bossanova PHP Framework 2.4.0
  * http://www.bossanova-framework.com
- *
- * PHP version 5
  *
  * @category PHP
  * @package  BossanovaFramework
@@ -47,7 +45,6 @@ class Render
      * @var $configuration array();
      */
     public static $configuration = array(
-        'route_id' => null,
         'template_area' => null,
         'template_path' => null,
         'template_render' => 1,
@@ -58,7 +55,6 @@ class Render
         'module_view' => null,
         'module_render' => 1,
         'node_id' => null,
-        'content' => array(),
         'extra_config' => array()
     );
 
@@ -122,6 +118,7 @@ class Render
                 if (! count($_POST) && ! count($_GET)) {
                     $url = '/' . substr($params, 0, -1);
                     header("Location: $url");
+                    exit;
                 }
             }
         }
@@ -512,7 +509,6 @@ class Render
                 if ($url) {
                     $url .= '/';
                 }
-
                 $url .= $v;
 
                 // Loading configuration
@@ -606,16 +602,13 @@ class Render
                 ));
 
                 if (is_object($this->database)) {
-                    // Locale
-                    $locale = isset($_SESSION['locale']) && $_SESSION['locale'] ? $_SESSION['locale'] : DEFAULT_LOCALE;
-
                     // Is there any nodes for this URL
-                    $this->database->table("nodes n");
-                    $this->database->column("n.node_id");
-                    $this->database->argument(1, "n.node_link", "'{$route}'");
-                    $this->database->argument(2, "n.node_status", 1);
-                    $this->database->select();
-                    $result = $this->database->execute();
+                    $result = $this->database->table("nodes n")
+                        ->column("n.node_id")
+                        ->argument(1, "n.node_link", "'{$route}'")
+                        ->argument(2, "n.node_status", 1)
+                        ->select()
+                        ->execute();
 
                     if ($row = $this->database->fetch_assoc($result)) {
                         self::$configuration['node_id'] = $row['node_id'];
@@ -640,22 +633,14 @@ class Render
      */
     public function setConfiguration($row)
     {
-        // Avoid notices
-        foreach (self::$configuration as $k => $v) {
-            if (! isset($row[$k])) {
-                $row[$k] = null;
-            }
+        if (isset($row['extra_config'])) {
+            $row['extra_config'] = json_decode($row['extra_config']);
         }
 
-        // Set configuration new values
-        self::$configuration['route_id'] = $row['route_id'];
-        self::$configuration['module_name'] = $row['module_name'];
-        self::$configuration['template_path'] = $row['template_path'];
-        self::$configuration['template_area'] = $row['template_area'];
-        self::$configuration['template_render'] = $row['template_render'] == '0' ? 0 : 1;
-        self::$configuration['template_recursive'] = $row['template_recursive'] ? 1 : 0;
-        self::$configuration['template_meta'] = $row['template_meta'];
-        self::$configuration['extra_config'] = json_decode($row['extra_config']);
+        // Avoid notices
+        foreach (self::$configuration as $k => $v) {
+            self::$configuration[$k] = $v;
+        }
     }
 
     /**
@@ -825,7 +810,7 @@ class Render
      */
     public static function isRestricted(array $urlRoute = null)
     {
-        global $restriction;
+        $restriction = $this->getConfig('restriction');
 
         // Route he trying to access
         $access_route = (isset($urlRoute)) ? $urlRoute : self::$urlParam;
@@ -990,7 +975,7 @@ class Render
                 $this->database->argument(1, "user_id", "$realpath");
             } else {
                 $realpath = $this->database->Bind(strtolower($realpath));
-                $this->database->argument(1, "user_login", "$realpath");
+                $this->database->argument(1, "lower(user_login)", $realpath);
             }
 
             $this->database->select();
@@ -998,6 +983,7 @@ class Render
 
             if ($row = $this->database->fetch_assoc($result)) {
                 self::$configuration['module_name'] = "Me";
+                self::$notFound = 0;
 
                 if (isset(self::$urlParam[1]) && $controller_name = self::$urlParam[1]) {
                     $controller_name = ucfirst(strtolower($controller_name));
@@ -1005,10 +991,6 @@ class Render
                         self::$configuration['module_controller'] = $controller_name;
                     }
                 }
-
-                self::$configuration['template_path'] = "ue/index.html";
-                self::$configuration['template_area'] = "default";
-                self::$notFound = 0;
             }
         }
     }

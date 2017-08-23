@@ -1,9 +1,7 @@
 <?php
 /**
- * (c) 2013 Bossanova PHP Framework
+ * (c) 2013 Bossanova PHP Framework 2.4.0
  * http://www.bossanova-framework.com
- *
- * PHP version 5
  *
  * @category PHP
  * @package  BossanovaFramework
