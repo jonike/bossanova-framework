@@ -1,16 +1,16 @@
 <?php
 /**
  * (c) 2013 Bossanova PHP Framework 2.4.0
- * http://www.bossanova-framework.com
- *
- * @category PHP
- * @package  BossanovaFramework
- * @author   Paul Hodel <paul.hodel@gmail.com>
- * @license  The MIT License (MIT)
- * @link     http://www.bossanova-framework.com
- *
- * Render Library
- */
+* http://www.bossanova-framework.com
+*
+* @category PHP
+* @package  BossanovaFramework
+* @author   Paul Hodel <paul.hodel@gmail.com>
+* @license  The MIT License (MIT)
+* @link     http://www.bossanova-framework.com
+*
+* Render Library
+*/
 namespace bossanova\Render;
 
 use bossanova\Database\Database;
@@ -106,6 +106,13 @@ class Render
             } else {
                 // Explode route based the URL
                 self::$urlParam = explode("/", $this->escape($requestUri[0]));
+
+                // Route id flexibility
+                if (isset(self::$urlParam[2]) && is_numeric(self::$urlParam[1])) {
+                    $id = self::$urlParam[1];
+                    self::$urlParam[1] = self::$urlParam[2];
+                    self::$urlParam[2] = $id;
+                }
             }
 
             // Check if last item is empty
@@ -192,12 +199,7 @@ class Render
                 }
             } else {
                 // Redirect the user to the login page
-                $base = strtolower(self::$configuration['module_name']);
-                if ($base) {
-                    $base .= '/';
-                }
-                $base .= 'login';
-                $url = self::getLink($base);
+                $url = self::getLink(self::$urlParam[0] . '/login');
                 header("Location: $url");
                 exit;
             }
@@ -214,7 +216,7 @@ class Render
 
                 // User message
                 if (self::isAjax()) {
-                    $content = json_encode(array('error'=>'1', 'message' => '^^[Permission denied]^^'));
+                    $content = json_encode(array('error'=>'1', 'message' => '^^[Page not found]^^'));
                 } else {
                     header("HTTP/1.1 404 Not found");
                     $content = "^^[Page not found]^^";
@@ -252,24 +254,15 @@ class Render
 
         try {
             if (self::$configuration['module_controller']) {
-                $controller_name = self::$configuration['module_controller'];
+                $controller_name = ucfirst(strtolower(self::$configuration['module_controller']));
                 $name = "\\modules\\$module_name\\controllers\\$controller_name";
                 $instance = new $name();
-
-                // Default method is call view
                 $method_name = "__default";
 
                 if (isset(self::$urlParam[2])) {
-                    if ((isset(self::$urlParam[3])) && (is_numeric(self::$urlParam[1]))) {
-                        $m = str_replace('-', '_', self::$urlParam[3]);
-                        if (method_exists($instance, $m)) {
-                            $method_name = $m;
-                        }
-                    } else {
-                        $m = str_replace('-', '_', self::$urlParam[2]);
-                        if (method_exists($instance, $m)) {
-                            $method_name = $m;
-                        }
+                    $m = str_replace('-', '_', self::$urlParam[2]);
+                    if (method_exists($instance, $m)) {
+                        $method_name = $m;
                     }
                 }
             } else {
@@ -279,20 +272,9 @@ class Render
                 $method_name = "__default";
 
                 if (isset(self::$urlParam[1])) {
-                    if ((isset(self::$urlParam[2])) && (is_numeric(self::$urlParam[1]))) {
-                        $m = str_replace('-', '_', self::$urlParam[2]);
-                        if (method_exists($instance, $m)) {
-                            // Define other method to call diferent from
-                            // default that was defined in the route call
-                            $method_name = $m;
-                        }
-                    } else {
-                        $m = str_replace('-', '_', self::$urlParam[1]);
-                        if (method_exists($instance, $m)) {
-                            // Define other method to call diferent from
-                            // default that was defined in the route call
-                            $method_name = $m;
-                        }
+                    $m = str_replace('-', '_', self::$urlParam[1]);
+                    if (method_exists($instance, $m)) {
+                        $method_name = $m;
                     }
                 }
             }
@@ -536,56 +518,42 @@ class Render
 
                 // Controller information: check if the call referes to a existing module
                 if (isset(self::$urlParam[1])) {
+                    // Check configuration for the login page
                     if (self::$urlParam[count(self::$urlParam) - 1] == 'login') {
                         if (! self::$configuration['template_path']) {
                             self::$configuration['template_path'] = "default/login.html";
                             self::$configuration['template_area'] = "content";
                             self::$configuration['template_render'] = 1;
                         }
-                    } else {
-                        if (isset(self::$urlParam[2]) && is_numeric(self::$urlParam[1])) {
-                            // Check if exists any controller that matches this call
-                            $controller_name = ucfirst(strtolower(str_replace('-', '_', self::$urlParam[2])));
+                    }
 
-                            if (file_exists("modules/$module_name/controllers/$controller_name.class.php")) {
-                                // Controller found
-                                self::$configuration['module_controller'] = $controller_name;
-                            }
-                        } else {
-                            // Check if exists any controller that matches this call
-                            $controller_name = ucfirst(strtolower(str_replace('-', '_', self::$urlParam[1])));
+                    // Verify if second param is a controllers
+                    $controller_name = ucfirst(strtolower(str_replace('-', '_', self::$urlParam[1])));
+                    if (file_exists("modules/$module_name/controllers/$controller_name.class.php")) {
+                        // Controller found
+                        self::$configuration['module_controller'] = $controller_name;
+                    }
 
-                            if (file_exists("modules/$module_name/controllers/$controller_name.class.php")) {
-                                // Controller found
-                                self::$configuration['module_controller'] = $controller_name;
-                            }
-                        }
-
-                        // Integrated CMS option
-                        if (self::$urlParam[0] == 'nodes' && self::$urlParam[1] > 0) {
-                            self::$configuration['node_id'] = self::$urlParam[1];
-                        }
+                    // Integrated CMS option
+                    if (self::$urlParam[0] == 'nodes' && self::$urlParam[1] > 0) {
+                        self::$configuration['node_id'] = self::$urlParam[1];
                     }
                 }
 
                 // View information
                 if (count(self::$urlParam) <= 3) {
                     if (isset(self::$urlParam[2])) {
-                        if (is_numeric(self::$urlParam[2])) {
-                            self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[1]));
-                        } else {
-                            if (is_numeric(self::$urlParam[1])) {
-                                self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[2]));
-                            }
-                        }
+                        $view_name = self::$urlParam[2];
                     } else if (isset(self::$urlParam[1])) {
-                        if (is_numeric(self::$urlParam[1])) {
-                            self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[0]));
-                        } else {
-                            self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[1]));
-                        }
+                        $view_name = self::$urlParam[1];
                     } else if (isset(self::$urlParam[0])) {
-                        self::$configuration['module_view'] = strtolower(str_replace('-', '_', self::$urlParam[0]));
+                        $view_name = self::$urlParam[0];
+                    }
+                    $view_name = strtolower(str_replace('-', '_', $view_name));
+
+                    // Check if view exist
+                    if (file_exists("modules/$module_name/views/$view_name.html")) {
+                        self::$configuration['module_view'] = $view_name;
                     }
                 }
             } else {
@@ -604,11 +572,11 @@ class Render
                 if (is_object($this->database)) {
                     // Is there any nodes for this URL
                     $result = $this->database->table("nodes n")
-                        ->column("n.node_id")
-                        ->argument(1, "n.node_link", "'{$route}'")
-                        ->argument(2, "n.node_status", 1)
-                        ->select()
-                        ->execute();
+                    ->column("n.node_id")
+                    ->argument(1, "n.node_link", "'{$route}'")
+                    ->argument(2, "n.node_status", 1)
+                    ->select()
+                    ->execute();
 
                     if ($row = $this->database->fetch_assoc($result)) {
                         self::$configuration['node_id'] = $row['node_id'];
@@ -638,8 +606,10 @@ class Render
         }
 
         // Avoid notices
-        foreach (self::$configuration as $k => $v) {
-            self::$configuration[$k] = $v;
+        foreach ($row as $k => $v) {
+            if ($v != '') {
+                self::$configuration[$k] = $v;
+            }
         }
     }
 
@@ -664,25 +634,15 @@ class Render
         // Scheme
         $request_scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https:' : 'http:';
 
-        // Template content
-        $html = "";
-
-        // Loading template file content
+        // Template name
         $template_path = self::$configuration['template_path'];
-        $template_file = fopen("public/templates/{$template_path}", "r");
-        while (! feof($template_file)) {
-            $html .= fgets($template_file, 9999);
-        }
-        fclose($template_file);
 
-        // Custom Dashboard
-        if (isset(self::$urlParam[0])) {
-            $html = str_replace("__NAME__", self::$urlParam[0], $html);
-        }
+        // Load HTML layoiut
+        $html = file_get_contents("public/templates/{$template_path}");
 
         // Defining baseurl for a correct template images, styling, javascript reference
         $url = $_SERVER["HTTP_HOST"] . substr($_SERVER["SCRIPT_NAME"], 0, strrpos($_SERVER["SCRIPT_NAME"], "/"));
-        $baseurl = explode('/', self::$configuration['template_path']);
+        $baseurl = explode('/', $template_path);
         array_pop($baseurl);
         $baseurl = implode('/', $baseurl);
 
@@ -749,9 +709,9 @@ class Render
                         } else {
                             // Separate any valid id character
                             if ((ord($test{$i}) >= 0x30 && ord($test{$i}) <= 0x39) ||
-                                (ord($test{$i}) >= 0x61 && ord($test{$i}) <= 0x7A) ||
-                                (ord($test{$i}) == 95) ||
-                                (ord($test{$i}) == 45)) {
+                            (ord($test{$i}) >= 0x61 && ord($test{$i}) <= 0x7A) ||
+                            (ord($test{$i}) == 95) ||
+                            (ord($test{$i}) == 45)) {
                                 $id .= $test{$i};
                             }
 
@@ -759,9 +719,9 @@ class Render
                             if ($id) {
                                 // Check for an string to be closed in the next character [>], [space], ["], [']
                                 if ($test{$i + 1} == chr(62) ||
-                                    $test{$i + 1} == chr(32) ||
-                                    $test{$i + 1} == chr(34) ||
-                                    $test{$i + 1} == chr(39)) {
+                                $test{$i + 1} == chr(32) ||
+                                $test{$i + 1} == chr(34) ||
+                                $test{$i + 1} == chr(39)) {
                                     // Id found mark flag
                                     if (isset($contents[$id])) {
                                         $found = $contents[$id];
@@ -810,7 +770,7 @@ class Render
      */
     public static function isRestricted(array $urlRoute = null)
     {
-        $restriction = $this->getConfig('restriction');
+        global $restriction;
 
         // Route he trying to access
         $access_route = (isset($urlRoute)) ? $urlRoute : self::$urlParam;
@@ -881,9 +841,9 @@ class Render
         $ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false) ||
             (isset($_SERVER['HTTP_ACCEPT']) &&
-            strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'json') !== false);
+                strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'json') !== false);
 
-        return $ajax;
+            return $ajax;
     }
 
     /**
@@ -961,34 +921,32 @@ class Render
     private function getSocialNetworkNames()
     {
         if (strlen(self::$urlParam[0]) > 1) {
-            // For default me refers to the logged user
-            if (self::$urlParam[0] == "me" && isset($_SESSION['me'])) {
-                self::$urlParam[0] = $_SESSION['me'];
-            }
+            if (file_exists("modules/Me/Me.class.php")) {
+                // Locate route
+                $realpath = strtolower(self::$urlParam[0]);
 
-            // Locate route
-            $realpath = self::$urlParam[0];
+                // Check if the user exists
+                $this->database->table("users");
+                if ($realpath > 0) {
+                    $this->database->argument(1, "user_id", "$realpath");
+                } else {
+                    $realpath = $this->database->Bind($realpath);
+                    $this->database->argument(1, "lower(user_login)", $realpath);
+                }
 
-            // Check if the user exists
-            $this->database->table("users");
-            if ($realpath > 0) {
-                $this->database->argument(1, "user_id", "$realpath");
-            } else {
-                $realpath = $this->database->Bind(strtolower($realpath));
-                $this->database->argument(1, "lower(user_login)", $realpath);
-            }
+                $this->database->select();
+                $result = $this->database->execute();
 
-            $this->database->select();
-            $result = $this->database->execute();
+                if ($row = $this->database->fetch_assoc($result)) {
+                    self::$configuration['module_name'] = "Me";
+                    self::$notFound = 0;
 
-            if ($row = $this->database->fetch_assoc($result)) {
-                self::$configuration['module_name'] = "Me";
-                self::$notFound = 0;
-
-                if (isset(self::$urlParam[1]) && $controller_name = self::$urlParam[1]) {
-                    $controller_name = ucfirst(strtolower($controller_name));
-                    if (file_exists("modules/Me/controllers/$controller_name.class.php")) {
-                        self::$configuration['module_controller'] = $controller_name;
+                    // Sub controller
+                    if (isset(self::$urlParam[1]) && $controller_name = self::$urlParam[1]) {
+                        $controller_name = ucfirst(strtolower($controller_name));
+                        if (file_exists("modules/Me/controllers/$controller_name.class.php")) {
+                            self::$configuration['module_controller'] = $controller_name;
+                        }
                     }
                 }
             }

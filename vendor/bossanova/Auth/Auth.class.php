@@ -553,7 +553,7 @@ class Auth
                     unset($_SESSION['HTTP_REFERER']);
                 }
 
-                $data['url'] = $url;
+                $data['url'] = $this->getLink();
 
                 $this->authenticate($row, $data['message']);
             } else {

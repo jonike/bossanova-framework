@@ -63,7 +63,7 @@ class Module
      *
      * @var $view
      */
-    protected $nativeMethods = false;
+    private $nativeMethods = false;
 
     /**
      * Connect to the database
@@ -642,7 +642,7 @@ class Module
         }
 
         // View full path
-        $viewPath = 'modules/' . ucfirst($moduleName) . '/views/' . strtolower($viewName) . '.html';
+        $viewPath = 'modules/' . ucfirst(strtolower($moduleName)) . '/views/' . strtolower($viewName) . '.html';
 
         // Call view if exists
         if (file_exists($viewPath)) {
