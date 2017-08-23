@@ -460,7 +460,7 @@ class Auth
 
             $data = [
                 'url' => $row['url'],
-                'message' => "^^[The instructions to recovery your password was sent to your email]^^";
+                'message' => "^^[The instructions to recovery your password was sent to your email]^^",
                 'success' => 1,
             ];
 
@@ -576,11 +576,11 @@ class Auth
         $hash = $this->database->bind($_GET['h']);
 
         // Looking for a valid hash among users
-        $result = $this->database->table("users");
+        $result = $this->database->table("users")
             ->column("user_id, permission_id, user_locale, user_recovery, user_status")
             ->argument(1, "user_hash", $hash)
             ->select()
-            ->execute()
+            ->execute();
 
         // Found
         if ($row = $this->database->fetch_assoc($result)) {
