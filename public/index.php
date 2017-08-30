@@ -1,11 +1,18 @@
 <?php
 
-// Base folder outside public
+// Base folder
+chdir(__DIR__);
 chdir('..');
 
 // Define application environment
-if (!defined('APPLICATION_ENV')) {
+if (! defined('APPLICATION_ENV')) {
+    // If not definition get default
     $env = (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'dev');
+    // If action is from a command-line
+    if (isset($_SERVER['argv']) && $_SERVER['argv'][2]) {
+        $env = $_SERVER['argv'][2];
+    }
+    // Define environment
     define('APPLICATION_ENV', $env);
 }
 
