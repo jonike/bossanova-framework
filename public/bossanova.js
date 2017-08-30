@@ -12,6 +12,18 @@
 * 			token	string	authentication token for object edition
 */
 
+var q = window.location.href;
+q = q.replace('http://', '');
+q = q.replace('https://', '');
+q = q.split('/');
+u = q.splice(0, 1);
+m = q[0];
+q = q.join('/');
+
+var bossanova_url = '//' + u[0] + '/';
+var bossanova_base = q;
+var bossanova_module = m;
+
 function load (area, token)
 {
 	var d = '';
@@ -41,13 +53,13 @@ function load (area, token)
 function bossanova_login ()
 {
 	$.ajax({
-		url: bossanova_url + bossanova_referer,
+		url: bossanova_url + bossanova_module,
 		type: 'POST',
 		dataType:'json',
 		data: { user:$('#user').val(), pass:SHA512($('#pass').val()) },
 		success: function(result) {
 			if (result == 1) {
-				window.open(bossanova_url + bossanova_referer, '_self');
+				window.open(bossanova_url + bossanova_module, '_self');
 			} else {
 				alert(result);
 			}
@@ -77,17 +89,7 @@ function bossanova_message (obj)
 
 function logout ()
 {
-	window.open(bossanova_url + bossanova_base + '/logout', '_top');
-}
-
-function include (jsfile)
-{
-	var js = document.createElement("script");
-
-	js.type = "text/javascript";
-	js.src = jsfile;
-
-	document.body.appendChild(js);
+	window.open(bossanova_url + bossanova_module + '/logout', '_top');
 }
 
 /*
@@ -361,5 +363,3 @@ function SHA512 (str) {
 	}
 	return binb2hex(binarray);
 }
-
-include('//cdn.ckeditor.com/4.4.7/standard/ckeditor.js');
