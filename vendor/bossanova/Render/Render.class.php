@@ -1,16 +1,16 @@
 <?php
 /**
  * (c) 2013 Bossanova PHP Framework 2.4.0
-* http://www.bossanova-framework.com
-*
-* @category PHP
-* @package  BossanovaFramework
-* @author   Paul Hodel <paul.hodel@gmail.com>
-* @license  The MIT License (MIT)
-* @link     http://www.bossanova-framework.com
-*
-* Render Library
-*/
+ * http://www.bossanova-framework.com
+ *
+ * @category PHP
+ * @package  BossanovaFramework
+ * @author   Paul Hodel <paul.hodel@gmail.com>
+ * @license  The MIT License (MIT)
+ * @link     http://www.bossanova-framework.com
+ *
+ * Render Library
+ */
 namespace bossanova\Render;
 
 use bossanova\Database\Database;
@@ -260,9 +260,16 @@ class Render
                 $method_name = "__default";
 
                 if (isset(self::$urlParam[2])) {
-                    $m = str_replace('-', '_', self::$urlParam[2]);
-                    if (method_exists($instance, $m)) {
-                        $method_name = $m;
+                    if (isset(self::$urlParam[3]) && is_numeric(self::$urlParam[2])) {
+                        $m = str_replace('-', '_', self::$urlParam[3]);
+                        if (method_exists($instance, $m)) {
+                            $method_name = $m;
+                        }
+                    } else {
+                        $m = str_replace('-', '_', self::$urlParam[2]);
+                        if (method_exists($instance, $m)) {
+                            $method_name = $m;
+                        }
                     }
                 }
             } else {
@@ -572,11 +579,11 @@ class Render
                 if (is_object($this->database)) {
                     // Is there any nodes for this URL
                     $result = $this->database->table("nodes n")
-                    ->column("n.node_id")
-                    ->argument(1, "n.node_link", "'{$route}'")
-                    ->argument(2, "n.node_status", 1)
-                    ->select()
-                    ->execute();
+                        ->column("n.node_id")
+                        ->argument(1, "n.node_link", "'{$route}'")
+                        ->argument(2, "n.node_status", 1)
+                        ->select()
+                        ->execute();
 
                     if ($row = $this->database->fetch_assoc($result)) {
                         self::$configuration['node_id'] = $row['node_id'];
@@ -709,9 +716,9 @@ class Render
                         } else {
                             // Separate any valid id character
                             if ((ord($test{$i}) >= 0x30 && ord($test{$i}) <= 0x39) ||
-                            (ord($test{$i}) >= 0x61 && ord($test{$i}) <= 0x7A) ||
-                            (ord($test{$i}) == 95) ||
-                            (ord($test{$i}) == 45)) {
+                                (ord($test{$i}) >= 0x61 && ord($test{$i}) <= 0x7A) ||
+                                (ord($test{$i}) == 95) ||
+                                (ord($test{$i}) == 45)) {
                                 $id .= $test{$i};
                             }
 
@@ -719,9 +726,9 @@ class Render
                             if ($id) {
                                 // Check for an string to be closed in the next character [>], [space], ["], [']
                                 if ($test{$i + 1} == chr(62) ||
-                                $test{$i + 1} == chr(32) ||
-                                $test{$i + 1} == chr(34) ||
-                                $test{$i + 1} == chr(39)) {
+                                    $test{$i + 1} == chr(32) ||
+                                    $test{$i + 1} == chr(34) ||
+                                    $test{$i + 1} == chr(39)) {
                                     // Id found mark flag
                                     if (isset($contents[$id])) {
                                         $found = $contents[$id];
@@ -841,9 +848,9 @@ class Render
         $ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strpos(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']), 'http') !== false) ||
             (isset($_SERVER['HTTP_ACCEPT']) &&
-                strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'json') !== false);
+            strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'json') !== false);
 
-            return $ajax;
+        return $ajax;
     }
 
     /**

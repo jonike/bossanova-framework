@@ -49,9 +49,6 @@ class Model extends \stdClass
         // Make it a object
         $this->config = (object) $this->config;
 
-        // Locale
-        $this->config->locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : DEFAULT_LOCALE;
-
         return $this;
     }
 
