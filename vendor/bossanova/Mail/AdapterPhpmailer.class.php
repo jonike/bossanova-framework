@@ -57,7 +57,7 @@ class AdapterPhpmailer implements MailService
                 }
             }
 
-            $this->instance->SMTPDebug = false;
+            $this->instance->SMTPDebug = true;
         }
     }
 

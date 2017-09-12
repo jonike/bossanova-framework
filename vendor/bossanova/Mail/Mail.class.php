@@ -105,7 +105,7 @@ class Mail
 
             $this->adapter->send();
 
-            $this->adapter->error();
+            return $this->adapter;
         }
     }
 
