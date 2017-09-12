@@ -542,9 +542,9 @@ class Render
 
                 // View information
                 if (count(self::$urlParam) <= 3) {
-                    if (isset(self::$urlParam[2])) {
+                    if (isset(self::$urlParam[2]) && ! is_numeric(self::$urlParam[2])) {
                         $view_name = self::$urlParam[2];
-                    } else if (isset(self::$urlParam[1])) {
+                    } else if (isset(self::$urlParam[1]) && ! is_numeric(self::$urlParam[1])) {
                         $view_name = self::$urlParam[1];
                     } else if (isset(self::$urlParam[0])) {
                         $view_name = self::$urlParam[0];
