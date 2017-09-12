@@ -1,16 +1,16 @@
 <?php
 /**
  * (c) 2013 Bossanova PHP Framework 2.4.0
- * http://www.bossanova-framework.com
- *
- * @category PHP
- * @package  BossanovaFramework
- * @author   Paul Hodel <paul.hodel@gmail.com>
- * @license  The MIT License (MIT)
- * @link     http://www.bossanova-framework.com
- *
- * Module Library
- */
+* http://www.bossanova-framework.com
+*
+* @category PHP
+* @package  BossanovaFramework
+* @author   Paul Hodel <paul.hodel@gmail.com>
+* @license  The MIT License (MIT)
+* @link     http://www.bossanova-framework.com
+*
+* Module Library
+*/
 namespace bossanova\Module;
 
 use bossanova\Auth\Auth;
@@ -63,7 +63,7 @@ class Module
      *
      * @var $view
      */
-    private $nativeMethods = false;
+    protected $nativeMethods = false;
 
     /**
      * Connect to the database
@@ -95,7 +95,7 @@ class Module
 
         // If native methods is disabled
         if ($this->nativeMethods == false) {
-            return false;
+            return json_encode(['message' => 'nativeMethods disabled']);
         }
 
         // Id
@@ -307,7 +307,7 @@ class Module
     {
         // If native methods is disabled
         if ($this->nativeMethods == false) {
-            return false;
+            return json_encode(['message' => 'nativeMethods disabled']);
         }
 
         // Data to be saved
@@ -357,7 +357,7 @@ class Module
     {
         // If native methods is disabled
         if ($this->nativeMethods == false) {
-            return false;
+            return json_encode(['message' => 'nativeMethods disabled']);
         }
 
         // Table name based on the module and controllers
@@ -417,7 +417,7 @@ class Module
     {
         // If native methods is disabled
         if ($this->nativeMethods == false) {
-            return false;
+            return json_encode(['message' => 'nativeMethods disabled']);
         }
 
         // Table name based on the module and controllers
