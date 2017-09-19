@@ -683,7 +683,11 @@ class Module
             $this->mail = new Mail();
         }
 
-        $this->mail->sendmail($to, $subject, $html, $from, $files);
+        ob_start();
+        $instance = $this->mail->sendmail($to, $subject, $html, $from, $files);
+        $result = ob_get_clean();
+
+        return $instance;
     }
 
     /**
