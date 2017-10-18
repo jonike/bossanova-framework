@@ -14,12 +14,9 @@
 namespace bossanova\Model;
 
 use bossanova\Database\Database;
-use bossanova\Common\Post;
 
 class Model extends \stdClass
 {
-    use Post;
-
     // Database instance
     public $database = null;
 
@@ -82,12 +79,20 @@ class Model extends \stdClass
      */
     public function getById($id)
     {
-        $result = $this->database->table($this->config->tableName)
-            ->argument(1, $this->config->primaryKey, $id)
-            ->select()
-            ->execute();
+        // Get empty record
+        $data = $this->getMeta();
 
-        return $this->database->fetch_assoc($result);
+        // Load record
+        if ((int)$id > 0) {
+            $result = $this->database->table($this->config->tableName)
+                ->argument(1, $this->config->primaryKey, $id)
+                ->select()
+                ->execute();
+
+            $data = $this->database->fetch_assoc($result);
+        }
+
+        return $data;
     }
 
     /**
@@ -113,11 +118,21 @@ class Model extends \stdClass
         return $data;
     }
 
+    /**
+     * Return an array based on the table
+     *
+     * @return array
+     */
     public function getEmpty()
     {
         return $this->getMeta();
     }
 
+    /**
+     * Create the class properties based on the table
+     *
+     * @return object|string[]
+     */
     public function createFromMeta()
     {
         $data = $this->getMeta();
@@ -133,20 +148,26 @@ class Model extends \stdClass
      * @param  integer
      * @return object
      */
-    public function get($id)
+    public function get($id = null)
     {
-        // Get data from the table
-        $result = $this->database->table($this->config->tableName)
-            ->argument(1, $this->config->primaryKey, $id)
-            ->select()
-            ->execute();
+        // Create empty record
+        $this->createFromMeta();
 
-        $data = $this->database->fetch_assoc($result);
+        // Load record data
+        if ((int)$id > 0) {
+            // Get data from the table
+            $result = $this->database->table($this->config->tableName)
+                ->argument(1, $this->config->primaryKey, $id)
+                ->select()
+                ->execute();
 
-        // Update object
-        $this->config->recordId = $id;
-        foreach ($data as $k => $v) {
-            $this->{$k} = $v;
+            if ($data = $this->database->fetch_assoc($result)) {
+                // Update object from data
+                $this->config->recordId = $id;
+                foreach ($data as $k => $v) {
+                    $this->{$k} = $v;
+                }
+            }
         }
 
         return $this;
@@ -162,7 +183,13 @@ class Model extends \stdClass
         $column = array();
 
         // Accepted types
-        $acceptedTypes = array('boolean','integer','double','string','null');
+        $acceptedTypes = [
+            'boolean',
+            'integer',
+            'double',
+            'string',
+            'null'
+        ];
 
         // Binding column types
         foreach ($this as $k => $v) {
@@ -252,6 +279,12 @@ class Model extends \stdClass
             ->argument(1, $this->config->primaryKey, $id)
             ->update()
             ->execute();
+
+        if ($this->database->error) {
+            $this->setError($this->database->error);
+        }
+
+        return (! $this->database->error) ? true : false;
     }
 
     /**
@@ -273,8 +306,15 @@ class Model extends \stdClass
             ->insert()
             ->execute();
 
+        if ($this->database->error) {
+            $id = false;
+            $this->setError($this->database->error);
+        } else {
+            $id = $this->database->insert_id($this->config->sequence);
+        }
+
         // Return the id
-        return $this->database->insert_id($this->config->sequence);
+        return $id;
     }
 
     /**
@@ -290,6 +330,61 @@ class Model extends \stdClass
             ->argument(1, $this->config->primaryKey, $id)
             ->delete()
             ->execute();
+
+        if ($this->database->error) {
+            $this->setError($this->database->error);
+        }
+
+        return (! $this->database->error) ? true : false;
+    }
+
+    /**
+     * Select, filter, order and limit data
+     *
+     * @param  integer
+     * @return array
+     */
+    public function listAll(array $where = null, $columns = null, array $orderBy = null, $limit = null, $offset = null)
+    {
+        // Get data from the table
+        $this->database->table($this->config->tableName);
+
+        //replace current "select *" by columns array..
+        if (isset($columns)) {
+            $this->database->column($columns);
+        }
+
+        // Make where clauses easier by just passing an array with desired filter.
+        if (count($where) > 0) {
+            $aux = 1;
+            foreach ($where as $filter) {
+                $this->database->argument($aux, $filter, "", "");
+                $aux++;
+            }
+        }
+
+        // Order data, if desired..
+        if ($orderBy) {
+            $this->database->order($orderBy);
+        }
+
+        // Limit data, if desired..
+        if ($limit) {
+            $this->database->limit($limit);
+        }
+
+        // Apply offset for limited data, if desired..
+        if ($limit && $offset) {
+            $this->database->offset($offset);
+        }
+
+        // Execute query
+        $result = $this->database->select()->execute();
+
+        // Return all records
+        $row = $this->database->fetch_assoc_all($result);
+
+        return $row;
     }
 
     /**
@@ -301,6 +396,26 @@ class Model extends \stdClass
     {
         // Return the string name
         return $this->config->primaryKey;
+    }
+
+    /**
+     * Set the global error
+     *
+     * @return string table primary key
+     */
+    public function setError($error)
+    {
+        $this->database->error = $error;
+    }
+
+    /**
+     * Get the global error
+     *
+     * @return string table primary key
+     */
+    public function getError()
+    {
+        return $this->database->error;
     }
 
     /**
@@ -318,37 +433,6 @@ class Model extends \stdClass
         $row['sequence'] = str_replace(array("nextval","regclass","(",")","::","'"), "", $column_name);
 
         return $row;
-    }
-
-    /**
-     * Bossanova UI grid json format
-     */
-    protected function gridFormat($result)
-    {
-        $page = isset($_GET['page']) && $_GET['page'] ? (int) $page = $_GET['page'] : 1;
-
-        $i = 0;
-        $j = 0;
-        $data['rows'] = array();
-
-        // Grid rows
-        while ($row = $this->database->fetch_assoc($result)) {
-            if (($j >= ($page - 1) * 10) && ($j < ((($page - 1) * 10) + 10))) {
-                if (! isset($data['rows'][$i]['id'])) {
-                    $data['rows'][$i]['id'] = current($row);
-                }
-                $data['rows'][$i]['cell'] = $row;
-                $i++;
-            }
-
-            $j++;
-        }
-
-        // Total results
-        $data['page'] = $page;
-        $data['total'] = (int) $j;
-
-        return $data;
     }
 
     /**

@@ -37,34 +37,26 @@ class Render
      *
      * @var $urlParam array
      */
-    public static $urlParam = array();
+    public static $urlParam = [];
 
     /**
      * Bossanova main configuration it is populated by the method router
      *
      * @var $configuration array();
      */
-    public static $configuration = array(
+    public static $configuration = [
         'template_area' => null,
         'template_path' => null,
         'template_render' => 1,
         'template_recursive' => null,
-        'template_meta' => array(),
+        'template_meta' => [],
         'module_name' => null,
         'module_controller' => null,
         'module_view' => null,
         'module_render' => 1,
         'node_id' => null,
-        'extra_config' => array()
-    );
-
-    /**
-     * Bossanova configuration this is a optional since it is possible to config
-     * use config.inc.php in the root of bossanova
-     *
-     * @var $database object
-     */
-    private $database = null;
+        'extra_config' => []
+    ];
 
     /**
      * Explode de URL request to define the route and create the main global database instance connection
@@ -73,7 +65,7 @@ class Render
      */
     public function __construct()
     {
-        $params = array();
+        $params = [];
 
         // Identifing a CLI call
         if (isset($_SERVER['argv']) && $_SERVER['argv'][1]) {
@@ -130,6 +122,23 @@ class Render
             }
         }
 
+        // Restriction aliases
+        foreach ($GLOBALS['restriction'] as $k => $v) {
+            $k = str_replace('-', '_', $k);
+            $GLOBALS['restriction'][$k] = $v;
+            $k = str_replace('_', '-', $k);
+            $GLOBALS['restriction'][$k] = $v;
+        }
+
+        // Create a default database connection
+        Database::getInstance(null, [
+            DB_CONFIG_TYPE,
+            DB_CONFIG_HOST,
+            DB_CONFIG_USER,
+            DB_CONFIG_PASS,
+            DB_CONFIG_NAME
+        ]);
+
         // Loading route
         $this->route();
 
@@ -147,15 +156,8 @@ class Render
      */
     public function run()
     {
-        $restriction = $this->getConfig('restriction');
-
-        // Return content
-        $content = "";
-
-        // Loading restricted modules
-        if (! is_array($restriction)) {
-            $restriction = array();
-        }
+        // Content container
+        $content = '';
 
         // If is an ajax call don't show the main template. This can be overwrite by the module.
         if (self::isAjax()) {
@@ -326,7 +328,7 @@ class Render
     private function getContents($content)
     {
         // Array of contents
-        $contents = array();
+        $contents = [];
 
         // Default area if not defined
         if (! self::$configuration['template_area']) {
@@ -337,15 +339,6 @@ class Render
         if ($content) {
             $contents[self::$configuration['template_area']] = $content;
         }
-
-        // Sub contents in the database
-        $this->database = Database::getInstance(null, array(
-            DB_CONFIG_TYPE,
-            DB_CONFIG_HOST,
-            DB_CONFIG_USER,
-            DB_CONFIG_PASS,
-            DB_CONFIG_NAME
-        ));
 
         // Check for any configured route
         if (self::$configuration['extra_config']) {
@@ -417,7 +410,7 @@ class Render
     private function route()
     {
         // Available routes
-        $routes = array();
+        $routes = [];
 
         // Global config.inc.php definitions
         if (isset($GLOBALS['route'])) {
@@ -429,21 +422,21 @@ class Render
         // If database routing is defined
         if (defined('DATABASE_ROUTING') && DATABASE_ROUTING) {
             // Load information from database conection
-            $this->database = Database::getInstance(null, array(
+            $database = Database::getInstance(null, [
                 DB_CONFIG_TYPE,
                 DB_CONFIG_HOST,
                 DB_CONFIG_USER,
                 DB_CONFIG_PASS,
                 DB_CONFIG_NAME
-            ));
+            ]);
 
-            if (is_object($this->database)) {
+            if (is_object($database)) {
                 // Search for the URL configuration
-                $this->database->table("routes");
-                $this->database->select();
-                $result = $this->database->execute();
+                $result = $database->table("routes")
+                    ->select()
+                    ->execute();
 
-                while ($row = $this->database->fetch_assoc($result)) {
+                while ($row = $database->fetch_assoc($result)) {
                     $routes[$row['route']] = $row;
                 }
             }
@@ -567,32 +560,34 @@ class Render
                 // Default for page not found
                 self::$notFound = 1;
 
-                // Load information from database conection
-                $this->database = Database::getInstance(null, array(
-                    DB_CONFIG_TYPE,
-                    DB_CONFIG_HOST,
-                    DB_CONFIG_USER,
-                    DB_CONFIG_PASS,
-                    DB_CONFIG_NAME
-                ));
+                if (defined('DATABASE_ROUTING') && DATABASE_ROUTING) {
+                    // Load information from database conection
+                    $database = Database::getInstance(null, [
+                        DB_CONFIG_TYPE,
+                        DB_CONFIG_HOST,
+                        DB_CONFIG_USER,
+                        DB_CONFIG_PASS,
+                        DB_CONFIG_NAME
+                    ]);
 
-                if (is_object($this->database)) {
-                    // Is there any nodes for this URL
-                    $result = $this->database->table("nodes n")
-                        ->column("n.node_id")
-                        ->argument(1, "n.node_link", "'{$route}'")
-                        ->argument(2, "n.node_status", 1)
-                        ->select()
-                        ->execute();
+                    if (is_object($database)) {
+                        // Is there any nodes for this URL
+                        $result = $database->table("nodes n")
+                            ->column("n.node_id")
+                            ->argument(1, "n.node_link", "'{$route}'")
+                            ->argument(2, "n.node_status", 1)
+                            ->select()
+                            ->execute();
 
-                    if ($row = $this->database->fetch_assoc($result)) {
-                        self::$configuration['node_id'] = $row['node_id'];
-                        self::$configuration['module_name'] = 'nodes';
-                        self::$notFound = 0;
-                    } else {
-                        if (defined('SOCIAL_NETWORK_EXTENSION') && SOCIAL_NETWORK_EXTENSION) {
-                            // Last try is the URL is reference for the social network
-                            $this->getSocialNetworkNames();
+                        if ($row = $database->fetch_assoc($result)) {
+                            self::$configuration['node_id'] = $row['node_id'];
+                            self::$configuration['module_name'] = 'nodes';
+                            self::$notFound = 0;
+                        } else {
+                            if (defined('SOCIAL_NETWORK_EXTENSION') && SOCIAL_NETWORK_EXTENSION) {
+                                // Last try is the URL is reference for the social network
+                                $this->getSocialNetworkNames();
+                            }
                         }
                     }
                 }
@@ -683,6 +678,21 @@ class Render
 
         // Dynamic Tags (TODO: implement a more effient replace)
         $html = str_replace("<head>", "<head>\n<base href='$request_scheme//$url/templates/$baseurl/'>$extra", $html);
+
+        // Process message
+        if (isset($_SESSION['bossanova_message']) && $_SESSION['bossanova_message']) {
+            // Force remove html tag to avoid duplication
+            $html = str_replace("</html>", "", $html);
+
+            // Inject message to the frontend
+            $html .= "<script>\n";
+            $html .= "var bossanova_message = {$_SESSION['bossanova_message']}\n";
+            $html .= "</script>\n";
+            $html .= "</html>";
+
+            // Remove message
+            unset($_SESSION['bossanova_message']);
+        }
 
         // Looking for the template area to insert the content
         if ($contents) {
@@ -777,7 +787,8 @@ class Render
      */
     public static function isRestricted(array $urlRoute = null)
     {
-        global $restriction;
+        // Get restriction defined in the config.inc.php
+        $restriction = $GLOBALS['restriction'];
 
         // Route he trying to access
         $access_route = (isset($urlRoute)) ? $urlRoute : self::$urlParam;
@@ -791,7 +802,7 @@ class Render
                 if ($route) {
                     $route .= '/';
                 }
-                $route .= $v;
+                $route .= str_replace('-', '_', $v);
 
                 // Restriction exists for this route
                 if (isset($restriction[$route])) {
@@ -932,19 +943,27 @@ class Render
                 // Locate route
                 $realpath = strtolower(self::$urlParam[0]);
 
+                $database = Database::getInstance(null, [
+                    DB_CONFIG_TYPE,
+                    DB_CONFIG_HOST,
+                    DB_CONFIG_USER,
+                    DB_CONFIG_PASS,
+                    DB_CONFIG_NAME
+                ]);
+
                 // Check if the user exists
-                $this->database->table("users");
+                $database->table("users");
                 if ($realpath > 0) {
-                    $this->database->argument(1, "user_id", "$realpath");
+                    $database->argument(1, "user_id", "$realpath");
                 } else {
-                    $realpath = $this->database->Bind($realpath);
-                    $this->database->argument(1, "lower(user_login)", $realpath);
+                    $realpath = $database->Bind($realpath);
+                    $database->argument(1, "lower(user_login)", $realpath);
                 }
 
-                $this->database->select();
-                $result = $this->database->execute();
+                $database->select();
+                $result = $database->execute();
 
-                if ($row = $this->database->fetch_assoc($result)) {
+                if ($row = $database->fetch_assoc($result)) {
                     self::$configuration['module_name'] = "Me";
                     self::$notFound = 0;
 
@@ -976,22 +995,5 @@ class Render
         $search = array("\\", "\0", "\n", "\r", "\x1a", "'", '"');
         $replace = array("", "", "", "", "", "", "");
         return str_replace($search, $replace, $str);
-    }
-
-    /**
-     * Get the configuration from config.inc.php
-     *
-     * return string $content
-     */
-    private function getConfig($key)
-    {
-        $vars = array('restriction', 'route', 'module');
-        $rows = null;
-
-        if (in_array($key, $vars)) {
-            $rows = isset($GLOBALS[$key]) ? $GLOBALS[$key] : null;
-        }
-
-        return $rows;
     }
 }

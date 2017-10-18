@@ -59,6 +59,13 @@ class Module
     public $view = array();
 
     /**
+     * Keep the requested method
+     *
+     * @var $requestMethod
+     */
+    public $requestMethod = 'GET';
+
+    /**
      * Allow native methods - For security reasons is disabled
      *
      * @var $view
@@ -81,6 +88,9 @@ class Module
         if (defined('NATIVE_METHODS')) {
             $nativeMethods = NATIVE_METHODS ? true : false;
         }
+
+        // Keep method
+        $this->requestMethod = $_SERVER['REQUEST_METHOD'];
     }
 
     /**
@@ -819,13 +829,29 @@ class Module
     }
 
     /**
-     * Get the registered permission_id
+     * Redirect to a new page
+     */
+    public function redirect($url, $message = null)
+    {
+        if ($message) {
+            $this->setMessage($message);
+        }
+
+        header('Location:' . $url);
+        exit;
+    }
+
+    /**
+     * Set the BF global message
      *
      * @return integer $permission_id
      */
-    public function redirect($url)
+    public function setMessage($message)
     {
-        header('Location:' . $url);
-        exit;
+        if (! is_array($message)) {
+            $message = [ 'message' => $message ];
+        }
+
+        $_SESSION['bossanova_message'] = json_encode($message);
     }
 }

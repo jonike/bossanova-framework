@@ -214,7 +214,7 @@ class Auth
      */
     public function getPermissions($access_route = null)
     {
-        $permissions = array();
+        $permissions = [];
 
         // Verify if a specific permission is registered
         if (isset($_SESSION['permission'])) {
@@ -311,6 +311,9 @@ class Auth
                     // If the user_id is a superuser register all restrited routes as permited
                     if (isset($row1['global_user']) && $row1['global_user'] == 1) {
                         foreach ($restriction as $k => $v) {
+                            $k = str_replace('-', '_', $k);
+                            $permission[$k] = 1;
+                            $k = str_replace('_', '-', $k);
                             $permission[$k] = 1;
                         }
                     } else {
@@ -323,12 +326,18 @@ class Auth
                                 ->execute();
 
                             while ($row = $this->database->fetch_assoc($result)) {
+                                $row['route'] = str_replace('-', '_', $row['route']);
+                                $permission[$row['route']] = 1;
+                                $row['route'] = str_replace('_', '-', $row['route']);
                                 $permission[$row['route']] = 1;
                             }
 
                             // All route permited defined in the config.inc.php
                             foreach ($restriction as $k => $v) {
                                 if (isset($v['permission']) && $v['permission'] == 1) {
+                                    $k = str_replace('-', '_', $k);
+                                    $permission[$k] = 1;
+                                    $k = str_replace('_', '-', $k);
                                     $permission[$k] = 1;
                                 }
                             }

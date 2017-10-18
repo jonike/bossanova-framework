@@ -28,7 +28,9 @@ class Html
 
         if (count($attr)) {
             foreach ($attr as $k => $v) {
-                $html .= " $k=\"$v\"";
+                if ($k) {
+                    $html .= " $k=\"$v\"";
+                }
             }
         }
 

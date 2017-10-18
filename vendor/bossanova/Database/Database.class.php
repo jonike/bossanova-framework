@@ -470,9 +470,12 @@ class Database
     {
         // Create select statement based on the arguments defined so far
 
-        if (!isset($this->query['column']) || @is_array($this->query['column'])) {
+        if (!isset($this->query['column'])) {
             $this->query['query'] = "SELECT *";
         } else {
+            if(is_array($this->query['column'])){
+                $this->query['column'] = implode(',',$this->query['column']);
+            }
             $this->query['query'] = "SELECT " . $this->query['column'];
         }
 
