@@ -29,15 +29,16 @@ class AdapterPhpmailer implements MailService
      */
     public $instance = null;
 
+    public function __construct()
+    {
+        require_once 'vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
+    }
+
     public function login(array $config)
     {
         // Composer autoloader loads the class into memory even
         // if the PHPMailer is never used. If composer is not
         // used, need to load the class manually.
-
-        if (! class_exists('\PHPMailer')) {
-            require 'vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
-        }
 
         $this->instance = new \PHPMailer();
 

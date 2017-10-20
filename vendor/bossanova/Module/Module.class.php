@@ -13,11 +13,12 @@
  */
 namespace bossanova\Module;
 
-use bossanova\Auth\Auth;
 use bossanova\Render\Render;
 use bossanova\Database\Database;
 use bossanova\Mail\Mail;
 use bossanova\Common\Post;
+
+use services\Authentication;
 
 class Module
 {
@@ -749,7 +750,7 @@ class Module
     public function login()
     {
         if (! $this->auth) {
-            $this->auth = new Auth($this->query);
+            $this->auth = new Authentication($this->query);
         }
 
         $this->auth->login();
@@ -763,7 +764,7 @@ class Module
     public function logout()
     {
         if (! $this->auth) {
-            $this->auth = new Auth($this->query);
+            $this->auth = new Authentication($this->query);
         }
 
         $this->auth->logout();
@@ -777,7 +778,7 @@ class Module
     public function getIdent()
     {
         if (! $this->auth) {
-            $this->auth = new Auth($this->query);
+            $this->auth = new Authentication($this->query);
         }
 
         return $this->auth->getIdent();
@@ -811,6 +812,7 @@ class Module
     public function getPermission($url)
     {
         $url = explode('/', $url);
+
         return (Render::isRestricted($url)) ? false : true;
     }
 
@@ -822,7 +824,7 @@ class Module
     public function getPermissions()
     {
         if (! $this->auth) {
-            $this->auth = new Auth($this->query);
+            $this->auth = new Authentication($this->query);
         }
 
         return $this->auth->getPermissions();

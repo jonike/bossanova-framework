@@ -13,6 +13,8 @@
  */
 namespace bossanova\Mail;
 
+use bossanova\Translate\Translate;
+
 class Mail
 {
     /**
@@ -107,6 +109,21 @@ class Mail
 
             return $this->adapter;
         }
+    }
+
+    /**
+     * This method replace macros in one array in the text given
+     *
+     * @param  string $txt    Original string
+     * @param  array  $macros Array of macros
+     * @return string
+     */
+    public function translate($content, $locale = null)
+    {
+        $translate = new Translate;
+        $content = $translate->run($content, $locale);
+
+        return $content;
     }
 
     /**

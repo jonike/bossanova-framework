@@ -538,6 +538,15 @@ class Render
                     if (self::$urlParam[0] == 'nodes' && self::$urlParam[1] > 0) {
                         self::$configuration['node_id'] = self::$urlParam[1];
                     }
+                } else {
+                    // Check configuration for the login page
+                    if (self::$urlParam[0] == 'login') {
+                        if (! self::$configuration['template_path']) {
+                            self::$configuration['template_path'] = "default/login.html";
+                            self::$configuration['template_area'] = "content";
+                            self::$configuration['template_render'] = 1;
+                        }
+                    }
                 }
 
                 // View information
@@ -914,6 +923,7 @@ class Render
 
         return $url;
     }
+
 
     /**
      * Print debug information

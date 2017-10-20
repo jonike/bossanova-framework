@@ -21,6 +21,32 @@ class Permissions extends Model
         'recordId' => 0
     );
 
+    public function select($id)
+    {
+        // Get permission data
+        $row = $this->getById($id);
+
+        // Allowed routes
+        $allowedRoutes = json_decode($row['permission_routes'], true);
+
+        // Get restrictions
+        $restrictions = $this->getRestrictions();
+
+        foreach ($restrictions as $k => $v) {
+            $restrictions[$k]['checked'] = isset($allowedRoutes[$k]) && $allowedRoutes[$k] == 1 ? true : false;
+        }
+
+        // Defaults
+        $row['global_user'] = ($row['global_user'] == '1') ? 1 : 0;
+        $row['permission_order'] = ($row['permission_order']) ? $row['permission_order'] : 6;
+        $row['permission_status'] = ($row['permission_status'] == '0') ? 0 : 1;
+
+        // Full format
+        $row['permission_routes'] = $restrictions;
+
+        return $row;
+    }
+
     /**
      * Populate permission combo
      *
@@ -28,94 +54,44 @@ class Permissions extends Model
      */
     public function combo()
     {
-        $data = array();
+        $data = [];
 
         // The user current permissios
         $permission_id = isset($_SESSION['permission_id']) ? $_SESSION['permission_id'] : 0;
 
         // Get the permission level
-        $this->database->table("permissions");
-        $this->database->column("permission_order");
-        $this->database->argument(1, "permission_id", $permission_id);
-        $this->database->select();
-        $result = $this->database->execute();
+        $result = $this->database->table("permissions")
+            ->column("permission_order")
+            ->argument(1, "permission_id", $permission_id)
+            ->select()
+            ->execute();
+
         $row = $this->database->fetch_assoc($result);
 
         // Get only the permissions with the same level or a lower importance
-        $this->database->Table("permissions");
-        $this->database->column("permission_id, permission_name");
-        $this->database->argument(1, "permission_status", 1);
-
         if ($row['permission_order'] > 0) {
-            $this->database->argument(2, "permission_order", $row['permission_order'], ">=");
+            $result = $this->database->table("permissions")
+                ->column("permission_id, permission_name")
+                ->argument(1, "permission_status", 1)
+                ->argument(2, "permission_order", $row['permission_order'], ">=")
+                ->order("permission_name")
+                ->execute();
         } else {
-            $this->database->argument(2, "permission_id", $permission_id);
+            $result = $this->database->table("permissions")
+                ->column("permission_id, permission_name")
+                ->argument(1, "permission_status", 1)
+                ->argument(2, "permission_id", $permission_id)
+                ->order("permission_name")
+                ->execute();
         }
-
-        $this->database->Order("permission_name");
-        $this->database->select();
-        $result = $this->database->execute();
-
-        $i = 0;
 
         // Create the json
         while ($row = $this->database->fetch_assoc($result)) {
-            $data[$i]['id'] = $row['permission_id'];
-            $data[$i]['name'] = $row['permission_name'];
-
-            $i ++;
+            $data[] = [
+                'id' => $row['permission_id'],
+                'name' => $row['permission_name'],
+            ];
         }
-
-        return $data;
-    }
-
-    /**
-     * Populate permission grid
-     *
-     * @return json $data List of permissions
-     */
-    public function grid()
-    {
-        $data = array();
-        $page = isset($_GET['page']) && $_GET['page'] ? $_GET['page'] : 1;
-
-        // Get all records by a search
-        $this->database->table("permissions");
-        $this->database->column("permission_id, permission_name, permission_status");
-        $this->database->argument(1, "permission_status", 1);
-
-        if (isset($_GET['value']) && $_GET['value'] != '') {
-            $value = $this->database->bind("%{$_GET['value']}%");
-
-            if ($_GET['column'] == 2) {
-                $this->database->argument(1, "permission_status", (int) $_GET['value']);
-            } elseif ($_GET['column'] == 1) {
-                $this->database->argument(2, "lower(permission_name)", "lower($value)", "LIKE");
-            }
-        }
-
-        $this->database->where();
-        $this->database->order("permission_id");
-        $this->database->select();
-        $result = $this->database->execute();
-
-        $i = 0;
-        $j = 0;
-
-        // Create the json
-        while ($row = $this->database->fetch_assoc($result)) {
-            if (($j >= ($page - 1) * 10) && ($j < ((($page - 1) * 10) + 10))) {
-                $data['rows'][$i]['id'] = $row['permission_id'];
-                $data['rows'][$i]['cell'] = $row;
-
-                $i ++;
-            }
-
-            $j ++;
-        }
-
-        $data['page'] = $page;
-        $data['total'] = (int) $j;
 
         return $data;
     }
@@ -136,71 +112,44 @@ class Permissions extends Model
             ->update()
             ->execute();
 
-        // Message
-        if (! $this->database->error) {
-            $data['message'] = "^^[Successfully deleted]^^";
-        } else {
-            $data['error'] = 1;
-            $data['message'] = "^^[It was not possible to delete this record]^^";
-        }
-
-        return $data;
+        return (! $this->database->error) ? true : false;
     }
 
     /**
-     * Update the routes from a permissions_id
+     * Populate permission grid
      *
-     * @param integer $permission_id
+     * @return json $data List of permissions
      */
-    public function setRoutes($id)
+    public function grid()
     {
-        // Delete and update route permissions
-        $this->database->table("permissions_route")
-            ->argument(1, "permission_id", $id)
-            ->delete()
-            ->execute();
+        // Get all records by a search
+        $this->database->table("permissions");
+        $this->database->column("permission_id, permission_name, permission_status");
+        $this->database->argument(1, "permission_status", 1);
 
-        if (isset($_POST['route']) && count($_POST['route'])) {
-            foreach ($_POST['route'] as $k => $v) {
-                if ($v) {
-                    // Re-include all routes
-                    $column['permission_id'] = $id;
-                    $column['route'] = "'$k'";
+        if (isset($_GET['value']) && $_GET['value'] != '') {
+            $value = $this->database->bind("%{$_GET['value']}%");
 
-                    // URL the user can access
-                    $this->database->table('permissions_route')
-                        ->column($column)
-                        ->insert()
-                        ->execute();
-                }
+            if ($_GET['column'] == 2) {
+                $this->database->argument(1, "permission_status", (int) $_GET['value']);
+            } elseif ($_GET['column'] == 1) {
+                $this->database->argument(2, "lower(permission_name)", "lower($value)", "LIKE");
             }
         }
+
+        $this->database->where();
+        $this->database->order("permission_id");
+        $this->database->select();
+        $result = $this->database->execute();
+
+        return $result;
     }
 
     /**
-     * Get all routes from a permission
+     * Check permission hierarchy
      *
-     * @param  integer $permission_id
-     * @return array   $data
+     * @return bool
      */
-    public function getRoutes($id)
-    {
-        $data = array();
-
-        // Get the routes from a permission_id
-        $result = $this->database->table('permissions_route')
-            ->argument(1, 'permission_id', (int) $id)
-            ->select()
-            ->execute();
-
-        // Create array
-        while ($row = $this->database->fetch_assoc($result)) {
-            $data[$row['route']] = true;
-        }
-
-        return $data;
-    }
-
     public function isAllowedHierarchy($id)
     {
         if (! $id) {
@@ -215,6 +164,7 @@ class Permissions extends Model
                     ->argument(1, "permission_id", $_SESSION['permission_id'])
                     ->select()
                     ->execute();
+
                 $row1 = $this->database->fetch_assoc($result);
 
                 $result = $this->database->table("permissions")
@@ -222,6 +172,7 @@ class Permissions extends Model
                     ->argument(1, "permission_id", $id)
                     ->select()
                     ->execute();
+
                 $row2 = $this->database->fetch_assoc($result);
 
                 $bool = ($row1['permission_order'] > $row2['permission_order']) ? false : true;
@@ -229,5 +180,17 @@ class Permissions extends Model
         }
 
         return $bool;
+    }
+
+    /**
+     * Get all restricted areas from BF config file
+     *
+     * @return bool
+     */
+    public function getRestrictions()
+    {
+        $restriction = isset($GLOBALS['restriction']) ? $GLOBALS['restriction'] : [];
+
+        return $restriction;
     }
 }

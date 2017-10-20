@@ -9,9 +9,6 @@
  */
 namespace services;
 
-use models\Users;
-use models\Permissions;
-
 class Users
 {
     private $userModel = null;
@@ -19,8 +16,8 @@ class Users
 
     public function __construct()
     {
-        $this->userModel = new Users();
-        $this->PermissionsModel = new Permissions();
+        $this->userModel = new \models\Users();
+        $this->PermissionsModel = new \models\Permissions();
     }
 
     /**
@@ -31,15 +28,23 @@ class Users
      */
     public function select($id)
     {
-        $data = $this->userModel->getById($id);
+        $data = [];
 
         if ((int)$id > 0) {
+            $data = $this->userModel->getById($id);
+
             if (count($data) > 0) {
                 if (! $this->PermissionsModel->isAllowedHierarchy($data['permission_id'])) {
-                    $data = [ 'error' => 1, 'message' => '^^[Permission denied]^^' ];
+                    $data = [
+                        'error' => 1,
+                        'message' => '^^[You do not have permission to load this record]^^'
+                    ];
                 }
             } else {
-                $data = [ 'error' => 1, 'message' => '^^[No record found]^^' ];
+                $data = [
+                    'error' => 1,
+                    'message' => '^^[No record found]^^'
+                ];
             }
         }
 
@@ -62,20 +67,55 @@ class Users
                     'message' => '^^[Permission denied]^^'
                 ];
             } else {
-                // Generate user Password
-                $salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
-                $generated = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 6)), 0, 6);
-                $pass = hash('sha512', hash('sha512', $generated) . $salt);
-                $row['user_salt'] = $salt;
-                $row['user_password'] = $pass;
+                // Avoid duplicate user email
+                $email = $this->userModel->getByEmail($row['user_email']);
+                $login = $this->userModel->getByLogin($row['user_login']);
 
-                // Add a new record
-                $result = $this->userModel->column($row)->insert();
+                if ((isset($email['user_id']) && $email['user_id']) || isset($login['user_id']) && $login['user_id']) {
+                    $data = [
+                        'error' => 1,
+                        'message' => '^^[This email or login is already in registered]^^'
+                    ];
+                } else {
+                    // Generate user Password
+                    $salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
+                    $generated = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 6)), 0, 6);
+                    $pass = hash('sha512', hash('sha512', $generated) . $salt);
+                    $row['user_salt'] = $salt;
+                    $row['user_password'] = $pass;
 
-                $data = [
-                    'data' => $result,
-                    'message' => '^^[Successfully saved]^^'
-                ];
+                    // Avoid errors
+                    if (isset($row['user_id'])) {
+                        unset($row['user_id']);
+                    }
+
+                    // Add a new record
+                    $data = $this->userModel->column($row)->insert();
+
+                    if (isset($data['id']) && $data['id']) {
+                        // Loading recovery email body
+                        $content = file_get_contents("resources/texts/registration.txt");
+
+                        // Replace macros
+                        $content = $this->mail->replaceMacros($content, $row);
+                        $content = $this->mail->translate($content);
+
+                        // Destination
+                        $to = [
+                            $row['user_email'],
+                            $row['user_name']
+                        ];
+
+                        // From
+                        $from = [
+                            MS_CONFIG_FROM,
+                            MS_CONFIG_NAME
+                        ];
+
+                        // Send email
+                        $this->sendmail($to, EMAIL_REGISTRATION_SUBJECT, $content, $from);
+                    }
+                }
             }
         } else {
             $data = [
@@ -135,15 +175,15 @@ class Users
         return $data;
     }
 
-    /**
-     * Populate users grid
-     *
-     * @return json $data - list of users
-     */
     public function grid()
     {
-        $data = $this->userModel->UsersWithPermissions();
-        return (count($data) > 0) ? $data : [];
+        $data = $this->userModel->grid();
+
+        // Convert to grid
+        $grid = new \services\Grid();
+        $data = $grid->get($data);
+
+        return $data;
     }
 
     /**
@@ -152,14 +192,51 @@ class Users
      * @param  integer $user_id
      * @return array   $data
      */
-    public function selectPermissions($id = null)
+    public function getPermissions($id = null)
     {
-        if ($id) {
-            $permissions = $this->PermissionsModel->select($id);
-        } else {
-            $permissions = $this->PermissionsModel->combo();
-        }
+        $permissions = $this->PermissionsModel->combo();
 
         return count($permissions) > 0 ? $permissions : [ 'error' => 1, 'message' => '^^[No record found]^^' ];
     }
+
+    /**
+     * Populate users grid
+     *
+     * @return json $data - list of users
+     */
+    /*public function gridData()
+     {
+         // Grid page
+         $page = isset($_GET['page']) && $_GET['page'] ? (int) $page = $_GET['page'] : 1;
+
+         // Conditionals
+         $where = [ 'user_status = 1' ];
+
+         if (isset($_GET['value']) && $_GET['value'] != '') {
+         // Bind data
+         $v = str_replace("'", "", $_GET['value']);
+
+         // Search by column
+         if ($_GET['column'] == 0) {
+         $where[1] = "user_id = $v";
+         } elseif ($_GET['column'] == 1) {
+         $where[1] = "lower(user_name) like lower('%$v%')";
+         } elseif ($_GET['column'] == 2) {
+         $where[0] = "user_status = $v";
+         }
+         }
+
+         // Columns
+         $columns = 'user_id, user_name, user_status';
+
+         // Data
+         $data = $this->userModel->listAll($where, $columns, null, 10, ($page - 1) * 10);
+
+         // Convert to grid
+         $grid = new \services\Grid();
+         $data = $grid->get($data);
+
+         return $data;
+     }*/
+
 }

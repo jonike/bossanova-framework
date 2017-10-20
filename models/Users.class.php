@@ -2,14 +2,14 @@
 
 /**
  * (c) 2013 Bossanova PHP Framework
-* http://www.bossanova-framework.com
-*
-* @author: Paul Hodel <paul.hodel@gmail.com>
-* @description: Model
-*/
+ * http://www.bossanova-framework.com
+ *
+ * @author: Paul Hodel <paul.hodel@gmail.com>
+ * @description: Model
+ */
 namespace models;
 
-use bossanova\Model\Model;
+use Bossanova\Model\Model;
 
 class Users extends Model
 {
@@ -29,55 +29,38 @@ class Users extends Model
      */
     public function delete($user_id)
     {
+        $data = array();
+
         $this->database->table("users")
             ->column(array('user_status' => 0))
             ->argument(1, "user_id", $user_id)
             ->update()
             ->execute();
 
-        if ($this->database->error) {
-            $this->setError($this->database->error);
-        }
-
         return (! $this->database->error) ? true : false;
     }
 
     /**
-     * Get user by login
-     *
-     * @param  string $user_login
-     * @return array  $row
-     */
-    public function getByLogin($user_login)
-    {
-        $user_login = $this->database->bind(trim(strtolower($user_login)));
-
-        $result = $this->database->table("users")
-            ->column("user_name, user_login")
-            ->argument(1, "lower(user_login)", $user_login)
-            ->select()
-            ->execute();
-
-        return $this->database->fetch_assoc($result);
-    }
-
-    /**
-     * Get user by email
+     * Get user
      *
      * @param  string $user_email
      * @return array  $row
      */
-    public function getByEmail($user_email)
+    public function getUserByIdent($ident)
     {
-        $user_email = $this->database->bind(trim(strtolower($user_email)));
+        $ident = $this->database->bind(strtolower(trim($ident)));
 
         $result = $this->database->Table("users")
-            ->column("user_id")
-            ->argument(1, "lower(user_email)", $user_email)
+            ->argument(1, "lower(user_login) = lower($ident) or lower(user_email) = lower($ident) or lower(user_hash) = lower($ident)", "", "")
             ->select()
             ->execute();
 
-        return $this->database->fetch_assoc($result);
+        if ($row = $this->database->fetch_assoc($result)) {
+            // Register user object
+            $this->get($row['user_id']);
+        }
+
+        return $row;
     }
 
     /**
@@ -104,5 +87,35 @@ class Users extends Model
                 ->update()
                 ->execute();
         }
+    }
+
+    /**
+     * Populate users grid
+     *
+     * @return json $data - list of users
+     */
+    public function grid()
+    {
+        // Selectd users
+        $this->database->Table("users");
+        $this->database->Column("user_id, user_name, user_status");
+        $this->database->Argument(1, "user_status", 1);
+
+        if (isset($_GET['value'])) {
+            if ($_GET['value'] != '') {
+                if ($_GET['column'] == 0) {
+                    $this->database->Argument(2, "user_id", (int) $_GET['value']);
+                } elseif ($_GET['column'] == 1) {
+                    $this->database->Argument(2, "lower(user_name)", "lower('%{$_GET['value']}%')", "LIKE");
+                } elseif ($_GET['column'] == 2) {
+                    $this->database->Argument(1, "user_status", $_GET['value']);
+                }
+            }
+        }
+
+        $this->database->Select();
+        $result = $this->database->Execute();
+
+        return $result;
     }
 }
