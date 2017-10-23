@@ -9,7 +9,7 @@
  */
 namespace models;
 
-use Bossanova\Model\Model;
+use bossanova\Model\Model;
 
 class Nodes extends Model
 {

@@ -924,7 +924,6 @@ class Render
         return $url;
     }
 
-
     /**
      * Print debug information
      *

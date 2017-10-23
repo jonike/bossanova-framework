@@ -9,7 +9,7 @@
  */
 namespace models;
 
-use Bossanova\Model\Model;
+use bossanova\Model\Model;
 
 class Permissions extends Model
 {
@@ -112,6 +112,10 @@ class Permissions extends Model
             ->update()
             ->execute();
 
+        if ($this->database->error) {
+            $this->setError($this->database->error);
+        }
+
         return (! $this->database->error) ? true : false;
     }
 
@@ -189,8 +193,10 @@ class Permissions extends Model
      */
     public function getRestrictions()
     {
-        $restriction = isset($GLOBALS['restriction']) ? $GLOBALS['restriction'] : [];
+        $restrictions = isset($GLOBALS['restriction']) ? $GLOBALS['restriction'] : [];
 
-        return $restriction;
+        ksort($restrictions);
+
+        return $restrictions;
     }
 }

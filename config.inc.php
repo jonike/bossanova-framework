@@ -39,8 +39,9 @@ define('MS_CONFIG_PASS', '');
 define('MS_CONFIG_KEY', '');
 
 // Login request email subject
-define('EMAIL_RECOVERY_SUBJECT', 'Login Reset Request');
 define('EMAIL_RECOVERY_FILE', 'resources/texts/recovery.txt');
+define('EMAIL_RECOVERY_SUBJECT', 'Login Reset Request');
+define('EMAIL_REGISTRATION_FILE', 'resources/texts/registration.txt');
 define('EMAIL_REGISTRATION_SUBJECT', 'Welcome to Bossanova');
 
 // Facebook
@@ -65,10 +66,10 @@ if (APPLICATION_ENV == 'production') {
     ini_set('display_errors', 1);
 
     // Global database configuration
-    define('DB_CONFIG_TYPE', 'mysql');
+    define('DB_CONFIG_TYPE', 'pgsql');
     define('DB_CONFIG_HOST', 'localhost');
-    define('DB_CONFIG_USER', 'root');
-    define('DB_CONFIG_PASS', '');
+    define('DB_CONFIG_USER', 'postgres');
+    define('DB_CONFIG_PASS', 'hodell11');
     define('DB_CONFIG_NAME', 'bossanova');
 }
 

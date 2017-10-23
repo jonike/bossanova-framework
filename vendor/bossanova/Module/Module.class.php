@@ -753,7 +753,21 @@ class Module
             $this->auth = new Authentication($this->query);
         }
 
-        $this->auth->login();
+        $data = $this->auth->login();
+
+
+        // Deal with the authetantion service return
+        if (Render::isAjax()) {
+            $data = $this->jsonEncode($data);
+        } else {
+            if (isset($data['url'])) {
+                $this->redirect($data['url'], $data);
+            } else {
+                $this->setMessage($data);
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -767,7 +781,7 @@ class Module
             $this->auth = new Authentication($this->query);
         }
 
-        $this->auth->logout();
+        return $this->auth->logout();
     }
 
     /**

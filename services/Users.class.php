@@ -9,6 +9,9 @@
  */
 namespace services;
 
+use models\Users;
+use models\Permissions;
+
 class Users
 {
     private $userModel = null;
@@ -16,8 +19,8 @@ class Users
 
     public function __construct()
     {
-        $this->userModel = new \models\Users();
-        $this->PermissionsModel = new \models\Permissions();
+        $this->userModel = new Users();
+        $this->PermissionsModel = new Permissions();
     }
 
     /**
@@ -94,7 +97,11 @@ class Users
 
                     if (isset($data['id']) && $data['id']) {
                         // Loading recovery email body
-                        $content = file_get_contents("resources/texts/registration.txt");
+                        $registrationFile = defined('EMAIL_REGISTRATION_FILE') ?
+                            EMAIL_REGISTRATION_FILE : "resources/texts/registration.txt";
+
+                        // Loading registration text template
+                        $content = file_get_contents($registrationFile);
 
                         // Replace macros
                         $content = $this->mail->replaceMacros($content, $row);

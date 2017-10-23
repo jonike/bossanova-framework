@@ -13,6 +13,7 @@
  */
 namespace bossanova\Services;
 
+use bossanova\Database\Database;
 use bossanova\Mail\Mail;
 
 class Services

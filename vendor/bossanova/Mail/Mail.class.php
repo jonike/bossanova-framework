@@ -112,10 +112,10 @@ class Mail
     }
 
     /**
-     * This method replace macros in one array in the text given
+     * Email translation helper
      *
-     * @param  string $txt    Original string
-     * @param  array  $macros Array of macros
+     * @param  string $content
+     * @param  array  $language
      * @return string
      */
     public function translate($content, $locale = null)

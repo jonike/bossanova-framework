@@ -9,7 +9,7 @@
  */
 namespace models;
 
-use Bossanova\Model\Model;
+use bossanova\Model\Model;
 
 class Users extends Model
 {
@@ -29,13 +29,15 @@ class Users extends Model
      */
     public function delete($user_id)
     {
-        $data = array();
-
         $this->database->table("users")
             ->column(array('user_status' => 0))
             ->argument(1, "user_id", $user_id)
             ->update()
             ->execute();
+
+        if ($this->database->error) {
+            $this->setError($this->database->error);
+        }
 
         return (! $this->database->error) ? true : false;
     }
@@ -90,6 +92,24 @@ class Users extends Model
     }
 
     /**
+     * Set user log
+     *
+     * @return json $data - list of users
+     */
+    public function setLog($column)
+    {
+        $column = $this->database->bind($column);
+        $column['access_date'] = "NOW()";
+    
+        $this->database->table('users_access')
+        ->column($column)
+        ->insert()
+        ->execute();
+    
+        return $this->database->insert_id('users_access_user_access_id_seq');
+    }
+
+    /**
      * Populate users grid
      *
      * @return json $data - list of users
@@ -97,24 +117,24 @@ class Users extends Model
     public function grid()
     {
         // Selectd users
-        $this->database->Table("users");
-        $this->database->Column("user_id, user_name, user_status");
-        $this->database->Argument(1, "user_status", 1);
+        $this->database->table("users");
+        $this->database->column("user_id, user_name, user_status");
+        $this->database->argument(1, "user_status", 1);
 
         if (isset($_GET['value'])) {
             if ($_GET['value'] != '') {
                 if ($_GET['column'] == 0) {
-                    $this->database->Argument(2, "user_id", (int) $_GET['value']);
+                    $this->database->argument(2, "user_id", (int) $_GET['value']);
                 } elseif ($_GET['column'] == 1) {
-                    $this->database->Argument(2, "lower(user_name)", "lower('%{$_GET['value']}%')", "LIKE");
+                    $this->database->argument(2, "lower(user_name)", "lower('%{$_GET['value']}%')", "LIKE");
                 } elseif ($_GET['column'] == 2) {
-                    $this->database->Argument(1, "user_status", $_GET['value']);
+                    $this->database->argument(1, "user_status", $_GET['value']);
                 }
             }
         }
 
-        $this->database->Select();
-        $result = $this->database->Execute();
+        $this->database->select();
+        $result = $this->database->execute();
 
         return $result;
     }

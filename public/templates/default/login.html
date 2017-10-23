@@ -3,10 +3,13 @@
 <title>Bossanova PHP Framework</title>
 <meta id="viewport" name='viewport' content='width=device-width, initial-scale=1, user-scalable=no' />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-<script src="../../components/jquery/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link rel="stylesheet" href="css/admin.css" type="text/css" />
-<body>
+<script src="bossanova.js"></script>
+
 </head>
+<body>
+
 
 <form id="login">
 <table height="90%" align="center">
@@ -37,7 +40,7 @@
         <input type='hidden' name='password' value=''>
         <table cellpadding='6'>
         <tr><td colspan='2'><img src='img/logo.png'></td></tr>
-        <tr><td><b>^^[Password]^^</b><br><input type='password' id='password1' style='width:200px;'></td></tr>
+        <tr><td><b>^^[New Password]^^</b><br><input type='password' id='password1' style='width:200px;'></td></tr>
         <tr><td><b>^^[Confirm Password]^^</b><br><input type='password' id='password2' style='width:200px;'></td></tr>
         <tr><td><input type='button' value='^^[Reset password]^^' style='width:200px;' class='circ1' onclick='doAction(3)'></td></tr>
         </table>
