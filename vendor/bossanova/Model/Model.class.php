@@ -14,9 +14,12 @@
 namespace bossanova\Model;
 
 use bossanova\Database\Database;
+use bossanova\Common\Post;
 
 class Model extends \stdClass
 {
+    use Post;
+
     // Database instance
     public $database = null;
 

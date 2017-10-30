@@ -107,7 +107,7 @@ function doAction(i)
         data: $(string).serializeArray(),
         success: function(result) {
             if (result) {
-                if (result.message) {
+                if (result.message && ! result.success) {
                     alert(result.message);
                 }
                 if (result.url) {

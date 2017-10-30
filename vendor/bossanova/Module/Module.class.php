@@ -755,7 +755,6 @@ class Module
 
         $data = $this->auth->login();
 
-
         // Deal with the authetantion service return
         if (Render::isAjax()) {
             $data = $this->jsonEncode($data);
