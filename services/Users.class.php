@@ -9,9 +9,6 @@
  */
 namespace services;
 
-use models\Users;
-use models\Permissions;
-
 class Users
 {
     private $userModel = null;
@@ -19,8 +16,8 @@ class Users
 
     public function __construct()
     {
-        $this->userModel = new Users();
-        $this->PermissionsModel = new Permissions();
+        $this->userModel = new \models\Users();
+        $this->PermissionsModel = new \models\Permissions();
     }
 
     /**
@@ -205,45 +202,4 @@ class Users
 
         return count($permissions) > 0 ? $permissions : [ 'error' => 1, 'message' => '^^[No record found]^^' ];
     }
-
-    /**
-     * Populate users grid
-     *
-     * @return json $data - list of users
-     */
-    /*public function gridData()
-     {
-         // Grid page
-         $page = isset($_GET['page']) && $_GET['page'] ? (int) $page = $_GET['page'] : 1;
-
-         // Conditionals
-         $where = [ 'user_status = 1' ];
-
-         if (isset($_GET['value']) && $_GET['value'] != '') {
-         // Bind data
-         $v = str_replace("'", "", $_GET['value']);
-
-         // Search by column
-         if ($_GET['column'] == 0) {
-         $where[1] = "user_id = $v";
-         } elseif ($_GET['column'] == 1) {
-         $where[1] = "lower(user_name) like lower('%$v%')";
-         } elseif ($_GET['column'] == 2) {
-         $where[0] = "user_status = $v";
-         }
-         }
-
-         // Columns
-         $columns = 'user_id, user_name, user_status';
-
-         // Data
-         $data = $this->userModel->listAll($where, $columns, null, 10, ($page - 1) * 10);
-
-         // Convert to grid
-         $grid = new \services\Grid();
-         $data = $grid->get($data);
-
-         return $data;
-     }*/
-
 }

@@ -10,7 +10,6 @@
 namespace services;
 
 use bossanova\Services\Services;
-use bossanova\Database\Database;
 use bossanova\Render\Render;
 use bossanova\Mail\Mail;
 
@@ -289,7 +288,7 @@ class Authentication extends Services
                 $row['user_hash'] = md5(uniqid(mt_rand(), true));
 
                 // Full Url
-                $row['url'] = Render::getLink('login');
+                $row['url'] = Render::getLink(Render::$urlParam[0] . '/login');
 
                 // Save hash in the user table, is is a one time code to access the system
                 $user->user_hash = $row['user_hash'];
@@ -396,7 +395,7 @@ class Authentication extends Services
 
                     $this->authenticate($row, $data['message']);
 
-                // This is the first access, user need to change the password
+                    // This is the first access, user need to change the password
                 } else if ($row['user_status'] == 2) {
                     $url = Render::getLink($module . '/login?h=' . $row['user_hash']);
 
