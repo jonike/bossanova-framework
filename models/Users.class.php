@@ -100,12 +100,12 @@ class Users extends Model
     {
         $column = $this->database->bind($column);
         $column['access_date'] = "NOW()";
-    
+
         $this->database->table('users_access')
-        ->column($column)
-        ->insert()
-        ->execute();
-    
+            ->column($column)
+            ->insert()
+            ->execute();
+
         return $this->database->insert_id('users_access_user_access_id_seq');
     }
 

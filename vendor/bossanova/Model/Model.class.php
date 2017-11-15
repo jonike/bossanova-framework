@@ -347,7 +347,7 @@ class Model extends \stdClass
      * @param  integer
      * @return array
      */
-    public function listAll(array $where = null, $columns = null, array $orderBy = null, $limit = null, $offset = null)
+    public function listAll(array $where = null, $columns = null, $orderBy = null, $limit = null, $offset = null)
     {
         // Get data from the table
         $this->database->table($this->config->tableName);

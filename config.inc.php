@@ -85,7 +85,7 @@ $route = array(
         'template_area' => 'content'
     ),
     'admin' => array(
-        'template_path' => 'default/admin.html',
+        'template_path' => 'default/index.html',
         'template_area' => 'content',
         'template_recursive' => '1'
     )

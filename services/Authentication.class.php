@@ -25,6 +25,8 @@ class Authentication extends Services
      */
     public function login()
     {
+        $data = '';
+
         if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id']) {
             if (isset(Render::$urlParam[1]) && Render::$urlParam[1] == 'login') {
                 $data = [

@@ -201,7 +201,11 @@ class Render
                 }
             } else {
                 // Redirect the user to the login page
-                $url = self::getLink(self::$urlParam[0] . '/login');
+                $module = isset(self::$urlParam[0]) && self::$urlParam[0] ? self::$urlParam[0] : '';
+                if ($module) {
+                    $module .= '/';
+                }
+                $url = self::getLink($module . 'login');
                 header("Location: $url");
                 exit;
             }
