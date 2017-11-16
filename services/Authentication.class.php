@@ -149,6 +149,14 @@ class Authentication extends Services
                     'message' => '^^[User not authenticated]^^',
                     'url' => Render::getLink(Render::$urlParam[0] . '/login'),
                 ];
+
+                if (Render::isAjax()) {
+                    echo json_encode($data);
+                } else {
+                    header("Location: {$data['url']}\r\n");
+                }
+
+                exit;
             }
         }
 
