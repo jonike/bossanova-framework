@@ -174,7 +174,7 @@ class Nodes extends Model
      * @param integer $id
      * @return integer $positino
      */
-    public function getChildren($node_id = 0)
+    public function getChildrenId($node_id = 0)
     {
         $nodes = '';
 
@@ -191,7 +191,7 @@ class Nodes extends Model
             $data = json_decode($row['node_json'], true);
 
             // Get children
-            $nodes .= $this->getChildren($row['node_id']);
+            $nodes .= $this->getChildrenId($row['node_id']);
             $nodes .= ',' . $row['node_id'];
         }
 
@@ -451,7 +451,11 @@ class Nodes extends Model
             if ($row['link']) {
                 $node = $row['link'];
             } else {
-                $node = 'nodes/' . $row['node_id'];
+                if (isset($row['node_id'])) {
+                    $node = 'nodes/' . $row['node_id'];
+                } else {
+                    $node = '';
+                }
             }
             // Create the full link
             $url = $this->getLink($node);
@@ -484,5 +488,36 @@ class Nodes extends Model
         $url .= $pageName;
 
         return $url;
+    }
+
+    /**
+     * Get all children nodes
+     *
+     * @param  integer $node_id
+     * @return string  $content
+     */
+    public function getChildren($node_id)
+    {
+        $content = [];
+
+        $result = $this->database->Table("nodes")
+            ->argument(1, "parent_id", $node_id)
+            ->argument(2, "node_status", 1)
+            ->order("node_order, node_id")
+            ->select()
+            ->execute();
+
+        // List
+        while ($data = $this->database->fetch_assoc($result)) {
+            // Content
+            $row = json_decode($data['node_json'], true);
+
+            // Content
+            $row['url'] = $this->nodeLink($row);
+
+            $content[] = $row;
+        }
+
+        return $content;
     }
 }
