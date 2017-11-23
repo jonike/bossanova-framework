@@ -9,8 +9,8 @@
  */
 namespace modules\Admin;
 
-use Bossanova\Module\Module;
-use Bossanova\Database\Database;
+use bossanova\Module\Module;
+use bossanova\Database\Database;
 
 class Admin extends Module
 {

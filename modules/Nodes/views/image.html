@@ -1,0 +1,148 @@
+<form method='post' action='/nodes/<?php echo $this->view['node_id']; ?>/edition'>
+<input type="hidden" name="parent_id" value="<?php echo $this->view['parent_id']; ?>">
+<input type="hidden" name="type" value="<?php echo $this->view['type']; ?>">
+
+<div class='title'>^^[Images]^^</div>
+<div class='subtitle'>^^[Images administration]^^</div><br>
+
+<table cellspacing='10'>
+<tr>
+<td class='rotateText'><div><p>^^[Info]^^</p></div></td>
+<td>
+
+    <table cellpadding='4'>
+    <tr><td><label>^^[URL]^^</label></td><td><div style="position:absolute;"><div style="position:relative;padding:4px;padding-right:0px;color:#555" id="nodes_link_div"><?php echo $this->view['domain']; ?></div></div><input type="text" name="link" id="nodes_link" value="<?php echo $this->view['link']; ?>" style="width:450px;"></div></td></td><td><input type='button' value='Open' onclick="window.open('/' + $('#nodes_link').val(), '_new');"></td></tr>
+    <tr><td><label>^^[Title]^^</label></td><td><input type="text" name="title" style="width:450px;"></td></tr>
+    <tr><td><label>^^[Status]^^</label></td><td><select name="status" style="width:240px;"><option value='1'>^^[Enabled]^^</option><option value='0'>^^[Disabled]^^</option><option value='2'>^^[Not published]^^</option></select></td></tr>
+    </table>
+
+</td>
+</tr>
+<tr>
+<td class='rotateText'><div><p>Images</p></div></td>
+<td>
+     <div>
+          <input type="file" id="file" multiple="multiple" /><br><br>
+
+          <div id='files'></div>
+     </div>
+</td>
+</tr>
+<tr>
+<td></td>
+<td>
+    <input type="submit" value="^^[Save]^^" onclick="nodes_save();" style="width:120px;">
+    <input type="button" value="^^[New]^^" onclick="window.open('/nodes/0/edition', '_top');" style="width:120px;">
+</td>
+</tr>
+</table>
+</form>
+
+<script>
+$(document).ready(function() {
+
+    var data = <?php echo isset($this->view['node_json']) && $this->view['node_json'] ? $this->view['node_json'] : "''"; ?>;
+
+    if (data) {
+        $.each(data, function(k, v) {
+            if (k == 'files') {
+                $.each(v, function(k1, v1) {
+                    content = '<div class="thumbs"><img src=' + v1.content + '></div>';
+                    $('#files').append(content);
+                });
+            } else {
+                $('[name='+k+']').val(v);
+            }
+        });
+    }
+
+    $('#nodes_link').css('padding-left', $('#nodes_link_div').width()+3);
+
+    $("#file").change(function(){
+        // Pre-process images
+        nodes_files(this.files);
+        // Reset file entry
+        $(this).val('');
+    });
+
+    $("#files").bind('dragstart', false);
+    $("#files").bind('dragenter dragover', false); 
+    $("#files").bind('drop', function(event) {
+        event.preventDefault();  
+        event.stopPropagation();
+        var data = event.originalEvent.dataTransfer.getData('text/html');
+        if (! data) {
+            nodes_files(event.originalEvent.dataTransfer.files);
+        } else {
+            importImage('/nodes/url?url=' + $(data).attr('src'));
+        }
+
+        return false;
+    });
+
+    $('#files').on('click', function (e) {
+        if ($(e.originalEvent.srcElement).prop('class') == 'thumbs') {
+            if (confirm('Are you sure?')) {
+                $(e.originalEvent.srcElement).remove();
+            }
+        }
+    });
+});
+
+function nodes_save()
+{
+    // Upload images
+    var imgs = $('#files img');
+
+    $.each(imgs, function (k, v) {
+        $('#files').append('<textarea name="files[][content]" style="display:none;">' + $(v).prop('src') + '</textarea>');
+    });
+}
+
+function nodes_files(files)
+{
+    var reader = [];
+
+    $.each(files, function (k, v) {
+        reader[k] = new FileReader();
+
+        reader[k].addEventListener("load", function () {
+            importImage(reader[k].result);
+        }, false);
+
+        reader[k].readAsDataURL(v)
+    });
+}
+
+function importImage(url)
+{
+    var img = new Image();
+
+    img.onload = function() {
+        var canvas = document.createElement("canvas");
+        canvas.width  = 200;
+        canvas.height = 200;
+        var ctx = canvas.getContext("2d");
+        ctx.imageSmoothingQuality = 'high';
+        var w = img.width;
+        var h = img.height;
+        if (w > h) {
+            p = 200 / w;
+        } else {
+            p = 200 / h;
+        }
+        var position = (200 - h*p) / 2;
+
+        ctx.drawImage(img, 0, position, w*p, h*p);
+        var img1 = new Image();
+        $(img1).prop('src', canvas.toDataURL());
+        var div = document.createElement('div');
+        $(div).prop('class', 'thumbs');
+        $(div).append(img1);
+        $('#files').append(div);
+    };
+
+    img.src = url;
+}
+
+</script>

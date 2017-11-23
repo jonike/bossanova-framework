@@ -1,0 +1,18 @@
+<div class='title'>^^[Nodes]^^</div>
+<div class='subtitle'>^^[Create a new node content]^^</div><br>
+
+<ul>
+<li><a onclick="next('text')" style="cursor:pointer;text-decoration:underline;">Text</a></li>
+<li><a onclick="next('image')" style="cursor:pointer;text-decoration:underline;">Image</a></li>
+<li><a onclick="next('folder')" style="cursor:pointer;text-decoration:underline;">Folder</a></li>
+<li><a onclick="next('link')" style="cursor:pointer;text-decoration:underline;">Link</a></li>
+<li><a onclick="next('product')" style="cursor:pointer;text-decoration:underline;">Product</a></li>
+</ul>
+
+<script>
+function next(obj) {
+    console.log(window.location.href);
+    var url = window.location.href.replace('edition', 'edition/0/' + obj);
+    window.open(url, '_top');
+}
+</script>

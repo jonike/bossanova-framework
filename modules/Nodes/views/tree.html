@@ -1,0 +1,88 @@
+<div id='tree_explorer'></div>
+
+<script>
+var node_id = 0;
+
+$(document).ready(function() {
+    // Prepare tree
+    $('#tree_explorer').jstree({
+        'core' : { 'data' : { 'url' : '/nodes/edition/explorer', 'dataType' : 'json' }, 'check_callback': dnd },
+        'plugins' : [ 'dnd', 'contextmenu', 'state' ],
+        'type' : { 'default' : { 'valid_children' : [ 'default' ] } },
+        "multiple" : false,
+        'contextmenu': {
+            'items': function ($node) {
+                if ($node.id == 'upload') {
+                    return false;
+                } else {
+                    return {
+                        'Content': {
+                            'label': 'Create new node',
+                            'action': function (obj) {
+                                window.open('/nodes/edition?parent_id=' + $node.id, '_top');
+                            }
+                        },
+                        'Expand': {
+                            'label': 'Expand all tree',
+                            'action': function (obj) {
+                                $("#tree_explorer").jstree('open_all');
+                            }
+                        }
+                    };
+                }
+            }
+        }
+    });
+
+    $('#tree_explorer').bind("move_node.jstree", function (e, data) {
+        if (data.node.parent == 'trash') {
+            $.ajax({
+                url: '/nodes/edition/' +  data.node.id +'/delete',
+                dataType:'json',
+                type: 'DELETE',
+                success: function(result) {
+                }
+            });
+        } else {
+            // Nodes in order
+            var obj = '';
+            $('#'+data.node.parent).find('li').each( function( k, v ) {
+                if (obj) obj += ',';
+                obj += v.id;
+            });
+
+            // Update server order
+            $.ajax({
+                url: '/nodes/edition/' + data.node.id + '/move',
+                dataType:'json',
+                data: { parent_id:data.node.parent, order:obj },
+                type: 'POST',
+                success: function(result) {
+                    $('[name="parent_id"]').val(data.node.parent);
+                }
+            });
+        }
+    });
+
+    $('#tree_explorer').bind("changed.jstree", function (e, data) {
+        var jsTree = $('#tree_explorer').jstree(true);
+        jsTree.save_state();
+		if (data.action == 'select_node' && data.event && data.event.type == 'click') {
+	        id = parseInt($('#tree_explorer').jstree('get_selected'));
+	        if (id > 0) {
+	            node_id = id;
+	            window.open('/nodes/edition/' + node_id, '_top');
+	        }
+		}
+    });
+});
+
+function dnd (a, b, c)
+{
+    if ((b.id == 'trash') || c.id == '#') {
+        return false;
+    } else {
+        return true;
+    }
+}
+</script>

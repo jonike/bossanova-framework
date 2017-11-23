@@ -1,26 +1,22 @@
 <form id="permissions_form">
 <input type="hidden" name="permission_id">
 
-<h1 class='title'>Permissions Module</h1>
-<span class='subtitle'>Permissions maintenance and administration</span>
+<div class='title'>Permissions</div>
+<div class='subtitle'>Permissions maintenance and administration</div><br>
 
 <table cellspacing='10' width='100%'>
 <tr>
 <td class='rotateText'><div><p>^^[Info]^^</p></div></td>
 <td>
 
-	<table cellpadding="4" cellspacing="0">
-	<tr>
-	<td><label>^^[Name]^^</label><br><input type="text" name="permission_name" style="width:350px"></td>
-	<td colspan="2"><label>^^[Status]^^</label><br><select type="text" name="permission_status" style="width:200px"><option value="1">^^[Enabled]^^</option><option value="0">^^[Disabled]^^</option></select></td>
-	</tr>
-	<tr>
-	<td><label>^^[Hierarchy]^^</label><br><select name="permission_order" style="width:350px"><option value="6">^^[None]^^</option><option value="5">^^[Copper]^^</option><option value="4">^^[Bronze]^^</option><option value="3">^^[Silver]^^</option><option value="2">^^[Gold]^^</option><option value="1">^^[Diamond]^^</option></select></td>
-	<td><label>^^[Superuser]^^</label><br><select name="global_user" style="width:200px" onchange="permissions_superuser()"><option value="0">^^[No]^^</option><option value="1">^^[Yes]^^</option></select></td>
-	</tr>
-	</table>
+    <table cellpadding="4" cellspacing="0">
+    <tr><td><label>^^[Name]^^</label></td><td><input type="text" name="permission_name" style="width:350px"></td></tr>
+    <tr><td><label>^^[Hierarchy]^^</label></td><td><select name="permission_order" style="width:350px"><option value="6">^^[None]^^</option><option value="5">^^[Copper]^^</option><option value="4">^^[Bronze]^^</option><option value="3">^^[Silver]^^</option><option value="2">^^[Gold]^^</option><option value="1">^^[Diamond]^^</option></select></td></tr>
+    <tr><td><label>^^[Superuser]^^</label></td><td><select name="global_user" style="width:350px" onchange="permissions_superuser()"><option value="0">^^[No]^^</option><option value="1">^^[Yes]^^</option></select></td></tr>
+    <tr><td><label>^^[Status]^^</label></td><td><select type="text" name="permission_status" style="width:350px"><option value="1">^^[Enabled]^^</option><option value="0">^^[Disabled]^^</option></select></td></tr>
+    </table>
 
-	<p><input type="button" name="save" value="^^[Save]^^" style="width:90px;"> <input type="reset" value="^^[New]^^" style="width:90px;" onclick="permissions_new();"></p>
+    <p><input type="button" name="save" value="^^[Save]^^" style="width:90px;"> <input type="reset" value="^^[New]^^" style="width:90px;" onclick="permissions_new();"></p>
 
 </td>
 </tr>
@@ -28,8 +24,8 @@
 <td class='rotateText'><div><p>^^[Permissions]^^</p></div></td>
 <td>
 
-	<div id="permission_actions" style="padding:10px;min-height:100px;"></div>
-	
+    <div id="permission_actions" style="padding:10px;min-height:100px;"></div>
+
 </td>
 </tr>
 </table>
@@ -41,87 +37,98 @@
 var permission_id = 0;
 
 $(document).ready(function() {
-	
-	$('#permissions_form').form({ url:bossanova_url + 'admin/permissions', primarykey:'permission_id' });
+    
+    $('#permissions_form').form({ url: '/admin/permissions', primarykey:'permission_id' });
 
-	$('#permissions_form_grid').grid({
-		url:bossanova_url + 'admin/permissions/grid',
-		columns:[
-			{title:'^^[ID]^^',width:'40'},
-			{title:'^^[Name]^^',width:'*', search:'1'},
-			{title:'^^[Status]^^',width:'100', search:'2', search_combo:{'1':'^^[Active]^^','0':'^^[Inactive]^^'}},
-			{title:'',width:'40'}
-			],
-		actions:[
-			{title:'^^[Open]^^',icon:'img/open.png',click:'permissions_open'},
-			{title:'^^[Delete]^^',icon:'img/delete.png',click:'permissions_delete'}
-			]
-	});
-
-	permission_actions_list(0);
+    $('#permissions_form_grid').grid({
+        url: '/admin/permissions/grid',
+        columns:[
+            {title:'^^[ID]^^',width:'40'},
+            {title:'^^[Name]^^',width:'*', search:'1'},
+            {title:'^^[Status]^^',width:'100', search:'2', search_combo:{'1':'^^[Active]^^','0':'^^[Inactive]^^'}},
+            {title:'',width:'40'}
+            ],
+        actions:[
+            {title:'^^[Open]^^',icon:'img/open.png',click:'permissions_open'},
+            {title:'^^[Delete]^^',icon:'img/delete.png',click:'permissions_delete'}
+            ]
+    });
 });
 
 function permissions_new ()
 {
-	$('#permissions_form').find('[name="permission_id"]').val('');
-	permission_actions_list(0);
-	$('#permission_actions').find('input').removeAttr("disabled");
-	$('#permission_tr').css('display', '');
+    $('#permissions_form').form('open', '0', function (result) {
+        permissions_superuser();
+        permissions_routes(result.permission_routes);
+    });
 }
 
 function permissions_open (id)
 {
-	permission_id = id;
-	$('#permissions_form').form('open', id, function () {
-		permissions_superuser();
-		permission_actions_list(id);
-	});
+    $('#permissions_form').form('open', id, function (result) {
+        permissions_superuser();
+        permissions_routes(result.permission_routes);
+    });
+}
+
+function permissions_routes(restrictions)
+{
+    var html = "<table cellpadding='2' cellspacing='0'>";
+    html += "<tr>";
+    html += " <td><b>^^[Route]^^</b></td><td><b>^^[Action]^^</b></td><td><b>^^[Permission]^^</b></td>";
+    html += "</tr>";
+
+    var color = '';
+    var bgcolor = '';
+
+    $.each(restrictions, function (k, v) {
+        selected = v.checked ? ' selected' : '';
+        title = v.title ? v.title : '';
+        color = selected ? 'green' : 'red';
+        bgcolor = (bgcolor == 'eee') ? 'fff' : 'eee';
+
+        html += "<tr style='background-color:#" + bgcolor + ";color:" + color + "'>";
+        html += " <td width='120'>" + k + "</td><td width='280'>" + title + "</td>";
+        html += " <td>";
+        html += "  <select name='permission_routes[" + k + "]' onchange=\"updateColor(this)\">";
+        html += "   <option value='0'>^^[No]^^</option>";
+        html += "   <option value='1'" + selected + ">^^[Yes]^^</option>";
+        html += "  </select>";
+        html += " </td>";
+        html += "</tr>";
+    });
+
+    html += "</table>";
+
+    $('#permission_actions').html(html);
 }
 
 function permissions_delete (id)
 {
-	if (confirm('^^[Are you sure]^^?'))
-	{
-		$('#permissions_form').form('delete', id);
-	}
-}
-
-function permission_actions_list (id)
-{
-	$.get(bossanova_url + 'admin/permissions/actions/' + id, function(data) {
-		$('#permission_actions').html(data);
-	});
+    if (confirm('^^[Are you sure]^^?'))
+    {
+        $('#permissions_form').form('delete', id);
+    }
 }
 
 function permissions_superuser ()
 {
-	var o = $('#permissions_form').find('[name="global_user"]').val();
+    var o = $('#permissions_form').find('[name="global_user"]').val();
 
-	if (o == 1) {
-		$('#permission_actions').find('input').attr("disabled", "true");
-		$('#permission_tr').css('display', 'none');
-	} else {
-		$('#permission_actions').find('input').removeAttr("disabled");
-		$('#permission_tr').css('display', '');
-	}
-}
-
-function permissions_filter_add ()
-{
-	$('#permission_filters tr.filter:last').after('<tr class="filter"><td><select name="filter_name[]" style="width:200px"><option value="1">^^[Country]^^</option><option value="2">^^[Time inserted]^^</option><option value="3">^^[Indication]^^</option><option value="4">^^[Qrtwid]^^</option></select></td><td><select type="text" name="filter_operator[]" style="width:200px"><option value="<=">&lt;=</option><option value=">=">&gt;=</option><option value="==">==</option><option value="in">IN</option></select></td><td><input type="text" name="filter_value[]" value="" id="filter_value"> <input type="button" value="x" style="border:0px;background-color:transparent;" onclick="$(this).parent().parent().remove();"></td></tr>');
-	$("#no_filters").remove();
-}
-
-function permissions_filter_del (o)
-{
-	$(o).parent().parent().remove();
+    if (o == 1) {
+        $('#permission_actions').find('input').attr("disabled", "true");
+        $('#permission_tr').css('display', 'none');
+    } else {
+        $('#permission_actions').find('input').removeAttr("disabled");
+        $('#permission_tr').css('display', '');
+    }
 }
 
 function updateColor (obj) {
-	if ($(obj).val() == 0) {
-		$(obj).parent().parent().css('color', 'red');
-	} else {
-		$(obj).parent().parent().css('color', 'green');
-	}
+    if ($(obj).val() == 0) {
+        $(obj).parent().parent().css('color', 'red');
+    } else {
+        $(obj).parent().parent().css('color', 'green');
+    }
 }
 </script>

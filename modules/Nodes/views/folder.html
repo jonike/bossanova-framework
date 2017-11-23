@@ -1,0 +1,114 @@
+<form method='post' action='/nodes/<?php echo $this->view['node_id']; ?>/edition'>
+<input type="hidden" name="parent_id" value="<?php echo $this->view['parent_id']; ?>">
+<input type="hidden" name="type" value="<?php echo $this->view['type']; ?>">
+
+<div class='title'>^^[Folder]^^</div>
+<div class='subtitle'>^^[Content administration]^^</div><br>
+
+<table cellspacing='10'>
+<tr>
+<td class='rotateText'><div><p>^^[Info]^^</p></div></td>
+<td>
+
+    <table cellpadding='4'>
+    <tr>
+        <td><label>^^[Format]^^</label></td><td>
+            <select name="format" style="width:240px;" onchange="nodes_template_custom()">
+            <option value="0">^^[Default]^^</option>
+            <option value="1">^^[List only]^^</option>
+            <option value="99">^^[Custom template]^^</option>
+            </select>
+        </td>
+    </tr>
+    <tr><td><label>^^[URL]^^</label></td><td><div style="position:absolute;"><div style="position:relative;padding:4px;padding-right:0px;color:#555" id="nodes_link_div"><?php echo $this->view['domain']; ?></div></div><input type="text" name="link" id="nodes_link" value="<?php echo $this->view['link']; ?>" style="width:450px;"></div></td></td><td><input type='button' value='Open' onclick="window.open('/' + $('#nodes_link').val(), '_new');"></td></tr>
+    <tr><td><label>^^[Title]^^</label></td><td><input type="text" name="title" style="width:450px;"></td></tr>
+    <tr><td><label>^^[Author]^^</label></td><td><input type="text" name="author" style="width:450px;"></td></tr>
+    <tr><td><label>^^[Published From]^^</label></td><td><input type="text" name="published_from" id="nodes_published_from" style="width:240px;"></td></tr>
+    <tr><td><label>^^[Published To]^^</label></td><td><input type="text" name="published_to" id="nodes_published_to" style="width:240px;"></td></tr>
+    <tr><td><label>^^[Meta title]^^</label></td><td><input name="page" style="width:450px;"></td></tr>
+    <tr><td><label>^^[Meta description]^^</label></td><td><input name="description" style="width:450px;"></td></tr>
+    <tr><td><label>^^[Meta Keywords]^^</label></td><td><textarea name="keywords" id="nodes_keywords"></textarea></td></tr>
+    <tr><td><label>^^[Status]^^</label></td><td><select name="status" style="width:240px;"><option value='1'>^^[Enabled]^^</option><option value='0'>^^[Disabled]^^</option><option value='2'>^^[Not published]^^</option></select></td></tr>
+    </table>
+
+</td>
+</tr>
+<tr class='node_template' style='display:none;'>
+<td class='rotateText'><div><p>^^[Template]^^</p></div></td>
+<td valign="top" style="padding:6px;">
+
+    <textarea name="template" style="width:100%;height:250px;"></textarea><br>  
+
+</td>
+</tr>
+<tr class='node_template' style='display:none;'>
+<td class='rotateText'><div><p>^^[Children Template]^^</p></div></td>
+<td valign="top" style="padding:6px;">
+
+    <textarea name="template_children" style="width:100%;height:250px;"></textarea><br>  
+
+</td>
+</tr>
+<tr>
+<td class='rotateText'><div><p>^^[Summary]^^</p></div></td>
+<td valign="top" style="padding:6px;">
+
+    <textarea id="editor1" name="summary"></textarea>
+
+</td>
+</tr>
+<tr>
+<td></td>
+<td>
+    <input type="submit" value="^^[Save]^^" onclick="nodes_save();" style="width:120px;">
+    <input type="button" value="^^[New]^^" onclick="window.open('/nodes/0/edition', '_top');" style="width:120px;">
+</td>
+</tr>
+</table>
+</form>
+
+<script>
+$(document).ready(function() {
+
+    var data = <?php echo isset($this->view['node_json']) && $this->view['node_json'] ? $this->view['node_json'] : "''"; ?>;
+
+    if (data) {
+        $.each(data, function(k, v) {
+            $('[name='+k+']').val(v);
+        });
+    }
+
+    CKEDITOR.config.autoParagraph = false;
+
+    CKEDITOR.replace( 'editor1', {
+        height:150,
+        extraPlugins: 'pastebase64',
+        toolbar: [
+            { name: 'document', items: [ 'Source', '-', 'NewPage', 'Preview', '-', 'Templates' ] },
+            [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ],
+            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Strike', '-', 'RemoveFormat' ] },
+        ]
+    });
+
+    $('#nodes_published_from').calendar({ format:'dd/mm/YYYY HH24:MI' });
+    $('#nodes_published_to').calendar({ format:'dd/mm/YYYY HH24:MI' });
+    $('#nodes_link').css('padding-left', $('#nodes_link_div').width()+3);
+    $('#nodes_keywords').tagEditor({ placeholder:'^^[Keywords]^^...', height:40 });
+
+    nodes_template_custom();
+});
+
+function nodes_save()
+{
+    $('#editor1').val(CKEDITOR.instances.editor1.getData());
+}
+
+function nodes_template_custom()
+{
+    if ($('[name="format"]').val() == 99) {
+        $('.node_template').css('display', '');
+    } else {
+        $('.node_template').css('display', 'none');
+    }
+}
+</script>

@@ -1,0 +1,45 @@
+<form method='post' action='/nodes/<?php echo $this->view['node_id']; ?>/edition'>
+<input type="hidden" name="parent_id" value="<?php echo $this->view['parent_id']; ?>">
+<input type="hidden" name="type" value="<?php echo $this->view['type']; ?>">
+
+<div class='title'>^^[Link]^^</div>
+<div class='subtitle'>^^[Content administration]^^</div><br>
+
+<table cellspacing='10'>
+<tr>
+<td class='rotateText'><div><p>^^[Info]^^</p></div></td>
+<td>
+
+    <table cellpadding='4'>
+    <tr><td><label>^^[URL]^^</label></td><td><div style="position:absolute;"><div style="position:relative;padding:4px;padding-right:0px;color:#555" id="nodes_link_div"><?php echo $this->view['domain']; ?></div></div><input type="text" name="link" id="nodes_link" value="<?php echo $this->view['link']; ?>" style="width:450px;"></div></td></td><td><input type='button' value='Open' onclick="window.open('/' + $('#nodes_link').val(), '_new');"></td></tr>
+    <tr><td><label>^^[Title]^^</label></td><td><input type="text" name="title" style="width:450px;"></td></tr>
+    <tr><td><label>^^[Redirect to]^^</label></td><td><input type="text" name="url" style="width:450px;"></td></tr>
+    <tr><td><label>^^[Status]^^</label></td><td><select name="status" style="width:240px;"><option value='1'>^^[Enabled]^^</option><option value='0'>^^[Disabled]^^</option><option value='2'>^^[Not published]^^</option></select></td></tr>
+    </table>
+
+</td>
+</tr>
+<tr>
+<td></td>
+<td>
+    <input type="submit" value="^^[Save]^^" style="width:120px;">
+    <input type="button" value="^^[New]^^" onclick="window.open('/nodes/0/edition', '_top');" style="width:120px;">
+</td>
+</tr>
+</table>
+</form>
+
+<script>
+$(document).ready(function() {
+
+    var data = <?php echo isset($this->view['node_json']) && $this->view['node_json'] ? $this->view['node_json'] : "''"; ?>;
+
+    if (data) {
+        $.each(data, function(k, v) {
+            $('[name='+k+']').val(v);
+        });
+    }
+
+    $('#nodes_link').css('padding-left', $('#nodes_link_div').width()+3);
+});
+</script>

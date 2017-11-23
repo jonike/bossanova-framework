@@ -2,24 +2,32 @@
 
 /**
  * (c) 2013 Bossanova PHP Framework
- * http://www.bossanova-framework.com
- *
- * @author: Paul Hodel <paul.hodel@gmail.com>
- * @description: User Admin Controller
- */
+* http://www.bossanova-framework.com
+*
+* @author: Paul Hodel <paul.hodel@gmail.com>
+* @description: User Admin Controller
+*/
 namespace modules\Admin\controllers;
 
 use modules\Admin\Admin;
 
 class Users extends Admin
 {
-    /**
-     * Information about all users for the grid
-     */
-    public function grid()
+    public function __construct()
     {
-        $users = new \models\Users();
-        $data = $users->grid();
+        $this->service = new \services\Users();
+
+        parent::__construct();
+    }
+
+    /**
+     * Select record
+     */
+    public function select()
+    {
+        $id = (int) $this->getParam(3);
+
+        $data = $this->service->select($id);
 
         return $this->jsonEncode($data);
     }
@@ -29,22 +37,9 @@ class Users extends Admin
      */
     public function insert($row = NULL)
     {
-        // Get post variables
-        $row = $this->getPost();
+        $data = $this->service->insert($this->getPost());
 
-        // Password
-        if (isset($row['user_password']) && ! $row['user_password']) {
-            unset($row['user_password']);
-        } else {
-            // Update password information
-            $salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
-            $pass = hash('sha512', hash('sha512', $row['user_password']) . $salt);
-            $row['user_salt'] = $salt;
-            $row['user_password'] = $pass;
-        }
-
-        // Update user informartion
-        return parent::insert($row);
+        return $this->jsonEncode($data);
     }
 
     /**
@@ -52,22 +47,11 @@ class Users extends Admin
      */
     public function update($row = NULL)
     {
-        // Get post variables
-        $row = $this->getPost();
+        $id = (int) $this->getParam(3);
 
-        // Password
-        if (isset($row['user_password']) && ! $row['user_password']) {
-            unset($row['user_password']);
-        } else {
-            // Update password information
-            $salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
-            $pass = hash('sha512', hash('sha512', $row['user_password']) . $salt);
-            $row['user_salt'] = $salt;
-            $row['user_password'] = $pass;
-        }
+        $data = $this->service->update($id, $this->getPost());
 
-        // Update user informartion
-        return parent::update($row);
+        return $this->jsonEncode($data);
     }
 
     /**
@@ -75,12 +59,29 @@ class Users extends Admin
      */
     public function delete()
     {
-        // Get the id
         $id = (int) $this->getParam(3);
 
-        // Logical delete
-        $user = new \models\Users();
-        $data = $user->delete($id);
+        $data = $this->service->delete($id);
+
+        return $this->jsonEncode($data);
+    }
+
+    /**
+     * Information about all users for the grid
+     */
+    public function grid()
+    {
+        $data = $this->service->grid();
+
+        return $this->jsonEncode($data);
+    }
+
+    /**
+     * Information about all users for the grid
+     */
+    public function dropdown()
+    {
+        $data = $this->service->getPermissions();
 
         return $this->jsonEncode($data);
     }

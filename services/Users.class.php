@@ -145,6 +145,17 @@ class Users
             if (! $this->PermissionsModel->isAllowedHierarchy($data['permission_id'])) {
                 $data = [ 'error' => 1, 'message' => '^^[Permission denied]^^' ];
             } else {
+                // Password
+                if (isset($row['user_password']) && ! $row['user_password']) {
+                    unset($row['user_password']);
+                } else {
+                    // Update password information
+                    $salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
+                    $pass = hash('sha512', hash('sha512', $row['user_password']) . $salt);
+                    $row['user_salt'] = $salt;
+                    $row['user_password'] = $pass;
+                }
+
                 $result = $this->userModel->column($row)->update($id);
                 $data = [ 'data' => $result, 'message' => '^^[Successfully saved]^^' ];
             }
