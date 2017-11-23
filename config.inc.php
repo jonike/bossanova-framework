@@ -39,8 +39,8 @@ define('MS_CONFIG_PASS', '');
 define('MS_CONFIG_KEY', '');
 
 // Login request email subject
-define('EMAIL_RECOVERY_FILE', 'resources/texts/recovery.txt');
 define('EMAIL_RECOVERY_SUBJECT', 'Login Reset Request');
+define('EMAIL_RECOVERY_FILE', 'resources/texts/recovery.txt');
 define('EMAIL_REGISTRATION_FILE', 'resources/texts/registration.txt');
 define('EMAIL_REGISTRATION_SUBJECT', 'Welcome to Bossanova');
 
@@ -69,34 +69,27 @@ if (APPLICATION_ENV == 'production') {
     define('DB_CONFIG_TYPE', 'pgsql');
     define('DB_CONFIG_HOST', 'localhost');
     define('DB_CONFIG_USER', 'postgres');
-    define('DB_CONFIG_PASS', 'hodell11');
+    define('DB_CONFIG_PASS', '');
     define('DB_CONFIG_NAME', 'bossanova');
 }
 
 // Global routing definition, this information will be marged with any stored database definitions table routes when DATABASE_ROUTING is true
-$route = array(
-    '' => array(
+$route = [
+    '' => [
         'template_path' => 'default/index.html',
         'template_area' => 'content',
         'template_recursive' => '1',
-    ),
-    'login' => array(
-        'template_path' => 'default/login.html',
-        'template_area' => 'content'
-    ),
-    'admin' => array(
-        'template_path' => 'default/index.html',
-        'template_area' => 'content',
-        'template_recursive' => '1'
-    )
-);
+    ]
+];
 
 // global access restriction. When a route is defined here you must use the database to give the user permissions
-$restriction = array(
-    'admin' => array(
-        'title' => '^^[Admin Portal]^^'
-    )
-);
+$restriction = [
+    'admin' => ['title' => 'Admin' ],
+    'admin/users' => ['title' => 'Users administration' ],
+    'admin/permissions' => ['title' => 'Permissions administration' ],
+    'admin/routes' => ['title' => 'Routes administration' ],
+    'nodes/edition' => ['title' => 'Nodes edition' ],
+];
 
 // Fix templates elements
-$persistent_elements = array();
+$persistent_elements = [];
