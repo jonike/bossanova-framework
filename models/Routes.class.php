@@ -54,7 +54,7 @@ class Routes extends Model
         $this->database->select();
         $result = $this->database->execute();
 
-        return $this->gridFormat($result);
+        return $result;
     }
 
     /**

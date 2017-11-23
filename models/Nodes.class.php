@@ -103,12 +103,18 @@ class Nodes extends Model
 
         // Data
         $data = [
-            'parent_id' => $this->getPost('parent_id'),
             'node_link' => $this->getPost('link'),
-            'node_order' => $this->getPost('order'),
             'node_status' => $this->getPost('status'),
             'node_json' => json_encode($row)
         ];
+
+        // Complement
+        if ($value = $this->getPost('parent_id')) {
+            $data['parent_id'] = $value;
+        }
+        if ($value = $this->getPost('order')) {
+            $data['node_order'] = $value;
+        }
 
         // Bind
         return $data = $this->database->bind($data);
