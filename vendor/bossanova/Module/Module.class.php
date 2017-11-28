@@ -113,9 +113,83 @@ class Module
             }
         }
 
-        $data = new \services\Rest($this->query);
+        // Reading Restful Request
+        if ((int) $this->getParam(1) > 0) {
+            // Table name
+            $table = $this->getParam(0);
+            $id = $this->getParam(1);
+            $action = $table;
+        } elseif ((int) $this->getParam(2) > 0) {
+            // Table name
+            $table = $this->getParam(1);
+            $id = $this->getParam(2);
+            $action = $this->getParam(0) . '/' . $table;
+        } elseif ($this->getParam(0) && ! $this->getParam(1)) {
+            // Table name
+            $table = $this->getParam(0);
+            $id = 0;
+            $action = $table;
+        } elseif ($this->getParam(0) && $this->getParam(1) && ! $this->getParam(2)) {
+            // Table name
+            $table = $this->getParam(1);
+            $id = 0;
+            $action = $this->getParam(0) . '/' . $table;
+        } else {
+            $table = $this->getParam(0);
+            $id = 0;
+            $action = $this->getParam(0);
+        }
 
-        return isset($data) ? $this->jsonEncode($data) : '';
+        // Escape table name
+        $table = $this->escape($table);
+
+        // Create model object
+        $model = $this->query->model($table);
+
+        // Create REST service object
+        $service = new \services\Rest($model);
+
+        // Process rest request
+        if ($this->requestMethod == 'POST' || $this->requestMethod == 'PUT') {
+            // Posted data
+            $data = $this->getPost();
+
+            if (! $id) {
+                if ($this->getPermission("$action/insert")) {
+                    $result = $service->insert($data);
+                } else {
+                    $result = [ 'message' => '^^[Permission denied]^^' ];
+                }
+            } else {
+                if ($this->getPermission("$action/update")) {
+                    $result = $service->update($id, $data);
+                } else {
+                    $result = [ 'message' => '^^[Permission denied]^^' ];
+                }
+            }
+        } else if ($this->requestMethod == 'DELETE') {
+            if ($this->getPermission("$action/delete")) {
+                if ($id > 0) {
+                    $result = $service->delete($id);
+                }
+            } else {
+                $result = [ 'message' => '^^[Permission denied]^^' ];
+            }
+        } else {
+            if ($id > 0) {
+                if ($this->getPermission("$action/select")) {
+                    $result = $service->select($id);
+                } else {
+                    $result = [ 'message' => '^^[Permission denied]^^' ];
+                }
+            }
+        }
+
+        if (isset($result)) {
+            $this->setView(false);
+
+            return $result = $this->jsonEncode($result);
+        }
     }
 
     /**
@@ -442,7 +516,7 @@ class Module
     public function getIdent()
     {
         if (! $this->auth) {
-            $this->auth = new Authentication($this->query);
+            $this->auth = new Authentication();
         }
 
         return $this->auth->getIdent();
@@ -488,7 +562,7 @@ class Module
     public function getPermissions()
     {
         if (! $this->auth) {
-            $this->auth = new Authentication($this->query);
+            $this->auth = new Authentication();
         }
 
         return $this->auth->getPermissions();

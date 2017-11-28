@@ -2,11 +2,11 @@
 
 /**
  * (c) 2013 Bossanova PHP Framework
-* http://www.bossanova-framework.com
-*
-* @author: Paul Hodel <paul.hodel@gmail.com>
-* @description: Permissions Admin Controller
-*/
+ * http://www.bossanova-framework.com
+ *
+ * @author: Paul Hodel <paul.hodel@gmail.com>
+ * @description: Permissions Admin Controller
+ */
 namespace modules\Admin\controllers;
 
 use modules\Admin\Admin;

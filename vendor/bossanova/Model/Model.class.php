@@ -60,12 +60,12 @@ class Model extends \stdClass
 
             // Looing for the table information
             if ($info = $this->getTableInfo($tableName)) {
-                $this->config = (object) array(
+                $this->config = (object) [
                     'tableName' => $tableName,
                     'primaryKey' => $info['primaryKey'],
                     'sequence' => $info['sequence'],
                     'recordId' => 0
-                );
+                ];
             } else {
                 throw new ModelException("^^[Table could not be found.]^^");
             }
@@ -433,7 +433,7 @@ class Model extends \stdClass
 
         $column_name = isset($row['Column_name']) ? $row['Column_name'] : $row['column_name'];
         $row['primaryKey'] = $column_name;
-        $row['sequence'] = str_replace(array("nextval","regclass","(",")","::","'"), "", $column_name);
+        $row['sequence'] = str_replace(array("nextval","regclass","(",")","::","'"), "", $row['column_default']);
 
         return $row;
     }

@@ -77,10 +77,13 @@ class Users
                         'message' => '^^[This email or login is already in registered]^^'
                     ];
                 } else {
-                    // Generate user Password
+                    // Password
+                    if (! isset($row['user_password']) || ! $row['user_password']) {
+                        $row['user_password'] = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 6)), 0, 6);
+                    }
+
                     $salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
-                    $generated = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 6)), 0, 6);
-                    $pass = hash('sha512', hash('sha512', $generated) . $salt);
+                    $pass = hash('sha512', hash('sha512', $row['user_password']) . $salt);
                     $row['user_salt'] = $salt;
                     $row['user_password'] = $pass;
 

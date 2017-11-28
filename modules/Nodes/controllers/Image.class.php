@@ -13,6 +13,11 @@ use modules\Nodes\Nodes;
 
 class Image extends Nodes
 {
+    public function __default()
+    {
+        $this->setView(false);
+    }
+
     public function get($row)
     {
         $content = '';

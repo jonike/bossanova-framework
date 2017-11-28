@@ -572,36 +572,36 @@ class Render
             } else {
                 // Default for page not found
                 self::$notFound = 1;
+            }
+        }
 
-                if (defined('DATABASE_ROUTING') && DATABASE_ROUTING) {
-                    // Load information from database conection
-                    $database = Database::getInstance(null, [
-                        DB_CONFIG_TYPE,
-                        DB_CONFIG_HOST,
-                        DB_CONFIG_USER,
-                        DB_CONFIG_PASS,
-                        DB_CONFIG_NAME
-                    ]);
+        if (defined('DATABASE_ROUTING') && DATABASE_ROUTING) {
+            // Load information from database conection
+            $database = Database::getInstance(null, [
+                DB_CONFIG_TYPE,
+                DB_CONFIG_HOST,
+                DB_CONFIG_USER,
+                DB_CONFIG_PASS,
+                DB_CONFIG_NAME
+            ]);
 
-                    if (is_object($database)) {
-                        // Is there any nodes for this URL
-                        $result = $database->table("nodes n")
-                            ->column("n.node_id")
-                            ->argument(1, "n.node_link", "'{$route}'")
-                            ->argument(2, "n.node_status", 1)
-                            ->select()
-                            ->execute();
+            if (is_object($database)) {
+                // Is there any nodes for this URL
+                $result = $database->table("nodes n")
+                    ->column("n.node_id")
+                    ->argument(1, "coalesce(n.node_link,'')", "'{$route}'")
+                    ->argument(2, "n.node_status", 1)
+                    ->select()
+                    ->execute();
 
-                        if ($row = $database->fetch_assoc($result)) {
-                            self::$configuration['node_id'] = $row['node_id'];
-                            self::$configuration['module_name'] = 'nodes';
-                            self::$notFound = 0;
-                        } else {
-                            if (defined('SOCIAL_NETWORK_EXTENSION') && SOCIAL_NETWORK_EXTENSION) {
-                                // Last try is the URL is reference for the social network
-                                $this->getSocialNetworkNames();
-                            }
-                        }
+                if ($row = $database->fetch_assoc($result)) {
+                    self::$configuration['node_id'] = $row['node_id'];
+                    self::$configuration['module_name'] = 'nodes';
+                    self::$notFound = 0;
+                } else {
+                    if (defined('SOCIAL_NETWORK_EXTENSION') && SOCIAL_NETWORK_EXTENSION) {
+                        // Last try is the URL is reference for the social network
+                        $this->getSocialNetworkNames();
                     }
                 }
             }
@@ -690,7 +690,7 @@ class Render
         }
 
         // Dynamic Tags (TODO: implement a more effient replace)
-        $html = str_replace("<head>", "<head>\n<base href='$request_scheme//$url/templates/$baseurl/'>$extra", $html);
+        $html = preg_replace("<head(.*)>", "head$1\n<base href='$request_scheme//$url/templates/$baseurl/'>$extra", $html);
 
         // Process message
         if (isset($_SESSION['bossanova_message']) && $_SESSION['bossanova_message']) {

@@ -11,8 +11,13 @@ namespace modules\Nodes\controllers;
 
 use modules\Nodes\Nodes;
 
-class Folder extends Nodes
+class Link extends Nodes
 {
+    public function __default()
+    {
+        $this->setView(false);
+    }
+
     public function get($row)
     {
         header("Location:/{$row['url']}");

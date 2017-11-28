@@ -13,6 +13,11 @@ use modules\Nodes\Nodes;
 
 class Folder extends Nodes
 {
+    public function __default()
+    {
+        $this->setView(false);
+    }
+
     public function get($row)
     {
         // Return text
@@ -59,6 +64,19 @@ class Folder extends Nodes
 
             // Create folder content
             $content = "<div class='children'>$content</div>";
+        } else if ($row['format'] == 2) {
+            if (count($children)) {
+                foreach ($children as $k => $v) {
+                    $content .= "<li><a href='{$v['url']}'>{$v['title']}</a><br>{$v['description']}</li>\n";
+                }
+
+                if ($content) {
+                    $content = "<ul class='folder'>$content</ul>";
+                }
+            }
+
+            // Create folder content
+            $content = "<div class='breadcrumb'>{$row['breadcrumb']}</div><div class='title'>{$row['title']}</div><div class='description'>{$row['summary']}</div><div class='children'>$content</div>";
         } else {
             if (count($children)) {
                 foreach ($children as $k => $v) {

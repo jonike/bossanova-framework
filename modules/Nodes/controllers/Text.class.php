@@ -13,6 +13,11 @@ use modules\Nodes\Nodes;
 
 class Text extends Nodes
 {
+    public function __default()
+    {
+        $this->setView(false);
+    }
+
     public function get($row)
     {
         $index = '';
@@ -39,7 +44,7 @@ class Text extends Nodes
             $content .= "</div>";
         } else if ($row['format'] == 99) {
             // Custom
-            $content = $row['format'];
+            $content = $row['template'];
 
             foreach ($row as $k => $v) {
                 $content = str_replace("[$k]", $v, $content);
