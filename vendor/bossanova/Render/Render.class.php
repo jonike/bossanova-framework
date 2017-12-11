@@ -358,45 +358,56 @@ class Render
                     $extra_config[$k]->controller_name = ucfirst(strtolower($extra_config[$k]->controller_name));
                 }
 
+                // Area
+                $area = $extra_config[$k]->template_area;
+
                 // If nothing yet loaded in the template area
-                if (! isset($contents[$extra_config[$k]->template_area])) {
-                    // If it is a node call the nodes module
-                    if (isset($extra_config[$k]->node_id) && $extra_config[$k]->node_id > 0) {
-                        // Create node instance
-                        if (! isset($nodes)) {
-                            $nodes = new \modules\Nodes\Nodes();
-                        }
-                        // Load the content to the righth area
-                        $area = $extra_config[$k]->template_area;
-                        $contents[$area] = $nodes->getContent($extra_config[$k]->node_id, false);
-                    } elseif (isset($extra_config[$k]->module_name) && $extra_config[$k]->module_name) {
-                        $module_name = $extra_config[$k]->module_name;
-
-                        // Check information about the module call
-                        if (isset($extra_config[$k]->controller_name) && $extra_config[$k]->controller_name) {
-                            // It is a controlle?
-                            $cn = "modules\\{$module_name}\\controllers\\" . $extra_config[$k]->controller_name;
-                            $cn = new $cn();
-                        } else {
-                            // It is a method inside the module
-                            $cn = "modules\\{$module_name}\\" . $extra_config[$k]->module_name;
-                            $cn = new $cn();
-                        }
-
-                        // Check if there is OB active for translations
-                        if (count(ob_list_handlers()) > 1) {
-                            // Loadind methods content including translation
-                            ob_start();
-                            $content = $cn->{$extra_config[$k]->method_name}();
-                            $content .= ob_get_clean();
-                        } else {
-                            // Loading methods content
-                            $content = $cn->{$extra_config[$k]->method_name}();
-                        }
-
-                        // Place content in the correct area
-                        $contents[$extra_config[$k]->template_area] = $content;
+                if (! isset($contents[$area])) {
+                    $contents[$area] = '';
+                }
+                // If it is a node call the nodes module
+                if (isset($extra_config[$k]->node_id) && $extra_config[$k]->node_id > 0) {
+                    // Create node instance
+                    if (! isset($nodes)) {
+                        $nodes = new \modules\Nodes\Nodes();
                     }
+                    // Load the content to the righth area
+
+                    // Create area if not exists
+                    if (! isset($contents[$area])) {
+                        $contents[$area] = '';
+                    }
+                    $contents[$area] .= $nodes->getContent($extra_config[$k]->node_id, false);
+                } elseif (isset($extra_config[$k]->module_name) && $extra_config[$k]->module_name) {
+                    $module_name = $extra_config[$k]->module_name;
+
+                    // Check information about the module call
+                    if (isset($extra_config[$k]->controller_name) && $extra_config[$k]->controller_name) {
+                        // It is a controlle?
+                        $cn = "modules\\{$module_name}\\controllers\\" . $extra_config[$k]->controller_name;
+                        $cn = new $cn();
+                    } else {
+                        // It is a method inside the module
+                        $cn = "modules\\{$module_name}\\" . $extra_config[$k]->module_name;
+                        $cn = new $cn();
+                    }
+
+                    // Check if there is OB active for translations
+                    if (count(ob_list_handlers()) > 1) {
+                        // Loadind methods content including translation
+                        ob_start();
+                        $content = $cn->{$extra_config[$k]->method_name}();
+                        $content .= ob_get_clean();
+                    } else {
+                        // Loading methods content
+                        $content = $cn->{$extra_config[$k]->method_name}();
+                    }
+
+                    // Place content in the correct area
+                    if (! isset( $contents[$extra_config[$k]->template_area])) {
+                        $contents[$extra_config[$k]->template_area] = '';
+                    }
+                    $contents[$extra_config[$k]->template_area] .= $content;
                 }
             }
         }
@@ -690,7 +701,7 @@ class Render
         }
 
         // Dynamic Tags (TODO: implement a more effient replace)
-        $html = preg_replace("<head(.*)>", "head$1\n<base href='$request_scheme//$url/templates/$baseurl/'>$extra", $html);
+        $html = preg_replace("<head.*>", "head>\n<base href='$request_scheme//$url/templates/$baseurl/'>$extra", $html, 1);
 
         // Process message
         if (isset($_SESSION['bossanova_message']) && $_SESSION['bossanova_message']) {

@@ -2,11 +2,11 @@
 
 /**
  * (c) 2013 Bossanova PHP Framework
-* http://www.bossanova-framework.com
-*
-* @author: Paul Hodel <paul.hodel@gmail.com>
-* @description: Admin module
-*/
+ * http://www.bossanova-framework.com
+ *
+ * @author: Paul Hodel <paul.hodel@gmail.com>
+ * @description: Admin module
+ */
 namespace modules\Admin;
 
 use bossanova\Module\Module;

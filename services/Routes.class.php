@@ -90,7 +90,21 @@ class Routes
 
     public function delete($id)
     {
-        return $this->model->delete($id);
+        $data = $this->model->delete($id);
+
+        if (! $data) {
+            $data = [
+                'error' => 1,
+                'message' => '^^[It was not possible to delete this record]^^'
+            ];
+        } else {
+            $data = [
+                'success' => 1,
+                'message' => '^^[Successfully deleted]^^'
+            ];
+        }
+
+        return $data;
     }
 
     public function getExtraConfig()

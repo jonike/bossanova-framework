@@ -1,7 +1,7 @@
 /*******************************************************************************
-* Bossanova PHP Framework 1.0.1
+* Bossanova UI
 * 2013 Paul Hodel <paul.hodel@gmail.com> 
-* http://www.bossanova-framework.com
+* http://bossanova.uk/
 
 * JS UI Form
 * 
@@ -22,129 +22,151 @@
 
 (function( $ ){
 
-	var methods = {
+    var methods = {
 
-	init : function( options ) {
+    init : function( options ) {
+        var id = $(this).attr('id');
 
-		var defaults = {};
+        // Save the options binded to the correct element
+        if (typeof(options.type) != 'undefined') {
+            options.type = 2;
+        }
+        $.fn.form.options[id] = options;
 
-		// Save options in a global variable
-		var options =  $.extend(defaults, options);
-		var id = $(this).attr('id');
-		$.fn.form.options[id] = options;
+        // Add automatic save action if save bottom exists
+        $(this).find("input[name='save']").click (function () {
+            $('#'+id).form('save');
+        });
+    },
+    open : function( key, __callback ) {
+        // Load global option from the variable
+        var id = $(this).attr('id');
+        var options = $.fn.form.options[id];
+        var url = options.url;
+        var data;
 
-		// Add automatic save action if save bottom exists
-		$(this).find("input[name='save']").click (function () {
-			$('#'+id).form('save');
-		});
-	},
-	open : function( key, __callback ) {
+        // Load URL
+        if (key) {
+            if (! options.type) {
+                url = url + '/select/' + key;
+            } else {
+                url = url + '/' + key;
+            }
+        }
 
-		// Load global option from the variable
-		var id = $(this).attr('id');
-		var options = $.fn.form.options[id];
-		var url = options.url;
-		var data;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType:'json',
+            success: function(result) {
+                data = result;
+                $.each(result, function(k, v) {
+                    obj = $('#'+id).find('[name="'+k+'"]');
 
-		// Load URL
-		if (key) url = url + '/select/' + key;
+                    if ($(obj).attr("type") == "checkbox") {
+                        if (v == 1) {
+                            $(obj).attr("checked", "checked");
+                        } else {
+                            $(obj).removeAttr("checked");
+                        }
+                    } else if ($(obj).attr("type") == "password") {
+                        // Do not update password boxes
+                    } else {
+                        $(obj).val(v);
+                    }
+                });
+            }
+        }).done(__callback, data);
+    },
+    save : function( __callback ) { 
 
-		$.ajax({
-			url: url,
-			type: 'GET',
-			dataType:'json',
-			success: function(result) {
-				data = result;
-				$.each(result, function(k, v) {
-					obj = $('#'+id).find('[name="'+k+'"]');
+        var id = $(this).attr('id');
+        var options = $.fn.form.options[id];
+        var string = '#'+id+' input, #'+id+' select, #'+id+' textarea';
 
-					if ($(obj).attr("type") == "checkbox") {
-						if (v == 1) {
-							$(obj).attr("checked", "checked");
-						} else {
-							$(obj).removeAttr("checked");
-						}
-					} else if ($(obj).attr("type") == "password") {
-						// Do not update password boxes
-					} else {
-						$(obj).val(v);
-					}
-				});
-			}
-		}).done(__callback, data);
-	},
-	save : function( __callback ) { 
+        var primarykey = $(this).find('[name="'+options.primarykey+'"]');
+        var url = options.url;
 
-		var id = $(this).attr('id');
-		var options = $.fn.form.options[id];
-		var string = '#'+id+' input, #'+id+' select, #'+id+' textarea';
+        if ($(primarykey).val() > 0) {
+            if (! options.type) {
+                url = url + '/update/' + $(primarykey).val();
+            } else {
+                url = url + '/' + $(primarykey).val();
+            }
+        } else {
+            if (! options.type) {
+                url = url + '/insert';
+            }
+        }
 
-		var primarykey = $(this).find('[name="'+options.primarykey+'"]');
-		var url = options.url;
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType:'json',
+            data: $(string).serializeArray(),
+            success: function(result) {
 
-		if ($(primarykey).val() > 0) {
-			url = url + '/update/' + $(primarykey).val();
-		} else {
-			url = url + '/insert';
-		}
+                if (!result.error) {
+                    if (! $(primarykey).val()) {
+                        if (result.id) {
+                            $(primarykey).val(result.id);
+                        }
+                    }
 
-		$.ajax({
-			url: url,
-			type: 'POST',
-			dataType:'json',
-			data: $(string).serializeArray(),
-			success: function(result) {
+                    if ($('#'+id+'_grid').length > 0) {
+                        $('#'+id+'_grid').grid('refresh');
+                    }
+                }
 
-				if (!result.error) {
-					if (!$(primarykey).val()) {
-						if (result.id) $(primarykey).val(result.id);
-					}
+                if (__callback) {
+                    __callback(result);
+                } else {
+                    alert(result.message);
+                }
+            }
+        });
+    },
+    delete : function( key, __callback ) {
+        var id = $(this).attr('id');
+        var options = $.fn.form.options[id];
+        var url = options.url;
 
-					if ($('#'+id+'_grid').length > 0) {
-						$('#'+id+'_grid').grid('refresh');
-					}
-				}
+        if (key) {
+            if (! options.type) {
+                url = url + '/delete/' + key;
+            } else {
+                url = url + '/' + key;
+            }
+        }
 
-				if (__callback) {
-					__callback(result);
-				} else {
-					alert(result.message);
-				}
-			}
-		});
-	},
-	delete : function( key, __callback ) {
-		var id = $(this).attr('id');
-		var options = $.fn.form.options[id];
-	
-		$.ajax({
-			url: options.url + '/delete/' + key,
-			type: 'DELETE',
-			dataType:'json',	
-			success: function(result) {
-				if (__callback) {
-					__callback(result);
-				} else {
-					alert(result.message);
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            dataType:'json',
+            success: function(result) {
+                if (__callback) {
+                    __callback(result);
+                } else {
+                    alert(result.message);
 
-					if ($('#'+id+'_grid').length > 0) {
-						$('#'+id+'_grid').grid('refresh');
-					}
-				}
-			}
-		});
-	}
+                    if ($('#'+id+'_grid').length > 0) {
+                        $('#'+id+'_grid').grid('refresh');
+                    }
+                }
+            }
+        });
+    }
 };
 
 $.fn.form = function( method ) {
 
-	if ( methods[method] ) {
-		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-	} else if ( typeof method === 'object' || ! method ) {
-		return methods.init.apply( this, arguments );
-	} else {
-		$.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
-	}  
+    if ( methods[method] ) {
+        return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+    } else if ( typeof method === 'object' || ! method ) {
+        return methods.init.apply( this, arguments );
+    } else {
+        $.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
+    }  
 };
 
 })( jQuery );

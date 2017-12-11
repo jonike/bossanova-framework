@@ -65,6 +65,20 @@ class Routes extends Admin
     }
 
     /**
+     * Delete a existing route
+     *
+     * @return string $json
+     */
+    public function delete($row = NULL)
+    {
+        $id = (int) $this->getParam(3);
+
+        $data = $this->service->delete($id);
+
+        return $this->jsonEncode($data);
+    }
+
+    /**
      * Interface Grid with all routes defined so far
      *
      * @return string $json

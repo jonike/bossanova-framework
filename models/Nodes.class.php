@@ -101,17 +101,19 @@ class Nodes extends Model
             }
         }
 
+        // Json
+        $node = $row; unset($node['parent_id']);
+        $node = json_encode($node);
+
         // Data
         $data = [
+            'parent_id' => (int)$this->getPost('parent_id'),
             'node_link' => $this->getPost('link'),
             'node_status' => $this->getPost('status'),
-            'node_json' => json_encode($row)
+            'node_json' => $node,
         ];
 
         // Complement
-        if ($value = $this->getPost('parent_id')) {
-            $data['parent_id'] = $value;
-        }
         if ($value = $this->getPost('order')) {
             $data['node_order'] = $value;
         }
