@@ -34,9 +34,11 @@ trait Post
             if (is_string($filter)) {
                 $row = isset($_POST[$filter]) ? $_POST[$filter] : null;
             } else {
-                foreach ($filter as $k => $v) {
-                    if (isset($_POST[$v])) {
-                        $row[$v] = $_POST[$v];
+                if (is_array($filter)) {
+                    foreach ($filter as $k => $v) {
+                        if (isset($_POST[$v])) {
+                            $row[$v] = $_POST[$v];
+                        }
                     }
                 }
             }
