@@ -47,7 +47,7 @@ $(document).ready(function() {
         $.each(data, function(k, v) {
             if (k == 'files') {
                 $.each(v, function(k1, v1) {
-                    content = '<div class="thumbs"><img src=' + v1.content + '></div>';
+                    content = '<div class="thumbs"><img src=' + v1.thumbs + '><input type="hidden" name="files['+k1+'][mineType]" value="' + v1.mineType + '"><input type="hidden" name="files['+k1+'][extension]" value="' + v1.extension + '"><textarea name="files['+k1+'][thumbs]" style="display:none;">' + v1.thumbs + '</textarea><textarea name="files['+k1+'][content]" style="display:none;">' + v1.content + '</textarea></div>';
                     $('#files').append(content);
                 });
             } else {
@@ -89,16 +89,6 @@ $(document).ready(function() {
     });
 });
 
-function nodes_save()
-{
-    // Upload images
-    var imgs = $('#files img');
-
-    $.each(imgs, function (k, v) {
-        $('#files').append('<textarea name="files[][content]" style="display:none;">' + $(v).prop('src') + '</textarea>');
-    });
-}
-
 function nodes_files(files)
 {
     var reader = [];
@@ -135,10 +125,25 @@ function importImage(url)
 
         ctx.drawImage(img, 0, position, w*p, h*p);
         var img1 = new Image();
-        $(img1).prop('src', canvas.toDataURL());
+        var src1 = canvas.toDataURL();
+        $(img1).prop('src', src1);
         var div = document.createElement('div');
         $(div).prop('class', 'thumbs');
         $(div).append(img1);
+
+        canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx = canvas.getContext("2d");
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0);
+
+        var l = $('#files .thumbs').length;
+        var m = src1.split(';')[0].replace('data:', '');
+        var e = m.split('/')[1];
+
+		$(div).append('<input type="hidden" name="files['+l+'][mineType]" value="' + m + '"><input type="hidden" name="files['+l+'][extension]" value="' + e + '"><textarea name="files['+l+'][thumbs]" style="display:none;">' + src1 + '</textarea><textarea name="files['+l+'][content]" style="display:none;">' + canvas.toDataURL() + '</textarea>');
+
         $('#files').append(div);
     };
 

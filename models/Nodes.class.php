@@ -66,6 +66,8 @@ class Nodes extends Model
             ->update()
             ->execute();
 
+        $this->saveMedia($id);
+
         // Return
         if (! $this->database->error) {
             $data = array('message' => '^^[Successfully saved]^^');
@@ -82,24 +84,6 @@ class Nodes extends Model
     {
         // Json content string
         $row = $this->getPost();
-
-        // If files are being uploaded
-        if (isset($_FILES) && count($_FILES)) {
-            if (count($_FILES['file']['name'])) {
-                foreach ($_FILES['file']['name'] as $k => $v) {
-                    $extension = explode('.', $_FILES['file']['name'][$k]);
-                    $extension = $extension[count($extension)-1];
-
-                    // Extension
-                    $file['size'] = filesize($_FILES['file']['tmp_name'][$k]);
-                    $file['filename'] = $_FILES['file']['name'][$k];
-                    $file['extension'] = $extension;
-                    $file['content'] = base64_encode(file_get_contents($_FILES['file']['tmp_name'][$k]));
-
-                    $row['files'][] = $file;
-                }
-            }
-        }
 
         // Json
         $node = $row; unset($node['parent_id']);
@@ -120,6 +104,21 @@ class Nodes extends Model
 
         // Bind
         return $data = $this->database->bind($data);
+    }
+
+    public function saveMedia($id)
+    {
+        $row = $this->getPost();
+
+        // Save media file
+        if (isset($row['files']) && count($row['files']) > 0) {
+            foreach ($row['files'] as $k => $v) {
+                if (isset($v['content'])) {
+                    $d = explode(',', $v['content']);
+                    file_put_contents('public/media/' . $id . ',' . $k . '.' . $v['extension'], base64_decode($d[1]));
+                }
+            }
+        }
     }
 
     public function delete($id)
@@ -518,7 +517,7 @@ class Nodes extends Model
         // List
         while ($data = $this->database->fetch_assoc($result)) {
             // Content
-            $row = json_decode($data['node_json'], true);
+            $row = $data + json_decode($data['node_json'], true);
 
             // Content
             $row['url'] = $this->nodeLink($row);
