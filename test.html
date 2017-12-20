@@ -1,0 +1,54 @@
+https://stackoverflow.com/questions/17696740/how-to-get-the-meta-tags-values-from-website-in-javascript-ajax
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+
+<textarea onkeyup='update(this)'></textarea>
+
+<div id='p'></div>
+
+<script>
+
+
+function update(obj)
+{
+    var text = $(obj).val();
+    if (url = detectUrl(text)) {
+        if (id = youtube_parser(url[0])) {
+            youtube(id);
+        }
+    }
+}
+
+function detectUrl(text)
+{
+    var expression = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+
+    return text.match(expression); 
+
+}
+
+function youtube_parser(url)
+{
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+    var match = url.match(regExp);
+
+    return (match&&match[7].length==11)? match[7] : false;
+}
+
+function youtube(id)
+{
+    $.getJSON("https://www.googleapis.com/youtube/v3/videos", { key: "AIzaSyCVJKtTXzwKgImHs9iZ-LoxO3XUPsbN2Q0", part: "snippet,statistics", id: id }, function(result) {
+        var p = [];
+        p.title = result.items[0].snippet.title;
+        p.description = result.items[0].snippet.description;
+        p.image = result.items[0].snippet.thumbnails.medium.url;
+        add(p);
+    });
+}
+
+function add(content)
+{
+    $('#p').html("<img src='" + content.image + "'>");
+}
+
+</script>

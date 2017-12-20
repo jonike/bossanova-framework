@@ -475,7 +475,7 @@ class Module
     public function login()
     {
         if (! $this->auth) {
-            $this->auth = new Authentication($this->query);
+            $this->auth = new Authentication();
         }
 
         $data = $this->auth->login();
@@ -502,7 +502,7 @@ class Module
     public function logout()
     {
         if (! $this->auth) {
-            $this->auth = new Authentication($this->query);
+            $this->auth = new Authentication();
         }
 
         return $this->auth->logout();
